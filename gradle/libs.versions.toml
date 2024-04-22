@@ -12,10 +12,14 @@ appcompat = "1.6.1"
 material = "1.11.0"
 jetbrainsKotlinJvm = "1.9.0"
 javaxInject = "1"
+navigationCompose = "2.7.7"
+
 
 
 [libraries]
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
