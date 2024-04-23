@@ -1,6 +1,6 @@
 package com.example.presentation.navigation
 
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.Image
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -11,7 +11,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 
 @Composable
@@ -41,7 +42,19 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                icon = { Icon(painterResource(id = item.icon),contentDescription = item.title) },
+                icon = {
+                    if (selectedItem == index) {
+                        Image(
+                            imageVector = ImageVector.vectorResource(item.iconFill),
+                            contentDescription = null
+                        )
+                    } else {
+                        Image(
+                            imageVector = ImageVector.vectorResource(item.icon),
+                            contentDescription = null
+                        )
+                    }
+                },
                 selected = selectedItem == index,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color(0xFF67C4A7),
