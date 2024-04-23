@@ -8,3 +8,7 @@ sealed class NavigationItem(val title: String, val route: String, var icon: Int)
     data object Manager : NavigationItem("Manager", "managerScreen", R.drawable.paper)
     data object Account : NavigationItem("Account", "accountScreen", R.drawable.profile)
 }
+
+sealed class NavigationObject(val route: String) {
+    data object SearchScreen : NavigationObject("SearchScreen")
+}

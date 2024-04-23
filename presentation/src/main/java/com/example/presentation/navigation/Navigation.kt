@@ -7,13 +7,16 @@ import androidx.navigation.compose.composable
 import com.example.presentation.account_screen.AccountScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.manager_screen.ManagerScreen
+import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.wishlist_screen.WishlistScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
     NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)}
+            )
         }
 
         composable(NavigationItem.Wishlist.route) {
@@ -26,6 +29,12 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationItem.Account.route) {
             AccountScreen()
+        }
+
+        composable(NavigationObject.SearchScreen.route) {
+            SearchScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
