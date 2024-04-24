@@ -89,9 +89,3 @@ class Api(
         setBody(request)
     }.body<Category>()
 }
-
-suspend fun main() {
-    val api = Api(Client)
-    val some = api.fetchCategories()
-    println(some)
-}
