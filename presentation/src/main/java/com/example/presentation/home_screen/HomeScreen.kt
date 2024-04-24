@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
@@ -37,10 +39,13 @@ import com.example.presentation.R
 import com.example.presentation.common_item.Cart
 import com.example.presentation.common_item.CategoryItem
 import com.example.presentation.common_item.ProductItem
+import com.example.presentation.theme.GrayDark
+import com.example.presentation.theme.GrayLight
+import com.example.presentation.theme.GrayLighter
+import com.example.presentation.theme.GrayLightest
 
 val categoryList = listOf("Laptop", "Smartphone", "Tablet", "All")
 
-//@Preview
 @Composable
 fun HomeScreen(
     navigationToSearchScreen: () -> Unit
@@ -49,8 +54,9 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TopBar(navigationToSearchScreen)
         LazyRow(
@@ -61,7 +67,6 @@ fun HomeScreen(
                 CategoryItem(categoryList[category], R.drawable.category)
             }
         }
-        FilterProduct()
         LazyVerticalGrid(
             modifier = Modifier.weight(1f),
             columns = GridCells.Fixed(2),
@@ -92,27 +97,27 @@ fun TopBar(
                 text = "Delivery address",
                 fontSize = 12.sp,
                 fontWeight = FontWeight(400),
-                color = Color(0xFFC8C8CB),
+                color = GrayLight,
             )
             Row(
                 modifier = Modifier.clickable { expanded = true }
             ) {
                 Text(
                     text = "Salatiga City, Central Java",
-                    color = Color(0xFF393F42),
+                    color = GrayDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500)
                 )
                 Icon(
                     imageVector = Icons.Outlined.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = Color(0xFF393F42)
+                    tint = GrayDark
                 )
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color(0xFFFAFAFC))
+                modifier = Modifier.background(GrayLightest)
             ) {
                 repeat(10) {
                     DropdownMenuItem(
@@ -127,7 +132,7 @@ fun TopBar(
             painter = painterResource(id = R.drawable.notification),
             contentDescription = null,
             modifier = Modifier.padding(10.dp),
-            tint = Color(0xFF393F42)
+            tint = GrayDark
         )
     }
 
@@ -135,7 +140,7 @@ fun TopBar(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { }
-            .border(1.dp, Color(0xFFF0F2F1), RoundedCornerShape(8.dp))
+            .border(1.dp, GrayLighter, RoundedCornerShape(8.dp))
             .clickable { navigationToSearchScreen() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -149,7 +154,7 @@ fun TopBar(
             text = "Search here ...",
             fontWeight = FontWeight(400),
             fontSize = 13.sp,
-            color = Color(0xFFC8C8CB),
+            color = GrayLight,
         )
     }
 }
@@ -170,14 +175,14 @@ fun FilterProduct() {
             modifier = Modifier.weight(1f),
             fontSize = 14.sp,
             fontWeight = FontWeight(500),
-            color = Color(0xFF393F42)
+            color = GrayDark
         )
         Column {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
                     .border(
-                        1.dp, Color(0xFFF0F2F1),
+                        1.dp, GrayLighter,
                         shape = RoundedCornerShape(5.dp)
                     )
                     .padding(horizontal = 8.dp)
@@ -189,18 +194,18 @@ fun FilterProduct() {
                     text = "Filter",
                     fontSize = 12.sp,
                     fontWeight = FontWeight(400),
-                    color = Color(0xFF393F42)
+                    color = GrayDark
                 )
                 Icon(painter = painterResource(
                     id = R.drawable.filter),
                     contentDescription = null,
-                    tint = Color(0xFF393F42)
+                    tint = GrayDark
                 )
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color(0xFFFAFAFC)),
+                modifier = Modifier.background(GrayLightest),
             ) {
                 DropdownMenuItem(
                     text = { Text("по названию") },
