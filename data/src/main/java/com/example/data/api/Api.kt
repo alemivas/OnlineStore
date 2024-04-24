@@ -41,10 +41,8 @@ class Api(
         parameter("offset", offset)
         title?.let { parameter("title", it) }
         categoryId?.let { parameter("categoryId", categoryId) }
-        if (priceMin != null && priceMax != null) {
-            parameter("priceMin", priceMin)
-            parameter("priceMax", priceMax)
-        }
+        priceMin?.let { parameter("priceMin", it) }
+        priceMax?.let { parameter("priceMax", it) }
     }.body<List<Product>>()
 
     suspend fun fetchProduct(
