@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.ksp)
+    id ("dagger.hilt.android.plugin")
 }
 
 android {
@@ -34,12 +36,23 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
 }
 
 dependencies {
     implementation(project(":domain"))
+
+    // viewModel
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    //Hilt
+    implementation (libs.hilt.android)
+    ksp (libs.hilt.compiler)
+    ksp (libs.androidx.hilt.compiler)
+    implementation (libs.androidx.hilt.navigation.compose)
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     // For navigation
     implementation (libs.androidx.navigation.compose)
 
