@@ -16,6 +16,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.presentation.theme.Gray
+import com.example.presentation.theme.Mint
+import com.example.presentation.theme.MintLight
 
 @Composable
 fun CategoryItem(
@@ -33,21 +36,21 @@ fun CategoryItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(Color(0xFFE9FFF8), RoundedCornerShape(8.dp)),
+                    .background(MintLight, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(painter = painterResource(
                     id = categoryImage),
                     contentDescription = null,
                     modifier = Modifier.padding(16.dp),
-                    tint = Color(0xFF67C4A7))
+                    tint = Mint)
             }
         }
         Text(
             text = category,
             fontSize = 12.sp,
             fontWeight = FontWeight(400),
-            color = Color(0xFF939393)
+            color = Gray
         )
     }
 }

@@ -13,9 +13,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,6 +36,11 @@ import com.example.presentation.R
 import com.example.presentation.common_item.Cart
 import com.example.presentation.common_item.ProductItem
 import com.example.presentation.home_screen.FilterProduct
+import com.example.presentation.theme.Gray
+import com.example.presentation.theme.GrayDark
+import com.example.presentation.theme.GrayLight
+import com.example.presentation.theme.GrayLighter
+import com.example.presentation.theme.Red
 
 //@Preview
 @Composable
@@ -54,8 +59,7 @@ fun SearchScreen(
             newSearchQuery = { searchQuery = it },
             navigateBack = navigateBack
         )
-        Divider(color = Color(0xFFF0F2F1))
-
+        HorizontalDivider(color = GrayLighter)
         if (searchQuery.isEmpty()) {
             Column(
                 modifier = Modifier
@@ -95,10 +99,10 @@ fun TopSearchBar(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Icon(
-            imageVector = Icons.Outlined.ArrowBack,
+            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
             contentDescription = null,
             modifier = Modifier.clickable { navigateBack() },
-            tint = Color(0xFF393F42)
+            tint = GrayDark
         )
         OutlinedTextField(
             value = searchQuery,
@@ -109,8 +113,7 @@ fun TopSearchBar(
                 Icon(
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = null,
-                    modifier = Modifier.padding(10.dp),
-                    tint = Color(0xFF939393)
+                    tint = Gray
                 )
             },
             singleLine = true,
@@ -119,7 +122,7 @@ fun TopSearchBar(
                     text = "Search here ...",
                     fontWeight = FontWeight(400),
                     fontSize = 13.sp,
-                    color = Color(0xFFC8C8CB),
+                    color = GrayLight,
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -127,8 +130,8 @@ fun TopSearchBar(
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
                 errorContainerColor = Color.Transparent,
-                focusedBorderColor = Color(0xFFF0F2F1),
-                unfocusedBorderColor = Color(0xFFF0F2F1),
+                focusedBorderColor = GrayLighter,
+                unfocusedBorderColor = GrayLighter,
             )
         )
         Cart(count = 5) { }
@@ -152,7 +155,7 @@ fun SearchResult() {
                 fontWeight = FontWeight(500),
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
-                color = Color(0xFF393F42),
+                color = GrayDark,
             )
             Text(
                 text = "Clear all",
@@ -160,7 +163,7 @@ fun SearchResult() {
                 fontWeight = FontWeight(500),
                 fontSize = 12.sp,
                 lineHeight = 15.sp,
-                color = Color(0xFFD65B5B),
+                color = Red,
             )
         }
         LazyColumn(
@@ -183,7 +186,7 @@ fun LastSearchRow() {
         Icon(
             painter = painterResource(id = R.drawable.time_circle),
             contentDescription = null,
-            tint = Color(0xFF939393)
+            tint = Gray
         )
         Text(
             text = "Salatiga City, Central Java",
@@ -193,12 +196,12 @@ fun LastSearchRow() {
             fontWeight = FontWeight(400),
             fontSize = 14.sp,
             lineHeight = 17.sp,
-            color = Color(0xFF393F42)
+            color = GrayDark
         )
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = null,
-            tint = Color(0xFF939393)
+            tint = Gray
         )
     }
 }
