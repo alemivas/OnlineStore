@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":utils"))
 
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -55,6 +56,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     // For navigation
     implementation (libs.androidx.navigation.compose)
+
+    //Coil
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

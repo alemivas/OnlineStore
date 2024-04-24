@@ -1,9 +1,9 @@
-package com.example.data.api
+package com.example.data.api.aaaa
 
-import com.example.data.api.models.Category
-import com.example.data.api.models.CategoryCreateRequest
-import com.example.data.api.models.Product
-import com.example.data.api.models.ProductCreateRequest
+import com.example.domain.models.Category
+import com.example.domain.models.CategoryCreateRequest
+import com.example.domain.models.Product
+import com.example.domain.models.ProductCreateRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
