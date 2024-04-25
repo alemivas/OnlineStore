@@ -1,9 +1,9 @@
 package com.example.data.api
 
-import com.example.data.api.models.Category
-import com.example.data.api.models.CategoryCreateRequest
-import com.example.data.api.models.Product
-import com.example.data.api.models.ProductCreateRequest
+import com.example.domain.models.Category
+import com.example.domain.models.CategoryCreateRequest
+import com.example.domain.models.Product
+import com.example.domain.models.ProductCreateRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -13,17 +13,17 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import javax.inject.Inject
 
-class Api(
+class ApiService @Inject constructor(
     private val client: HttpClient
 ) {
     companion object Endpoints {
-        private const val DOMAIN = "https://api.escuelajs.co"
         private const val API = "/api/v1"
         const val _PRODUCTS = "/products"
-        const val PRODUCTS = "$DOMAIN$API/products"
+        const val PRODUCTS = "$API/products"
         const val _CATEGORIES = "/categories"
-        const val CATEGORIES = "$DOMAIN$API/categories"
+        const val CATEGORIES = "$API/categories"
     }
 
     suspend fun fetchProducts(
@@ -40,7 +40,7 @@ class Api(
         categoryId?.let { parameter("categoryId", categoryId) }
         priceMin?.let { parameter("priceMin", it) }
         priceMax?.let { parameter("priceMax", it) }
-    }.body<List<Product>>()
+    }
 
     suspend fun fetchProduct(
         id: Int
@@ -66,10 +66,10 @@ class Api(
     }.body<List<Product>>()
 
     suspend fun fetchCategories(
-        limit: Int = 10
+        limit: Int = 30
     ) = client.get(CATEGORIES) {
         parameter("limit", limit)
-    }.body<List<Category>>()
+    }
 
     suspend fun fetchCategory(
         id: Int

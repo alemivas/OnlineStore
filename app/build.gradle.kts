@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":utils"))
 
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -73,6 +74,18 @@ dependencies {
     //Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
+    //Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    //Coil
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

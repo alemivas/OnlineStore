@@ -1,8 +1,6 @@
 package com.example.presentation.common_item
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,63 +14,67 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.R
+import coil.compose.AsyncImage
+import com.example.domain.models.Product
+import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
+import com.example.presentation.theme.Red
 
-@Preview
 @Composable
-fun ProductItem() {
+fun ProductItem(
+    homeViewModel: HomeViewModel,
+    product: Product
+) {
     Card(
-        modifier = Modifier.fillMaxWidth()
-            .clickable {  },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { },
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
+        AsyncImage(
+            modifier = Modifier.fillMaxWidth()
                 .height(112.dp),
-            painter = painterResource(id = R.drawable.img),
+            contentScale = ContentScale.Crop,
+            model = product.images.first().removePrefix("[\"").removeSuffix("\"]"),
             contentDescription = null,
-            contentScale = ContentScale.Crop
         )
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(13.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Monitor LG 22”inc 4K 120Fps",
+                text = product.title,
                 color = GrayDark,
                 fontSize = 12.sp,
                 fontWeight = FontWeight(400),
                 maxLines = 1,
             )
             Text(
-                text = "$199.99",
+                text = "$${product.price}",
                 color = GrayDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(600),
                 maxLines = 1,
             )
             Button(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = 6.dp),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Mint
+                    containerColor = if (homeViewModel.cart.value.contains(product)) Red else Mint
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { homeViewModel.checkCart(product) }
             ) {
                 Text(
-                    text = "Add to cart",
+                    text = if (homeViewModel.cart.value.contains(product)) "Remove from cart" else "Add to cart",
                     fontSize = 12.sp,
                     fontWeight = FontWeight(400),
                 )

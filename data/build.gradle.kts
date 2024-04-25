@@ -35,6 +35,9 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":utils"))
+
+    implementation(libs.javax.inject)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.serialization)
