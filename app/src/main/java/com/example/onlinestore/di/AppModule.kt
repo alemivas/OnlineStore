@@ -1,5 +1,6 @@
 package com.example.onlinestore.di
 
+import com.example.data.api.ApiService
 import com.example.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -44,6 +45,12 @@ object AppModule {
                 })
             }
         }
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(httpClient: HttpClient) : ApiService {
+        return ApiService(httpClient)
     }
 
     @Provides

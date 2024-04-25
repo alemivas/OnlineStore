@@ -2,31 +2,14 @@ package com.example.presentation.home_screen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,213 +20,113 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.presentation.R
-import com.example.presentation.common_item.Cart
-import com.example.presentation.common_item.CategoryItem
-import com.example.presentation.common_item.ProductItem
-import com.example.presentation.theme.GrayDark
+import com.example.presentation.common_item.CategoriesRow
+import com.example.presentation.common_item.CategoriesVerticalGrid
+import com.example.presentation.common_item.FilterProduct
+import com.example.presentation.common_item.NoResultBox
+import com.example.presentation.common_item.ProductVerticalGrid
+import com.example.presentation.common_item.SearchBar
+import com.example.presentation.common_item.TopBar
 import com.example.presentation.theme.GrayLight
-import com.example.presentation.theme.GrayLighter
-import com.example.presentation.theme.GrayLightest
 import com.example.utils.ApiResult
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel,
     navigationToSearchScreen: () -> Unit
 ) {
     val categories by homeViewModel.categories.collectAsState()
+    val products by homeViewModel.products.collectAsState()
+    var isShowAll by remember { mutableStateOf(false) }
+    var isFilter by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TopBar(navigationToSearchScreen)
-        Box(modifier = Modifier
-            .fillMaxWidth(),
-            contentAlignment = Alignment.Center) {
+        TopBar(homeViewModel)
+        SearchBar(
+            homeViewModel = homeViewModel,
+            isSearchScreen = false,
+            padding = 0.dp,
+            navigateToSearch = { navigationToSearchScreen() },
+            navigateBack = {})
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
             when (categories) {
                 is ApiResult.Error -> {
-                    Toast.makeText(LocalContext.current,categories.error , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(LocalContext.current, categories.error, Toast.LENGTH_SHORT)
+                        .show()
                 }
+
                 is ApiResult.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.size(40.dp), color = GrayLight)
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(40.dp),
+                            color = GrayLight
+                        )
+                    }
                 }
+
                 is ApiResult.Success -> {
                     val list = categories.data ?: emptyList()
-                    LazyRow(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(list.size) { category ->
-                            CategoryItem(list[category])
-                        }
+                    if (!isShowAll) {
+                        CategoriesRow(
+                            homeViewModel = homeViewModel,
+                            list = list,
+                            categoryClicked = { isFilter = false },
+                            showAllClicked = { isShowAll = true }
+                        )
+                    } else {
+                        CategoriesVerticalGrid(
+                            homeViewModel = homeViewModel,
+                            list = list,
+                            showAllClicked = {
+                                isShowAll = false
+                                isFilter = false
+                            }
+                        )
                     }
                 }
             }
         }
-        FilterProduct()
-        LazyVerticalGrid(
-            modifier = Modifier.weight(1f),
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(10) {
-                ProductItem()
-            }
-        }
-    }
-}
 
-@Composable
-fun TopBar(
-    navigationToSearchScreen: () -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
+        FilterProduct(
+            homeViewModel = homeViewModel,
+            sortedClicked = { isFilter = true }
+        )
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Delivery address",
-                fontSize = 12.sp,
-                fontWeight = FontWeight(400),
-                color = GrayLight,
-            )
-            Row(
-                modifier = Modifier.clickable { expanded = true }
-            ) {
-                Text(
-                    text = "Salatiga City, Central Java",
-                    color = GrayDark,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight(500)
-                )
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = GrayDark
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.background(GrayLightest)
-            ) {
-                repeat(10) {
-                    DropdownMenuItem(
-                        text = { Text("Item ${it + 1}") },
-                        onClick = { /* TODO */ },
-                    )
+            when (products) {
+                is ApiResult.Error -> {
+                    Toast.makeText(LocalContext.current, products.error, Toast.LENGTH_SHORT).show()
                 }
-            }
-        }
-        Cart(count = 5) { }
-        Icon(
-            painter = painterResource(id = R.drawable.notification),
-            contentDescription = null,
-            modifier = Modifier.padding(10.dp),
-            tint = GrayDark
-        )
-    }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { }
-            .border(1.dp, GrayLighter, RoundedCornerShape(8.dp))
-            .clickable { navigationToSearchScreen() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.search),
-            contentDescription = null,
-            modifier = Modifier.padding(10.dp),
-            tint = Color(0xFF939393)
-        )
-        Text(
-            text = "Search here ...",
-            fontWeight = FontWeight(400),
-            fontSize = 13.sp,
-            color = GrayLight,
-        )
-    }
-}
+                is ApiResult.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.size(40.dp), color = GrayLight)
+                }
 
-@Composable
-fun FilterProduct() {
-    var expanded by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(27.dp)
-            .padding(start = 6.dp, end = 60.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Product",
-            modifier = Modifier.weight(1f),
-            fontSize = 14.sp,
-            fontWeight = FontWeight(500),
-            color = GrayDark
-        )
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .border(
-                        1.dp, GrayLighter,
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding(horizontal = 8.dp)
-                    .clickable { expanded = true },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Text(
-                    text = "Filter",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400),
-                    color = GrayDark
-                )
-                Icon(painter = painterResource(
-                    id = R.drawable.filter),
-                    contentDescription = null,
-                    tint = GrayDark
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.background(GrayLightest),
-            ) {
-                DropdownMenuItem(
-                    text = { Text("по названию") },
-                    onClick = { expanded = false },
-                )
-                DropdownMenuItem(
-                    text = { Text("по цене") },
-                    onClick = { expanded = false },
-                )
-                DropdownMenuItem(
-                    text = { Text("ценовой диапазон") },
-                    onClick = { expanded = false },
-                )
+                is ApiResult.Success -> {
+                    val list = products.data ?: emptyList()
+                    if (isFilter) {
+                        if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
+                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value)
+                    } else {
+                        if (list.isEmpty())  NoResultBox("No results")
+                        else ProductVerticalGrid(homeViewModel, list)
+                    }
+                }
             }
         }
     }

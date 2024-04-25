@@ -1,5 +1,6 @@
 package com.example.presentation.common_item
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,20 +17,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.domain.models.Category
+import com.example.presentation.R
 import com.example.presentation.theme.Gray
+import com.example.presentation.theme.MintLight
 
 @Composable
 fun CategoryItem(
     category: Category,
+    onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.background(Color.White)
-            .clickable {  },
+        modifier = Modifier
+            .background(Color.White)
+            .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -48,6 +54,39 @@ fun CategoryItem(
         }
         Text(
             text = category.name,
+            fontSize = 12.sp,
+            fontWeight = FontWeight(400),
+            color = Gray
+        )
+    }
+}
+
+@Composable
+fun CategoryItemAll(
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 6.dp)
+                .size(40.dp)
+                .background(MintLight)
+                .clip(shape = RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(painter = painterResource(
+                id = R.drawable.category),
+                contentDescription = null,
+            )
+        }
+        Text(
+            text = "All",
             fontSize = 12.sp,
             fontWeight = FontWeight(400),
             color = Gray
