@@ -17,7 +17,7 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    NavHost(navController, startDestination = NavigationObject.RegistrationScreen.route) {
+    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -45,11 +45,17 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationObject.LoginScreen.route) {
-            LoginScreen()
+            LoginScreen(
+                navigateToRegistration = { navController.navigate(NavigationObject.RegistrationScreen.route) },
+                navigateToHome = { navController.navigate(NavigationItem.Home.route) }
+            )
         }
 
         composable(NavigationObject.RegistrationScreen.route) {
-            RegistrationScreen()
+            RegistrationScreen(
+                navigateToHome = { navController.navigate(NavigationItem.Home.route) },
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

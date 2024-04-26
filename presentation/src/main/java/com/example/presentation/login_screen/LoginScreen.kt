@@ -30,10 +30,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayLighter
@@ -43,9 +43,12 @@ import com.example.presentation.theme.LoginLabelColor
 import com.example.presentation.theme.Mint
 import com.example.presentation.theme.Red
 
-@Preview
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    loginVewModel: LoginVewModel = hiltViewModel(),
+    navigateToRegistration: () -> Unit,
+    navigateToHome: () -> Unit,
+) {
     val login = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
@@ -98,7 +101,9 @@ fun LoginScreen() {
                 fontWeight = FontWeight(700),
             )
             Text(
-                modifier = Modifier.clickable { /*TODO*/ },
+                modifier = Modifier.clickable {
+                    navigateToRegistration()
+                },
                 text = "Register here",
                 color = Mint,
                 fontSize = 16.sp,
@@ -112,7 +117,6 @@ fun LoginScreen() {
             onDismissRequest = { showErrorDialog = false }
         )
     }
-
 }
 
 @Composable

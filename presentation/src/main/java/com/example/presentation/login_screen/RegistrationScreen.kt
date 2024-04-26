@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,11 +48,11 @@ import com.example.presentation.theme.PasswordBackgroundColor
 import com.example.presentation.theme.PasswordLabelColor
 import com.example.presentation.theme.Purple
 
-@Preview
 @Composable
 fun RegistrationScreen(
     loginVewModel: LoginVewModel = hiltViewModel(),
-//    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -80,7 +79,7 @@ fun RegistrationScreen(
                 modifier = Modifier
                     .size(48.dp)
                     .background(GrayLighter, CircleShape)
-                    .clickable { },
+                    .clickable { navigateBack() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -189,10 +188,12 @@ fun RegistrationScreen(
 
         Button(
             onClick = {
-                if (!isErrorEmail || !isErrorName || !isErrorPassword || !isErrorConfirmPassword) {
-                    showErrorDialog = true
+                if (!isErrorEmail && !isErrorName && !isErrorPassword && !isErrorConfirmPassword
+                    && name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()
+                ) {
+                    navigateToHome()
                 } else {
-
+                    showErrorDialog = true
                 }
             },
             modifier = Modifier
@@ -212,7 +213,7 @@ fun RegistrationScreen(
                 fontWeight = FontWeight(600),
             )
             Text(
-                modifier = Modifier.clickable { /*TODO*/ },
+                modifier = Modifier.clickable { navigateBack() },
                 text = "Login",
                 color = Purple,
                 fontSize = 16.sp,

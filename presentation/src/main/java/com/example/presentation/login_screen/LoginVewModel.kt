@@ -21,4 +21,5 @@ class LoginVewModel @Inject constructor(
         return text.isEmpty() || !text.contains("@").and(text.endsWith(".ru") || text.endsWith(".com"))
     }
 
+
 }
