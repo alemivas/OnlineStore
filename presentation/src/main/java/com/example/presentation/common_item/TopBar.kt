@@ -32,9 +32,11 @@ import com.example.presentation.theme.GrayLightest
 @Composable
 fun TopBar(
     homeViewModel: HomeViewModel,
-//    navigationToSearchScreen: () -> Unit
+//    navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val countryList = homeViewModel.countryList
+    var currentCountry by remember { mutableStateOf(countryList.first()) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -44,7 +46,7 @@ fun TopBar(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "Delivery address",
+                text = "Delivery country",
                 fontSize = 12.sp,
                 fontWeight = FontWeight(400),
                 color = GrayLight,
@@ -53,7 +55,7 @@ fun TopBar(
                 modifier = Modifier.clickable { expanded = true }
             ) {
                 Text(
-                    text = "Salatiga City, Central Java",
+                    text = currentCountry,
                     color = GrayDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500)
@@ -69,10 +71,13 @@ fun TopBar(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(GrayLightest)
             ) {
-                repeat(10) {
+                repeat(countryList.size) {
                     DropdownMenuItem(
-                        text = { Text("Item ${it + 1}") },
-                        onClick = { /* TODO */ },
+                        text = { Text(countryList[it]) },
+                        onClick = {
+                            currentCountry = countryList[it]
+                            expanded = false
+                        },
                     )
                 }
             }

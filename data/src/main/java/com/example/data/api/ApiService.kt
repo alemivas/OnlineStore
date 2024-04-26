@@ -13,6 +13,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ApiService @Inject constructor(
@@ -34,12 +36,14 @@ class ApiService @Inject constructor(
         priceMin: Int? = null,
         priceMax: Int? = null,
     ) = client.get(PRODUCTS) {
-        parameter("limit", limit)
-        parameter("offset", offset)
-        title?.let { parameter("title", it) }
-        categoryId?.let { parameter("categoryId", categoryId) }
-        priceMin?.let { parameter("priceMin", it) }
-        priceMax?.let { parameter("priceMax", it) }
+        withContext(Dispatchers.IO) {
+            parameter("limit", limit)
+            parameter("offset", offset)
+            title?.let { parameter("title", it) }
+            categoryId?.let { parameter("categoryId", categoryId) }
+            priceMin?.let { parameter("priceMin", it) }
+            priceMax?.let { parameter("priceMax", it) }
+        }
     }
 
     suspend fun fetchProduct(
@@ -68,7 +72,9 @@ class ApiService @Inject constructor(
     suspend fun fetchCategories(
         limit: Int = 30
     ) = client.get(CATEGORIES) {
-        parameter("limit", limit)
+        withContext(Dispatchers.IO) {
+            parameter("limit", limit)
+        }
     }
 
     suspend fun fetchCategory(
