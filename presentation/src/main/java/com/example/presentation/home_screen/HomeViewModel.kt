@@ -26,6 +26,13 @@ class HomeViewModel @Inject constructor(
     private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
+    val countryList = listOf(
+        "USA", "Canada", "Brazil", "Argentina", "Australia",
+        "Europe", "United Kingdom", "Japan", "Russia", "China"
+    )
+
+//    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
+
     private val _categories = MutableStateFlow<ApiResult<List<Category>>>(ApiResult.Loading())
     val categories = _categories.asStateFlow()
 
