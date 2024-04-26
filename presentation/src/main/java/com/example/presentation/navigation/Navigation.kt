@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import com.example.presentation.account_screen.AccountScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.login_screen.LoginScreen
+import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.wishlist_screen.WishlistScreen
@@ -15,7 +17,7 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    NavHost(navController, startDestination = NavigationItem.Home.route) {
+    NavHost(navController, startDestination = NavigationObject.RegistrationScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -40,6 +42,14 @@ fun Navigation(navController: NavHostController) {
                 homeViewModel = homeViewModel,
                 navigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(NavigationObject.LoginScreen.route) {
+            LoginScreen()
+        }
+
+        composable(NavigationObject.RegistrationScreen.route) {
+            RegistrationScreen()
         }
     }
 }
