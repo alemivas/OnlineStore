@@ -20,6 +20,4 @@ class LoginVewModel @Inject constructor(
     fun isValidEmail(text: String): Boolean {
         return text.isEmpty() || !text.contains("@").and(text.endsWith(".ru") || text.endsWith(".com"))
     }
-
-
 }
