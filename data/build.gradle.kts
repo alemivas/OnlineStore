@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 android {
@@ -34,6 +35,17 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":utils"))
+
+    implementation(libs.javax.inject)
+
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
