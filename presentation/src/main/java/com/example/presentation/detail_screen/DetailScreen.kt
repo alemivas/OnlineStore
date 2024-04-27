@@ -1,6 +1,7 @@
 package com.example.presentation.detail_screen
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,7 +47,11 @@ import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.Mint
 import com.example.presentation.theme.Red
+import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
+import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
+import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(
     homeViewModel: HomeViewModel,
@@ -61,21 +68,42 @@ fun DetailScreen(
                 .background(Color.White)
                 .verticalScroll(rememberScrollState())
         ) {
+            val pageCount = selectedProduct?.images?.size ?: 0
+            val pagerState = rememberPagerState(pageCount = { pageCount })
+
             DetailTopBar(
                 homeViewModel = homeViewModel,
                 isDetailScreen = true,
                 title = "Detail product",
-                padding = 16.dp,
                 navigateBack = { navigateBack() }
             )
-            AsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(290.dp),
-                contentScale = ContentScale.Crop,
-                model = selectedProduct!!.images.first().removePrefix("[\"").removeSuffix("\"]"),
-                contentDescription = null,
-            )
+            Box {
+                HorizontalPager(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(290.dp),
+                    pageSpacing = 24.dp,
+                    state = pagerState
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(290.dp),
+                        contentScale = ContentScale.Crop,
+                        model = selectedProduct?.images?.get(it)?.removePrefix("[\"")?.removeSuffix("\"]"),
+                        contentDescription = null,
+                    )
+                }
+                DotsIndicator(
+                    dotCount = pageCount,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp),
+                    type = ShiftIndicatorType(dotsGraphic = DotGraphic(color = GrayLighter)),
+                    pagerState = pagerState
+                )
+
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()

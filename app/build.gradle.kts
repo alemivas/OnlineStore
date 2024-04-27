@@ -58,6 +58,8 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":utils"))
 
+    implementation(libs.dotsindicator)
+
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     // For room

@@ -70,7 +70,6 @@ class HomeViewModel @Inject constructor(
 
     private val _favoriteList: MutableState<List<Product>> =
         mutableStateOf(emptyList())
-    val favoriteList: State<List<Product>> = _favoriteList
 
     init {
         fetchCategories()

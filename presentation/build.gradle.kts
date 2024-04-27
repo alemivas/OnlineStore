@@ -44,6 +44,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":utils"))
 
+    implementation(libs.dotsindicator)
+
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     //Hilt
