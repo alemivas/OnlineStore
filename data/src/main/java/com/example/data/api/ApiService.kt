@@ -13,8 +13,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ApiService @Inject constructor(
@@ -36,28 +34,26 @@ class ApiService @Inject constructor(
         priceMin: Int? = null,
         priceMax: Int? = null,
     ) = client.get(PRODUCTS) {
-        withContext(Dispatchers.IO) {
-            parameter("limit", limit)
-            parameter("offset", offset)
-            title?.let { parameter("title", it) }
-            categoryId?.let { parameter("categoryId", categoryId) }
-            priceMin?.let { parameter("priceMin", it) }
-            priceMax?.let { parameter("priceMax", it) }
-        }
+        parameter("limit", limit)
+        parameter("offset", offset)
+        title?.let { parameter("title", it) }
+        categoryId?.let { parameter("categoryId", categoryId) }
+        priceMin?.let { parameter("priceMin", it) }
+        priceMax?.let { parameter("priceMax", it) }
     }
 
     suspend fun fetchProduct(
         id: Int
     ) = client.get(PRODUCTS) {
         url { appendPathSegments(id.toString()) }
-    }.body<com.example.domain.models.Product>()
+    }.body<Product>()
 
     suspend fun postProduct(
-        request: com.example.domain.models.ProductCreateRequest
+        request: ProductCreateRequest
     ) = client.post(PRODUCTS) {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body<com.example.domain.models.Product>()
+    }.body<Product>()
 
     suspend fun fetchCategoryProducts(
         categoryId: Int,
@@ -67,26 +63,24 @@ class ApiService @Inject constructor(
         url { appendPathSegments(categoryId.toString(), _PRODUCTS) }
         parameter("limit", limit)
         parameter("offset", offset)
-    }.body<List<com.example.domain.models.Product>>()
+    }.body<List<Product>>()
 
     suspend fun fetchCategories(
         limit: Int = 30
     ) = client.get(CATEGORIES) {
-        withContext(Dispatchers.IO) {
-            parameter("limit", limit)
-        }
+        parameter("limit", limit)
     }
 
     suspend fun fetchCategory(
         id: Int
     ) = client.get(CATEGORIES) {
         url { appendPathSegments(id.toString()) }
-    }.body<com.example.domain.models.Category>()
+    }.body<Category>()
 
     suspend fun postCategory(
-        request: com.example.domain.models.CategoryCreateRequest
+        request: CategoryCreateRequest
     ) = client.post(CATEGORIES) {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body<com.example.domain.models.Category>()
+    }.body<Category>()
 }

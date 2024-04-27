@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.domain.models.Category
 
-
 @Entity
 data class ProductDBO(
     @PrimaryKey

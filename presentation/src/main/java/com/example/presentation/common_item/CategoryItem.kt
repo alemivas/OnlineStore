@@ -29,7 +29,7 @@ import com.example.presentation.theme.MintLight
 
 @Composable
 fun CategoryItem(
-    category: com.example.domain.models.Category,
+    category: Category,
     onClick: () -> Unit
 ) {
     Column(
