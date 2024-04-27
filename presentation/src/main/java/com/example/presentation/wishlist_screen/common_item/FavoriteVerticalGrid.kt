@@ -1,4 +1,4 @@
-package com.example.presentation.home_screen.common_item
+package com.example.presentation.wishlist_screen.common_item
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -6,12 +6,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.example.domain.models.Product
-import com.example.presentation.common_item.ProductItem
-import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
-fun ProductVerticalGrid(
-    homeViewModel: HomeViewModel,
+fun FavoriteVerticalGrid(
+    wishlistViewModel: WishlistViewModel,
     listProduct: List<Product>,
     navigateToDetail: (Int) -> Unit
 ) {
@@ -21,8 +20,8 @@ fun ProductVerticalGrid(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(listProduct.size) { product ->
-            ProductItem(
-                homeViewModel = homeViewModel,
+            FavoriteItem(
+                wishlistViewModel = wishlistViewModel,
                 product = listProduct[product],
                 navigateToDetail = { navigateToDetail(it) }
             )

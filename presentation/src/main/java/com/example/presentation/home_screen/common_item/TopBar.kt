@@ -83,7 +83,7 @@ fun TopBar(
                 }
             }
         }
-        Cart(homeViewModel) { }
+        Cart(homeViewModel.cart.value.size) { }
         Icon(
             painter = painterResource(id = R.drawable.notification),
             contentDescription = null,

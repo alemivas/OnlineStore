@@ -18,6 +18,7 @@ import com.example.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -64,9 +65,6 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery: MutableState<String> = mutableStateOf("")
     val searchQuery = _searchQuery
 
-    private val _searchFavoriteQuery: MutableState<String> = mutableStateOf("")
-    val searchFavoriteQuery = _searchFavoriteQuery
-
     private val _selectedProduct = mutableStateOf<Product?>(null)
     val selectedProduct: State<Product?> = _selectedProduct
 
@@ -82,10 +80,13 @@ class HomeViewModel @Inject constructor(
 
     private fun getUser() {
         viewModelScope.launch {
-            val isLoginUser = getIsLoginUser()
-            if (isLoginUser != null) {
-                _cart.value = isLoginUser.cartList
-                _favoriteList.value = isLoginUser.favoriteProductList
+            while (true) {
+                val isLoginUser = getIsLoginUser()
+                if (isLoginUser != null) {
+                    _cart.value = isLoginUser.cartList
+                    _favoriteList.value = isLoginUser.favoriteProductList
+                }
+                delay(1000)
             }
         }
     }
@@ -153,20 +154,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getSearchFavoriteList() : List<Product> {
-        return _favoriteList.value.filter { it.title.contains(_searchFavoriteQuery.value) }
-    }
-
     fun isVisibleHistorySearchList(): Boolean {
         return _searchQuery.value.isEmpty()
     }
 
     fun changeSearchQuery(query: String) {
         _searchQuery.value = query
-    }
-
-    fun changeSearchFavoriteQuery(query: String) {
-        _searchFavoriteQuery.value = query
     }
 
     fun clearSearchList() {
@@ -192,6 +185,13 @@ class HomeViewModel @Inject constructor(
                 else it
             }
         }
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = _cart.value)
+                saveUser(updatedCartList)
+            }
+        }
     }
 
     fun removeFromCart(product: Product) {
@@ -204,6 +204,13 @@ class HomeViewModel @Inject constructor(
             }
         } else if (currentProduct != null && currentProduct.quantity >= 1) {
             _cart.value = _cart.value.minus(Cart(currentProduct.id,product, 1))
+        }
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = _cart.value)
+                saveUser(updatedCartList)
+            }
         }
     }
 

@@ -122,12 +122,12 @@ fun HomeScreen(
                     val list = products.data ?: emptyList()
                     if (isFilter) {
                         if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value, false) {
+                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
                             navigateToDetail(it)
                         }
                     } else {
                         if (list.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, list, false) {
+                        else ProductVerticalGrid(homeViewModel, list) {
                             navigateToDetail(it)
                         }
                     }

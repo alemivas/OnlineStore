@@ -1,10 +1,14 @@
-package com.example.presentation.common_item
+package com.example.presentation.wishlist_screen.common_item
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -12,22 +16,26 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.domain.models.Product
-import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.R
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
 import com.example.presentation.theme.Red
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
-fun ProductItem(
-    homeViewModel: HomeViewModel,
+fun FavoriteItem(
+    wishlistViewModel: WishlistViewModel,
     product: Product,
     navigateToDetail: (Int) -> Unit
 ) {
@@ -65,22 +73,42 @@ fun ProductItem(
                 fontWeight = FontWeight(600),
                 maxLines = 1,
             )
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (homeViewModel.isContainsCart(product)) Red else Mint
-                ),
-                onClick = {
-                    if (homeViewModel.isContainsCart(product)) homeViewModel.removeFromCart(product)
-                    else homeViewModel.addToCart(product)
-                }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = if (homeViewModel.isContainsCart(product)) "Remove from cart" else "Add to cart",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400),
+                Image(
+                    imageVector = ImageVector.vectorResource(
+                        id = if (wishlistViewModel.isFavoriteChecked(product)) R.drawable.heart_fill
+                        else R.drawable.heart
+                    ),
+                    modifier = Modifier.size(35.dp)
+                        .clickable { wishlistViewModel.toggleFavorite(product) },
+                    contentDescription = null,
                 )
+
+                Button(
+                    modifier = Modifier
+                        .weight(1f),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (wishlistViewModel.isContainsCart(product)) Red else Mint
+                    ),
+                    onClick = {
+                        if (wishlistViewModel.isContainsCart(product)) wishlistViewModel.removeFromCart(product)
+                        else wishlistViewModel.addToCart(product)
+                    }
+                ) {
+                    Text(
+                        text = if (wishlistViewModel.isContainsCart(product)) "Remove from cart" else "Add to cart",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight(400),
+                    )
+                }
             }
         }
     }

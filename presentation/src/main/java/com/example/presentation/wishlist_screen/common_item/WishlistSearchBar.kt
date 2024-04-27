@@ -1,6 +1,5 @@
-package com.example.presentation.home_screen.common_item
+package com.example.presentation.wishlist_screen.common_item
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -26,19 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
-import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.Gray
-import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
-fun SearchBar(
-    homeViewModel: HomeViewModel,
-    isSearchScreen: Boolean,
+fun WishlistSearchBar(
+    wishlistViewModel: WishlistViewModel,
     padding: Dp,
-    navigateToSearch: () -> Unit,
-    navigateBack: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -47,17 +40,9 @@ fun SearchBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (isSearchScreen) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.clickable { navigateBack() },
-                tint = GrayDark
-            )
-        }
         OutlinedTextField(
-            value = homeViewModel.searchQuery.value,
-            onValueChange = { homeViewModel.changeSearchQuery(it) },
+            value = wishlistViewModel.searchQuery.value,
+            onValueChange = { wishlistViewModel.changeSearchQuery(it) },
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(8.dp),
             leadingIcon = {
@@ -85,14 +70,10 @@ fun SearchBar(
                 unfocusedBorderColor = GrayLighter,
             ),
             keyboardActions = KeyboardActions(onSearch = {
-                homeViewModel.fetchSearchList(10, 0, title = homeViewModel.searchQuery.value)
-                homeViewModel.checkSearchList(homeViewModel.searchQuery.value)
-                navigateToSearch()
+                wishlistViewModel.getSearchFavoriteList()
             }),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search)
         )
-        if (isSearchScreen) {
-            Cart(homeViewModel.cart.value.size) { }
-        }
+        Cart(wishlistViewModel.cart.value.size) { }
     }
 }

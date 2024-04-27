@@ -85,7 +85,7 @@ fun SearchScreen(
                                 sortedClicked = {}
                             )
                             if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list, false) { navigateToDetail(it) }
+                                ProductVerticalGrid(homeViewModel, list) { navigateToDetail(it) }
                             } else {
                                 NoResultBox("No results")
                             }

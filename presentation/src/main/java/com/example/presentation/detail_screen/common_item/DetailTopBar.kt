@@ -49,6 +49,6 @@ fun DetailTopBar(
             fontSize = 16.sp,
             color = GrayDark,
         )
-        Cart(homeViewModel) { }
+        Cart(homeViewModel.cart.value.size) { }
     }
 }

@@ -10,40 +10,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.home_screen.HomeViewModel
-import com.example.presentation.home_screen.common_item.ProductVerticalGrid
-import com.example.presentation.home_screen.common_item.SearchBar
 import com.example.presentation.theme.GrayLighter
+import com.example.presentation.wishlist_screen.common_item.FavoriteVerticalGrid
+import com.example.presentation.wishlist_screen.common_item.WishlistSearchBar
 
 @Composable
 fun WishlistScreen(
-    homeViewModel: HomeViewModel,
+    wishlistViewModel: WishlistViewModel,
     navigateToDetail: (Int) -> Unit,
 ) {
-    val favoriteList = homeViewModel.favoriteList.value
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(Color.White)
     ) {
-        SearchBar(
-            homeViewModel = homeViewModel,
-            isSearchScreen = false,
+        WishlistSearchBar(
+            wishlistViewModel = wishlistViewModel,
             padding = 16.dp,
-            navigateToSearch = {},
-            navigateBack = {}
         )
         HorizontalDivider(color = GrayLighter)
 
-        if (homeViewModel.searchFavoriteQuery.value.isEmpty()) {
-            if (favoriteList.isEmpty()) NoResultBox("Add Favorite")
-            else ProductVerticalGrid(homeViewModel, favoriteList, true) { navigateToDetail(it) }
+        if (wishlistViewModel.searchQuery.value.isEmpty()) {
+            if (wishlistViewModel.favoriteList.value.isEmpty()) NoResultBox("Add Favorite")
+            else FavoriteVerticalGrid(wishlistViewModel, wishlistViewModel.favoriteList.value) { navigateToDetail(it) }
         } else {
-            ProductVerticalGrid(homeViewModel, homeViewModel.getSearchFavoriteList(), true) {
-                navigateToDetail(it)
-            }
+            val listProduct = wishlistViewModel.getSearchFavoriteList()
+            FavoriteVerticalGrid(wishlistViewModel, listProduct) { navigateToDetail(it) }
         }
     }
 }
