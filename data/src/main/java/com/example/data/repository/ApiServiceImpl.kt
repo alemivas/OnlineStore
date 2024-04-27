@@ -12,12 +12,12 @@ import javax.inject.Inject
 
 class ApiServiceImpl @Inject constructor(
     private val apiService: ApiService
-) : ApiRepository {
+) : com.example.domain.repository.ApiRepository {
 
-    override suspend fun getCategories(): Flow<ApiResult<List<Category>>> = flow {
+    override suspend fun getCategories(): Flow<ApiResult<List<com.example.domain.models.Category>>> = flow {
         emit(ApiResult.Loading())
         try {
-            val categories = apiService.fetchCategories().body<List<Category>>()
+            val categories = apiService.fetchCategories().body<List<com.example.domain.models.Category>>()
             emit(ApiResult.Success(categories))
         } catch (e:Exception) {
             e.printStackTrace()
@@ -32,7 +32,7 @@ class ApiServiceImpl @Inject constructor(
         categoryId: Int?,
         priceMin: Int?,
         priceMax: Int?,
-        ): Flow<ApiResult<List<Product>>> = flow {
+        ): Flow<ApiResult<List<com.example.domain.models.Product>>> = flow {
         emit(ApiResult.Loading())
         try {
             val products = apiService.fetchProducts(
@@ -42,7 +42,7 @@ class ApiServiceImpl @Inject constructor(
                 categoryId,
                 priceMin,
                 priceMax
-            ).body<List<Product>>()
+            ).body<List<com.example.domain.models.Product>>()
             emit(ApiResult.Success(products))
         } catch (e:Exception) {
             e.printStackTrace()

@@ -1,6 +1,10 @@
 package com.example.onlinestore.di
 
+import android.app.Application
+import androidx.room.Room
 import com.example.data.api.ApiService
+import com.example.data.local.AppDatabase
+import com.example.data.local.dao.ProductDao
 import com.example.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -22,6 +26,23 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(app: Application): AppDatabase {
+        return Room.databaseBuilder(
+            app,
+            AppDatabase::class.java,
+            Constants.NAME_DATABASE
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductDao(appDatabase: AppDatabase): ProductDao {
+        return appDatabase.productDao
+    }
 
     @Singleton
     @Provides

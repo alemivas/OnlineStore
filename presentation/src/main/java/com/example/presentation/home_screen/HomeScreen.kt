@@ -34,7 +34,8 @@ import com.example.utils.ApiResult
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    navigationToSearchScreen: () -> Unit
+    navigateToSearchScreen: () -> Unit,
+    navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
     val products by homeViewModel.products.collectAsState()
@@ -53,7 +54,7 @@ fun HomeScreen(
             homeViewModel = homeViewModel,
             isSearchScreen = false,
             padding = 0.dp,
-            navigateToSearch = { navigationToSearchScreen() },
+            navigateToSearch = { navigateToSearchScreen() },
             navigateBack = {})
         Box(
             modifier = Modifier
@@ -121,10 +122,14 @@ fun HomeScreen(
                     val list = products.data ?: emptyList()
                     if (isFilter) {
                         if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value)
+                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
+                            navigateToDetail(it)
+                        }
                     } else {
                         if (list.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, list)
+                        else ProductVerticalGrid(homeViewModel, list) {
+                            navigateToDetail(it)
+                        }
                     }
                 }
             }

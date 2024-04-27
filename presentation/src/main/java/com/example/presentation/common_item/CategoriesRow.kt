@@ -12,7 +12,7 @@ import com.example.presentation.home_screen.HomeViewModel
 @Composable
 fun CategoriesRow(
     homeViewModel: HomeViewModel,
-    list: List<Category>,
+    list: List<com.example.domain.models.Category>,
     categoryClicked: () -> Unit,
     showAllClicked: () -> Unit
 ) {

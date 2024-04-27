@@ -21,6 +21,8 @@ kotlinxCoroutinesCore = "1.8.0"
 ksp = "1.9.23-1.0.20"
 room = "2.6.1"
 coilCompose = "2.6.0"
+converterGson = "2.9.0"
+
 
 # Network : Ktor
 ktor = "2.3.10"
@@ -74,6 +76,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 

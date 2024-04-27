@@ -3,14 +3,18 @@ package com.example.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.presentation.account_screen.AccountScreen
+import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
+import com.example.presentation.navigation.NavigationObject.Companion.PRODUCT_ID_PARAM_KEY
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.wishlist_screen.WishlistScreen
 
@@ -21,7 +25,12 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
-                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)}
+                navigateToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)},
+                navigateToDetail = { productId ->
+                     navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                         popUpTo(NavigationItem.Home.route)
+                     }
+                }
             )
         }
 
@@ -40,7 +49,12 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.SearchScreen.route) {
             SearchScreen(
                 homeViewModel = homeViewModel,
-                navigateBack = { navController.popBackStack() }
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationItem.Home.route)
+                    }
+                },
+                navigateBack = { navController.navigateUp() }
             )
         }
 
@@ -54,8 +68,22 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.RegistrationScreen.route) {
             RegistrationScreen(
                 navigateToHome = { navController.navigate(NavigationItem.Home.route) },
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.navigateUp() }
             )
+        }
+
+        composable(
+            route = "${NavigationObject.DetailScreen.route}/{$PRODUCT_ID_PARAM_KEY}",
+            arguments = listOf(navArgument(PRODUCT_ID_PARAM_KEY) { type = NavType.IntType })
+        ) {
+            val productId =
+                it.arguments?.getInt(PRODUCT_ID_PARAM_KEY) ?: throw IllegalStateException()
+            DetailScreen(
+                homeViewModel = homeViewModel,
+                productId = productId
+            ) {
+                navController.navigateUp()
+            }
         }
     }
 }

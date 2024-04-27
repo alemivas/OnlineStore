@@ -14,7 +14,7 @@ import com.example.presentation.home_screen.HomeViewModel
 @Composable
 fun CategoriesVerticalGrid(
     homeViewModel: HomeViewModel,
-    list: List<Category>,
+    list: List<com.example.domain.models.Category>,
     showAllClicked: () -> Unit
 ) {
     LazyVerticalGrid(

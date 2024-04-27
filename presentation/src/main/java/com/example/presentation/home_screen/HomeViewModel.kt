@@ -7,11 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.models.Category
 import com.example.domain.models.Product
-import com.example.domain.usecases.GetCategoriesUseCase
-import com.example.domain.usecases.GetProductsUseCase
+import com.example.domain.usecases.api_use_cases.GetCategoriesUseCase
+import com.example.domain.usecases.api_use_cases.GetProductsUseCase
+import com.example.domain.usecases.product_db_use_cases.GetAllProductsFromCacheUseCase
+import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCache
 import com.example.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -23,8 +26,10 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getProductsUseCase: GetProductsUseCase,
-    private val defaultDispatcher: CoroutineDispatcher
-) : ViewModel() {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val insertProductListIntoCache: InsertProductListIntoCache,
+    private val getAllProductsFromCacheUseCase: GetAllProductsFromCacheUseCase
+    ) : ViewModel() {
 
     val countryList = listOf(
         "USA", "Canada", "Brazil", "Argentina", "Australia",
@@ -54,6 +59,9 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery: MutableState<String> = mutableStateOf("")
     val searchQuery = _searchQuery
 
+    private val _selectedProduct = mutableStateOf<Product?>(null)
+    val selectedProduct: State<Product?> = _selectedProduct
+
     init {
         fetchCategories()
         fetchProducts(30, 0)
@@ -62,12 +70,13 @@ class HomeViewModel @Inject constructor(
     private fun fetchCategories() {
         viewModelScope.launch {
             getCategoriesUseCase()
-                .flowOn(defaultDispatcher)
+                .flowOn(dispatcher)
                 .catch {
                     _categories.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
                 .collect{
                     _categories.value = it
+
                 }
         }
     }
@@ -82,12 +91,13 @@ class HomeViewModel @Inject constructor(
         ) {
         viewModelScope.launch {
             getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-                .flowOn(defaultDispatcher)
+                .flowOn(dispatcher)
                 .catch {
                     _products.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
                 .collect{
                     _products.value = it
+                    insertProductListIntoCache(it.data ?: emptyList())
                 }
         }
     }
@@ -102,7 +112,7 @@ class HomeViewModel @Inject constructor(
         ) {
             viewModelScope.launch {
                 getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-                    .flowOn(defaultDispatcher)
+                    .flowOn(dispatcher)
                     .catch {
                         _searchList.value = ApiResult.Error(it.message ?: "Something went wrong")
                     }
@@ -156,6 +166,15 @@ class HomeViewModel @Inject constructor(
                     price in priceMin..priceMax
                 }
                 filteredProducts.sortedBy { it.price }
+            }
+        }
+    }
+
+    fun getProduct(id: Int) {
+        viewModelScope.launch {
+            val products = getAllProductsFromCacheUseCase()
+            if (products != null) {
+                _selectedProduct.value = products.find { it.id == id }
             }
         }
     }

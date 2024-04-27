@@ -50,14 +50,14 @@ class ApiService @Inject constructor(
         id: Int
     ) = client.get(PRODUCTS) {
         url { appendPathSegments(id.toString()) }
-    }.body<Product>()
+    }.body<com.example.domain.models.Product>()
 
     suspend fun postProduct(
-        request: ProductCreateRequest
+        request: com.example.domain.models.ProductCreateRequest
     ) = client.post(PRODUCTS) {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body<Product>()
+    }.body<com.example.domain.models.Product>()
 
     suspend fun fetchCategoryProducts(
         categoryId: Int,
@@ -67,7 +67,7 @@ class ApiService @Inject constructor(
         url { appendPathSegments(categoryId.toString(), _PRODUCTS) }
         parameter("limit", limit)
         parameter("offset", offset)
-    }.body<List<Product>>()
+    }.body<List<com.example.domain.models.Product>>()
 
     suspend fun fetchCategories(
         limit: Int = 30
@@ -81,12 +81,12 @@ class ApiService @Inject constructor(
         id: Int
     ) = client.get(CATEGORIES) {
         url { appendPathSegments(id.toString()) }
-    }.body<Category>()
+    }.body<com.example.domain.models.Category>()
 
     suspend fun postCategory(
-        request: CategoryCreateRequest
+        request: com.example.domain.models.CategoryCreateRequest
     ) = client.post(CATEGORIES) {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body<Category>()
+    }.body<com.example.domain.models.Category>()
 }

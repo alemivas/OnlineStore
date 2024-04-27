@@ -11,7 +11,8 @@ import com.example.presentation.home_screen.HomeViewModel
 @Composable
 fun ProductVerticalGrid(
     homeViewModel: HomeViewModel,
-    listProduct: List<Product>
+    listProduct: List<Product>,
+    navigateToDetail: (Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -21,7 +22,8 @@ fun ProductVerticalGrid(
         items(listProduct.size) { product ->
             ProductItem(
                 homeViewModel = homeViewModel,
-                listProduct[product]
+                product = listProduct[product],
+                navigateToDetail = { navigateToDetail(it) }
             )
         }
     }

@@ -40,6 +40,7 @@ import com.example.utils.ApiResult
 @Composable
 fun SearchScreen(
     homeViewModel: HomeViewModel,
+    navigateToDetail: (Int) -> Unit,
     navigateBack: () -> Unit,
 ) {
     val products by homeViewModel.searchList.collectAsState()
@@ -84,7 +85,7 @@ fun SearchScreen(
                                 sortedClicked = {}
                             )
                             if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list)
+                                ProductVerticalGrid(homeViewModel, list) { navigateToDetail(it) }
                             } else {
                                 NoResultBox("No results")
                             }

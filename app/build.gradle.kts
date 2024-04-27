@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.ksp)
+    id("kotlin-parcelize")
     id ("dagger.hilt.android.plugin")
 }
 
@@ -74,6 +75,8 @@ dependencies {
     //Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    //Gson
+    implementation(libs.converter.gson)
 
     //Ktor
     implementation(libs.ktor.client.core)
