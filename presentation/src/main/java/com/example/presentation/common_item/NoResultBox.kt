@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import com.example.presentation.theme.GrayLight
 
 @Composable
 fun NoResultBox(message: String) {
@@ -16,6 +17,7 @@ fun NoResultBox(message: String) {
         Text(
             text = message,
             fontSize = 24.sp,
+            color = GrayLight
         )
     }
 }

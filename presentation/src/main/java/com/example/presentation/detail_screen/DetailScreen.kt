@@ -1,7 +1,9 @@
 package com.example.presentation.detail_screen
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -19,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,17 +28,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.presentation.R
-import com.example.presentation.common_item.DetailTopBar
 import com.example.presentation.common_item.NoResultBox
+import com.example.presentation.detail_screen.common_item.DetailTopBar
 import com.example.presentation.home_screen.HomeViewModel
-import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
@@ -105,13 +106,15 @@ fun DetailScreen(
                     Box(
                         modifier = Modifier
                             .size(46.dp)
-                            .background(GrayLighter, CircleShape),
+                            .background(GrayLighter, CircleShape)
+                            .clickable { homeViewModel.toggleFavorite(selectedProduct!!) },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(painterResource(
-                            id = R.drawable.heart),
+                        Image(
+                            imageVector = ImageVector.vectorResource(id =
+                            if (homeViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
+                            else R.drawable.heart),
                             contentDescription = null,
-                            tint = Gray
                         )
                     }
                 }
@@ -144,13 +147,19 @@ fun DetailScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(55.dp),
-                        onClick = { homeViewModel.checkCart(selectedProduct!!) },
+                        onClick = {
+                            if (homeViewModel.isContainsCart(selectedProduct!!)) {
+                                homeViewModel.removeFromCart(selectedProduct!!)
+                            }
+                            else homeViewModel.addToCart(selectedProduct!!)
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (homeViewModel.cart.value.contains(selectedProduct)) Red else Mint),
+                            containerColor = if (homeViewModel.isContainsCart(selectedProduct!!)) Red else Mint
+                        ),
                     ) {
                         Text(
-                            text = if (homeViewModel.cart.value.contains(selectedProduct)) "Remove from cart" else "Add to cart",
+                            text = if (homeViewModel.isContainsCart(selectedProduct!!)) "Remove from cart" else "Add to cart",
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,

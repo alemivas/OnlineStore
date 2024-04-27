@@ -1,4 +1,4 @@
-package com.example.presentation.common_item
+package com.example.presentation.home_screen.common_item
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.common_item.Cart
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark

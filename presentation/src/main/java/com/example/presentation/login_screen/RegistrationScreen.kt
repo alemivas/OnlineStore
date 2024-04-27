@@ -12,15 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,16 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.presentation.R
-import com.example.presentation.theme.Gray
+import androidx.lifecycle.viewModelScope
+import com.example.presentation.login_screen.common_item.ErrorMinimalDialog
+import com.example.presentation.login_screen.common_item.PasswordScreenTextField
 import com.example.presentation.theme.GrayDarkest
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.LoginLabelColor
@@ -47,6 +42,7 @@ import com.example.presentation.theme.Mint
 import com.example.presentation.theme.PasswordBackgroundColor
 import com.example.presentation.theme.PasswordLabelColor
 import com.example.presentation.theme.Purple
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(
@@ -188,12 +184,16 @@ fun RegistrationScreen(
 
         Button(
             onClick = {
-                if (!isErrorEmail && !isErrorName && !isErrorPassword && !isErrorConfirmPassword
-                    && name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()
-                ) {
-                    navigateToHome()
-                } else {
-                    showErrorDialog = true
+                loginVewModel.viewModelScope.launch {
+                    if (!loginVewModel.checkUser(email.value, password.value)
+                        && !isErrorEmail && !isErrorName && !isErrorPassword && !isErrorConfirmPassword
+                        && name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()
+                    ) {
+                        loginVewModel.saveUser(name.value, email.value, password.value)
+                        navigateToHome()
+                    } else {
+                        showErrorDialog = true
+                    }
                 }
             },
             modifier = Modifier
@@ -222,68 +222,9 @@ fun RegistrationScreen(
         }
     }
     if (showErrorDialog) {
-        MinimalDialog(
+        ErrorMinimalDialog(
             text = "Enter data in all fields",
             onDismissRequest = { showErrorDialog = false }
-        )
-    }
-}
-
-@Composable
-fun PasswordScreenTextField(
-    header: String,
-    placeholder: String,
-    value: String,
-    newValue: (String) -> Unit,
-    isHidden: Boolean,
-    isError: Boolean,
-) {
-    val isHiddenPassword = remember { mutableStateOf(true) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = header,
-            color = LoginLabelColor
-        )
-        OutlinedTextField(
-            value = value,
-            onValueChange = { newValue(it)},
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            placeholder = { Text(text = placeholder, color = PasswordLabelColor) },
-            trailingIcon = {
-                if (!isHidden) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (!isHiddenPassword.value) R.drawable.eye else R.drawable.hide
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            isHiddenPassword.value = !isHiddenPassword.value
-                        },
-                        tint = Gray
-                    )
-                }
-            },
-            isError = isError,
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Mint,
-                focusedBorderColor = Color.Transparent,
-                focusedContainerColor = PasswordBackgroundColor,
-                unfocusedBorderColor = Color.Transparent,
-                unfocusedTextColor = PasswordLabelColor,
-                unfocusedContainerColor = PasswordBackgroundColor
-            ),
-            visualTransformation =
-            if (!isHidden) {
-                if (isHiddenPassword.value) PasswordVisualTransformation()
-                else VisualTransformation.None
-            } else VisualTransformation.None
         )
     }
 }

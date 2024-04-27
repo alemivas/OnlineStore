@@ -25,12 +25,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.common_item.FilterProduct
-import com.example.presentation.common_item.LastSearchItem
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.ProductVerticalGrid
-import com.example.presentation.common_item.SearchBar
 import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.home_screen.common_item.FilterProduct
+import com.example.presentation.home_screen.common_item.ProductVerticalGrid
+import com.example.presentation.home_screen.common_item.SearchBar
+import com.example.presentation.search_screen.common_item.LastSearchItem
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
@@ -85,7 +85,7 @@ fun SearchScreen(
                                 sortedClicked = {}
                             )
                             if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list) { navigateToDetail(it) }
+                                ProductVerticalGrid(homeViewModel, list, false) { navigateToDetail(it) }
                             } else {
                                 NoResultBox("No results")
                             }

@@ -1,7 +1,9 @@
 package com.example.data.local.entity
 
 import androidx.room.TypeConverter
+import com.example.domain.models.Cart
 import com.example.domain.models.Category
+import com.example.domain.models.Product
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -30,5 +32,27 @@ class StringListConverter {
     @TypeConverter
     fun toProduct(category: Category): String {
         return gson.toJson(category)
+    }
+
+    @TypeConverter
+    fun fromCartList(value: String): List<Cart> {
+        val listType = object : TypeToken<List<Cart>>() {}.type
+        return gson.fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun toCartList(list: List<Cart>): String {
+        return gson.toJson(list)
+    }
+
+    @TypeConverter
+    fun fromProductList(value: String): List<Product> {
+        val listType = object : TypeToken<List<Product>>() {}.type
+        return gson.fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun toProductList(list: List<Product>): String {
+        return gson.toJson(list)
     }
 }

@@ -21,13 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.presentation.common_item.CategoriesRow
-import com.example.presentation.common_item.CategoriesVerticalGrid
-import com.example.presentation.common_item.FilterProduct
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.ProductVerticalGrid
-import com.example.presentation.common_item.SearchBar
-import com.example.presentation.common_item.TopBar
+import com.example.presentation.home_screen.common_item.CategoriesRow
+import com.example.presentation.home_screen.common_item.CategoriesVerticalGrid
+import com.example.presentation.home_screen.common_item.FilterProduct
+import com.example.presentation.home_screen.common_item.ProductVerticalGrid
+import com.example.presentation.home_screen.common_item.SearchBar
+import com.example.presentation.home_screen.common_item.TopBar
 import com.example.presentation.theme.GrayLight
 import com.example.utils.ApiResult
 
@@ -122,12 +122,12 @@ fun HomeScreen(
                     val list = products.data ?: emptyList()
                     if (isFilter) {
                         if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
+                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value, false) {
                             navigateToDetail(it)
                         }
                     } else {
                         if (list.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, list) {
+                        else ProductVerticalGrid(homeViewModel, list, false) {
                             navigateToDetail(it)
                         }
                     }

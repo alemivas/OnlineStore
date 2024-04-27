@@ -35,7 +35,14 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Wishlist.route) {
-            WishlistScreen()
+            WishlistScreen(
+                homeViewModel = homeViewModel,
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationItem.Wishlist.route)
+                    }
+                }
+            )
         }
 
         composable(NavigationItem.Manager.route) {
@@ -51,7 +58,7 @@ fun Navigation(navController: NavHostController) {
                 homeViewModel = homeViewModel,
                 navigateToDetail = { productId ->
                     navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
-                        popUpTo(NavigationItem.Home.route)
+                        popUpTo(NavigationObject.SearchScreen.route)
                     }
                 },
                 navigateBack = { navController.navigateUp() }

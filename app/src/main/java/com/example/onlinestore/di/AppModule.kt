@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.data.api.ApiService
 import com.example.data.local.AppDatabase
 import com.example.data.local.dao.ProductDao
+import com.example.data.local.dao.UserDao
 import com.example.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -42,6 +43,12 @@ object AppModule {
     @Singleton
     fun provideProductDao(appDatabase: AppDatabase): ProductDao {
         return appDatabase.productDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao
     }
 
     @Singleton
