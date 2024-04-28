@@ -171,12 +171,7 @@ fun DetailScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(55.dp),
-                    onClick = {
-                        if (homeViewModel.isContainsCart(selectedProduct!!)) {
-                            homeViewModel.removeFromCart(selectedProduct!!)
-                        }
-                        else homeViewModel.addToCart(selectedProduct!!)
-                    },
+                    onClick = { homeViewModel.checkCart(selectedProduct!!) },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (homeViewModel.isContainsCart(selectedProduct!!)) Red else Mint

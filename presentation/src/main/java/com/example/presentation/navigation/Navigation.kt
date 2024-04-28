@@ -88,6 +88,11 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.CartScreen.route) {
             CartScreen(
                 homeViewModel = homeViewModel,
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationObject.CartScreen.route)
+                    }
+                },
                 navigateBack = { navController.navigateUp() }
             )
         }

@@ -37,14 +37,16 @@ import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
+import com.example.utils.Constants
 
 @Composable
 fun CartScreen(
     homeViewModel: HomeViewModel,
+    navigateToDetail: (Int) -> Unit,
     navigateBack: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val countryList = homeViewModel.countryList
+    val countryList = Constants.countryList
 
     Column(
         modifier = Modifier
@@ -54,7 +56,7 @@ fun CartScreen(
         DetailTopBar(
             homeViewModel = homeViewModel,
             isDetailScreen = false,
-            title = "Detail product",
+            title = "Your Cart",
             navigateToCart = {},
             navigateBack = { navigateBack() }
         )
@@ -110,8 +112,12 @@ fun CartScreen(
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(5) {
-                CartItem()
+            items(homeViewModel.cart.value.size) {
+                CartItem(
+                    homeViewModel = homeViewModel,
+                    cart = homeViewModel.cart.value[it],
+                    navigateToDetail = navigateToDetail
+                )
             }
         }
         HorizontalDivider(color = GrayLighter)
@@ -134,7 +140,7 @@ fun CartScreen(
                     color = GrayDark,
                 )
                 Text(
-                    text = "$ 10.000",
+                    text = homeViewModel.getSum().toString(),
                     fontWeight = FontWeight(500),
                     fontSize = 16.sp,
                     lineHeight = 20.sp,
@@ -147,7 +153,7 @@ fun CartScreen(
                     .padding(bottom = 16.dp),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(Mint),
-                onClick = { }
+                onClick = { homeViewModel.makeOrder() }
             ) {
                 Text(text = "Select payment method")
             }

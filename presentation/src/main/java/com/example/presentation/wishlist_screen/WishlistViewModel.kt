@@ -84,41 +84,16 @@ class WishlistViewModel @Inject constructor(
         return _cart.value.find { it.product == product } != null
     }
 
-    fun addToCart(product: Product) {
-        val currentProduct = _cart.value.find { it.product.id == product.id}
+    fun checkCart(product: Product) {
+        val currentCart = _cart.value.find { it.product == product}
 
         val shoppingCartLastId = _cart.value.lastOrNull()?.id ?: 0
         val newId = shoppingCartLastId + 1
         val newShoppingCart = Cart(newId, product, 1)
 
-        if (currentProduct == null) {
-            _cart.value += newShoppingCart
-        } else {
-            _cart.value = _cart.value.map {
-                if (it.product == product) it.copy(quantity = currentProduct.quantity + 1)
-                else it
-            }
-        }
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (user != null) {
-                val updatedCartList = user.copy(cartList = _cart.value)
-                saveUser(updatedCartList)
-            }
-        }
-    }
+        if (currentCart == null) _cart.value += newShoppingCart
+        else _cart.value = _cart.value.minus(currentCart)
 
-    fun removeFromCart(product: Product) {
-        val currentProduct = _cart.value.find { it.product == product}
-
-        if (currentProduct != null && currentProduct.quantity > 1) {
-            _cart.value = _cart.value.map {
-                if (it.product == product) it.copy(quantity = currentProduct.quantity - 1)
-                else it
-            }
-        } else if (currentProduct != null && currentProduct.quantity >= 1) {
-            _cart.value = _cart.value.minus(Cart(currentProduct.id,product, 1))
-        }
         viewModelScope.launch {
             val user = getIsLoginUser()
             if (user != null) {

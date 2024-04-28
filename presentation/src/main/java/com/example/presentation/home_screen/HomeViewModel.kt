@@ -15,6 +15,7 @@ import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCac
 import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
 import com.example.utils.ApiResult
+import com.example.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -37,12 +38,7 @@ class HomeViewModel @Inject constructor(
     private val saveUser: SaveUserUseCase,
     ) : ViewModel() {
 
-    val countryList = listOf(
-        "USA", "Canada", "Brazil", "Argentina", "Australia",
-        "Europe", "United Kingdom", "Japan", "Russia", "China"
-    )
-
-    private val _currentCountry: MutableState<String> = mutableStateOf(countryList.first())
+    private val _currentCountry: MutableState<String> = mutableStateOf(Constants.countryList.first())
     val currentCountry = _currentCountry
 
 //    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
@@ -71,8 +67,10 @@ class HomeViewModel @Inject constructor(
     private val _selectedProduct = mutableStateOf<Product?>(null)
     val selectedProduct: State<Product?> = _selectedProduct
 
-    private val _favoriteList: MutableState<List<Product>> =
-        mutableStateOf(emptyList())
+    private val _favoriteList: MutableState<List<Product>> = mutableStateOf(emptyList())
+
+    private val _checkedProducts: MutableState<List<Cart>> = mutableStateOf(emptyList())
+    val checkedProducts: State<List<Cart>> = _checkedProducts
 
     init {
         fetchCategories()
@@ -172,48 +170,61 @@ class HomeViewModel @Inject constructor(
         return _cart.value.find { it.product == product } != null
     }
 
-    fun addToCart(product: Product) {
-        val currentProduct = _cart.value.find { it.product.id == product.id}
+    fun checkCart(product: Product) {
+        val currentCart = _cart.value.find { it.product == product}
 
         val shoppingCartLastId = _cart.value.lastOrNull()?.id ?: 0
         val newId = shoppingCartLastId + 1
         val newShoppingCart = Cart(newId, product, 1)
 
-        if (currentProduct == null) {
-            _cart.value += newShoppingCart
-        } else {
+        if (currentCart == null) _cart.value += newShoppingCart
+        else {
+            _cart.value = _cart.value.minus(currentCart)
+            val checkedCart = _checkedProducts.value.find { it.product == product}
+            if (checkedCart != null) _checkedProducts.value = _checkedProducts.value.minus(checkedCart)
+        }
+
+        saveUserCart(_cart.value)
+    }
+
+    fun addToCart(cart: Cart) {
+        val currentProduct = _cart.value.find { it.product == cart.product}
+
+        if (currentProduct != null) {
             _cart.value = _cart.value.map {
-                if (it.product == product) it.copy(quantity = currentProduct.quantity + 1)
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity + 1)
+                else it
+            }
+            _checkedProducts.value = _checkedProducts.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity + 1)
                 else it
             }
         }
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (user != null) {
-                val updatedCartList = user.copy(cartList = _cart.value)
-                saveUser(updatedCartList)
-            }
-        }
+        saveUserCart(_cart.value)
     }
 
-    fun removeFromCart(product: Product) {
-        val currentProduct = _cart.value.find { it.product == product}
+    fun removeFromCart(cart: Cart) {
+        val currentProduct = _cart.value.find { it.product == cart.product}
 
         if (currentProduct != null && currentProduct.quantity > 1) {
             _cart.value = _cart.value.map {
-                if (it.product == product) it.copy(quantity = currentProduct.quantity - 1)
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity - 1)
+                else it
+            }
+            _checkedProducts.value = _checkedProducts.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity - 1)
                 else it
             }
         } else if (currentProduct != null && currentProduct.quantity >= 1) {
-            _cart.value = _cart.value.minus(Cart(currentProduct.id,product, 1))
+            deleteFromCart(cart)
         }
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (user != null) {
-                val updatedCartList = user.copy(cartList = _cart.value)
-                saveUser(updatedCartList)
-            }
-        }
+        saveUserCart(_cart.value)
+    }
+
+    fun deleteFromCart(cart: Cart) {
+        _cart.value = _cart.value.minus(cart)
+        _checkedProducts.value = _checkedProducts.value.minus(cart)
+        saveUserCart(_cart.value)
     }
 
     fun sortedProductList(
@@ -270,6 +281,33 @@ class HomeViewModel @Inject constructor(
 
     fun changeCurrentCountry(country: String) {
         _currentCountry.value = country
+    }
+
+    fun changeCheckedProducts(cart: Cart) {
+        if (_checkedProducts.value.contains(cart)) {
+            _checkedProducts.value = _checkedProducts.value.minus(cart)
+        } else {
+            _checkedProducts.value = _checkedProducts.value.plus(cart)
+        }
+    }
+
+    fun getSum(): Int {
+        return _checkedProducts.value.sumOf { it.product.price * it.quantity }
+    }
+
+    fun makeOrder() {
+        _cart.value = emptyList()
+        saveUserCart(_cart.value)
+    }
+
+    private fun saveUserCart(carts: List<Cart>) {
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = carts)
+                saveUser(updatedCartList)
+            }
+        }
     }
 }
 

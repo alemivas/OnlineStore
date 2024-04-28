@@ -1,8 +1,8 @@
 package com.example.presentation.cart_screen.common_item
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,49 +28,60 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.example.domain.models.Cart
 import com.example.presentation.R
+import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDarkest
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.Mint
 
-@Preview
 @Composable
-fun CartItem() {
-    val checkedState = remember { mutableStateOf(false) }
+fun CartItem(
+    homeViewModel: HomeViewModel,
+    cart: Cart,
+    navigateToDetail: (Int) -> Unit,
+    ) {
+    val checkedState = remember { mutableStateOf(homeViewModel.checkedProducts.value.contains(cart)) }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .height(80.dp),
+            .height(80.dp)
+            .clickable { navigateToDetail(cart.product.id) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Checkbox(
             checked = checkedState.value,
-            onCheckedChange = { checkedState.value = it },
+            onCheckedChange = {
+                checkedState.value = it
+                homeViewModel.changeCheckedProducts(cart)
+            },
             colors = CheckboxDefaults.colors(
                 checkedColor = Mint,
                 uncheckedColor = GrayLighter)
         )
-        Image(
-            painter = painterResource(id = R.drawable.img),
+
+        AsyncImage(
             modifier = Modifier
                 .fillMaxHeight()
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop,
+            model = cart.product.images.first().removePrefix("[\"").removeSuffix("\"]"),
             contentDescription = null,
-            contentScale = ContentScale.Crop
         )
+
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Text(
-                text = "Product name",
+                text = cart.product.title,
                 color = GrayDarkest
             )
             Row(
@@ -79,30 +90,33 @@ fun CartItem() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$ 333333",
+                    text = "$ ${cart.product.price}",
                     modifier = Modifier.weight(1f),
                     color = GrayDarkest
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.minus),
                     contentDescription = null,
-                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape),
+                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape)
+                        .clickable { homeViewModel.removeFromCart(cart) },
                     tint = GrayLight
                 )
                 Text(
-                    text = "1",
+                    text = cart.quantity.toString(),
                     color = GrayDarkest
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.plus),
                     contentDescription = null,
-                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape),
+                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape)
+                        .clickable { homeViewModel.addToCart(cart) },
                     tint = GrayLight
                 )
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
-                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape),
+                    modifier = Modifier.border(1.dp, GrayLighter, CircleShape)
+                        .clickable { homeViewModel.deleteFromCart(cart) },
                     tint = GrayLight
                 )
             }

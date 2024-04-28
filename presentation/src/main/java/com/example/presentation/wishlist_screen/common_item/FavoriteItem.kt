@@ -98,13 +98,10 @@ fun FavoriteItem(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (wishlistViewModel.isContainsCart(product)) Red else Mint
                     ),
-                    onClick = {
-                        if (wishlistViewModel.isContainsCart(product)) wishlistViewModel.removeFromCart(product)
-                        else wishlistViewModel.addToCart(product)
-                    }
+                    onClick = { wishlistViewModel.checkCart(product) }
                 ) {
                     Text(
-                        text = if (wishlistViewModel.isContainsCart(product)) "Remove from cart" else "Add to cart",
+                        text = if (wishlistViewModel.isContainsCart(product)) "Remove" else "Add to cart",
                         fontSize = 12.sp,
                         fontWeight = FontWeight(400),
                     )

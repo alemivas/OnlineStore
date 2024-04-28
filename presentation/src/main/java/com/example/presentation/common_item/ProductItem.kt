@@ -71,10 +71,7 @@ fun ProductItem(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (homeViewModel.isContainsCart(product)) Red else Mint
                 ),
-                onClick = {
-                    if (homeViewModel.isContainsCart(product)) homeViewModel.removeFromCart(product)
-                    else homeViewModel.addToCart(product)
-                }
+                onClick = { homeViewModel.checkCart(product) }
             ) {
                 Text(
                     text = if (homeViewModel.isContainsCart(product)) "Remove from cart" else "Add to cart",

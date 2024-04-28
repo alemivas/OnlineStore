@@ -29,6 +29,7 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLightest
+import com.example.utils.Constants
 
 @Composable
 fun TopBar(
@@ -36,7 +37,7 @@ fun TopBar(
     navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val countryList = homeViewModel.countryList
+    val countryList = Constants.countryList
 
     Row(
         modifier = Modifier.fillMaxWidth(),
