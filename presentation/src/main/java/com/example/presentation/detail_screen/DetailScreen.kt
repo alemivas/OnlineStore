@@ -55,6 +55,7 @@ import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 fun DetailScreen(
     homeViewModel: HomeViewModel,
     productId: Int,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit
 ) {
     homeViewModel.getProduct(productId)
@@ -66,6 +67,7 @@ fun DetailScreen(
                 homeViewModel = homeViewModel,
                 isDetailScreen = true,
                 title = "Detail product",
+                navigateToCart = { navigateToCart() },
                 navigateBack = { navigateBack() }
             )
             Column(

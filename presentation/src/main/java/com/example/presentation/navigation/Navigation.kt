@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.presentation.account_screen.AccountScreen
+import com.example.presentation.cart_screen.CartScreen
 import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
@@ -27,7 +28,8 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
-                navigateToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)},
+                navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
+                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
                 navigateToDetail = { productId ->
                      navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
                          popUpTo(NavigationItem.Home.route)
@@ -43,7 +45,8 @@ fun Navigation(navController: NavHostController) {
                     navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
                         popUpTo(NavigationItem.Wishlist.route)
                     }
-                }
+                },
+                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) }
             )
         }
 
@@ -63,6 +66,7 @@ fun Navigation(navController: NavHostController) {
                         popUpTo(NavigationObject.SearchScreen.route)
                     }
                 },
+                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
         }
@@ -81,6 +85,13 @@ fun Navigation(navController: NavHostController) {
             )
         }
 
+        composable(NavigationObject.CartScreen.route) {
+            CartScreen(
+                homeViewModel = homeViewModel,
+                navigateBack = { navController.navigateUp() }
+            )
+        }
+
         composable(
             route = "${NavigationObject.DetailScreen.route}/{$PRODUCT_ID_PARAM_KEY}",
             arguments = listOf(navArgument(PRODUCT_ID_PARAM_KEY) { type = NavType.IntType })
@@ -89,10 +100,10 @@ fun Navigation(navController: NavHostController) {
                 it.arguments?.getInt(PRODUCT_ID_PARAM_KEY) ?: throw IllegalStateException()
             DetailScreen(
                 homeViewModel = homeViewModel,
-                productId = productId
-            ) {
-                navController.navigateUp()
-            }
+                productId = productId,
+                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateBack = { navController.navigateUp() }
+            )
         }
     }
 }

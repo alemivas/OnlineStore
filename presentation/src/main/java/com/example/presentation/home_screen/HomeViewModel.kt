@@ -42,6 +42,9 @@ class HomeViewModel @Inject constructor(
         "Europe", "United Kingdom", "Japan", "Russia", "China"
     )
 
+    private val _currentCountry: MutableState<String> = mutableStateOf(countryList.first())
+    val currentCountry = _currentCountry
+
 //    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
 
     private val _categories = MutableStateFlow<ApiResult<List<Category>>>(ApiResult.Loading())
@@ -263,6 +266,10 @@ class HomeViewModel @Inject constructor(
 
     fun isFavoriteChecked(product: Product): Boolean {
         return _favoriteList.value.contains(product)
+    }
+
+    fun changeCurrentCountry(country: String) {
+        _currentCountry.value = country
     }
 }
 

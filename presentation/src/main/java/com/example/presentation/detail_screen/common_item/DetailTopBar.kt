@@ -24,6 +24,7 @@ fun DetailTopBar(
     homeViewModel: HomeViewModel,
     isDetailScreen: Boolean,
     title:String,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit,
 ) {
     Row(
@@ -47,6 +48,6 @@ fun DetailTopBar(
             fontSize = 16.sp,
             color = GrayDark,
         )
-        Cart(homeViewModel.cart.value.size) { }
+        Cart(homeViewModel.cart.value.size) { navigateToCart() }
     }
 }

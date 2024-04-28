@@ -32,7 +32,8 @@ import com.example.presentation.wishlist_screen.WishlistViewModel
 fun WishlistSearchBar(
     wishlistViewModel: WishlistViewModel,
     padding: Dp,
-) {
+    navigateToCart: () -> Unit,
+    ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,6 +75,6 @@ fun WishlistSearchBar(
             }),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search)
         )
-        Cart(wishlistViewModel.cart.value.size) { }
+        Cart(wishlistViewModel.cart.value.size) { navigateToCart() }
     }
 }

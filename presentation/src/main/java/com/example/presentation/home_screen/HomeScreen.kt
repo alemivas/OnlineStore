@@ -34,7 +34,8 @@ import com.example.utils.ApiResult
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    navigateToSearchScreen: () -> Unit,
+    navigateToSearch: () -> Unit,
+    navigateToCart: () -> Unit,
     navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
@@ -49,12 +50,13 @@ fun HomeScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TopBar(homeViewModel)
+        TopBar(homeViewModel) { navigateToCart() }
         SearchBar(
             homeViewModel = homeViewModel,
             isSearchScreen = false,
             padding = 0.dp,
-            navigateToSearch = { navigateToSearchScreen() },
+            navigateToSearch = { navigateToSearch() },
+            navigateToCart = navigateToCart,
             navigateBack = {})
         Box(
             modifier = Modifier

@@ -2,7 +2,9 @@ package com.example.presentation.wishlist_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -18,18 +20,21 @@ import com.example.presentation.wishlist_screen.common_item.WishlistSearchBar
 fun WishlistScreen(
     wishlistViewModel: WishlistViewModel,
     navigateToDetail: (Int) -> Unit,
-) {
+    navigateToCart: () -> Unit,
+    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color.White)
+            .background(Color.White),
     ) {
         WishlistSearchBar(
             wishlistViewModel = wishlistViewModel,
             padding = 16.dp,
+            navigateToCart = navigateToCart
         )
         HorizontalDivider(color = GrayLighter)
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (wishlistViewModel.searchQuery.value.isEmpty()) {
             if (wishlistViewModel.favoriteList.value.isEmpty()) NoResultBox("Add Favorite")

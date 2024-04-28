@@ -41,6 +41,7 @@ import com.example.utils.ApiResult
 fun SearchScreen(
     homeViewModel: HomeViewModel,
     navigateToDetail: (Int) -> Unit,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit,
 ) {
     val products by homeViewModel.searchList.collectAsState()
@@ -55,6 +56,7 @@ fun SearchScreen(
             isSearchScreen = true,
             padding = 16.dp,
             navigateToSearch = {},
+            navigateToCart = navigateToCart,
             navigateBack = navigateBack
         )
         HorizontalDivider(color = GrayLighter)
@@ -99,7 +101,7 @@ fun SearchScreen(
 
 @Composable
 fun HistorySearch(
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
     val searchList = homeViewModel.searchHistoryList.value
     Column(

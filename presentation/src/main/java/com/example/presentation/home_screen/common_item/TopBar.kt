@@ -33,11 +33,10 @@ import com.example.presentation.theme.GrayLightest
 @Composable
 fun TopBar(
     homeViewModel: HomeViewModel,
-//    navigationToCartScreen: () -> Unit
+    navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val countryList = homeViewModel.countryList
-    var currentCountry by remember { mutableStateOf(countryList.first()) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -56,7 +55,7 @@ fun TopBar(
                 modifier = Modifier.clickable { expanded = true }
             ) {
                 Text(
-                    text = currentCountry,
+                    text = homeViewModel.currentCountry.value,
                     color = GrayDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500)
@@ -76,14 +75,14 @@ fun TopBar(
                     DropdownMenuItem(
                         text = { Text(countryList[it]) },
                         onClick = {
-                            currentCountry = countryList[it]
+                            homeViewModel.changeCurrentCountry(countryList[it])
                             expanded = false
                         },
                     )
                 }
             }
         }
-        Cart(homeViewModel.cart.value.size) { }
+        Cart(homeViewModel.cart.value.size) { navigationToCartScreen() }
         Icon(
             painter = painterResource(id = R.drawable.notification),
             contentDescription = null,
