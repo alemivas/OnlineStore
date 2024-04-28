@@ -18,5 +18,14 @@ val GrayLighter = Color(0xFFF0F2F1)
 val GrayLight = Color(0xFFC8C8CB)
 val Gray = Color(0xFF939393)
 val GrayDark = Color(0xFF393F42)
+val GrayDarkest = Color(0xFF111111)
+
+val LoginBackgroundColor = Color(0xFFFBFBFB)
+val LoginBorderColor = Color(0xFFEDEDED)
+val LoginLabelColor = Color(0xFF7C7C7B)
+
+val Purple = Color(0xFF514EB6)
+val PasswordBackgroundColor = Color(0xFFF6F8FE)
+val PasswordLabelColor = Color(0xFF9CA4AB)
 
 val Red = Color(0xFFD65B5B)
