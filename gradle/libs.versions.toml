@@ -23,6 +23,7 @@ ksp = "1.9.23-1.0.20"
 room = "2.6.1"
 coilCompose = "2.6.0"
 converterGson = "2.9.0"
+lottieCompose = "6.4.0"
 
 
 # Network : Ktor
@@ -81,6 +82,7 @@ firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "fireb
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }

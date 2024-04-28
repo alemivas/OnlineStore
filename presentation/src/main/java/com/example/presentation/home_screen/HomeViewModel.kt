@@ -215,7 +215,7 @@ class HomeViewModel @Inject constructor(
                 if (it.product == cart.product) it.copy(quantity = currentProduct.quantity - 1)
                 else it
             }
-        } else if (currentProduct != null && currentProduct.quantity >= 1) {
+        } else if (currentProduct != null && currentProduct.quantity == 1) {
             deleteFromCart(cart)
         }
         saveUserCart(_cart.value)
@@ -223,7 +223,10 @@ class HomeViewModel @Inject constructor(
 
     fun deleteFromCart(cart: Cart) {
         _cart.value = _cart.value.minus(cart)
-        _checkedProducts.value = _checkedProducts.value.minus(cart)
+
+        val checkedCart = _checkedProducts.value.find { it == cart}
+        if (checkedCart != null) _checkedProducts.value = _checkedProducts.value.minus(checkedCart)
+//        _checkedProducts.value = _checkedProducts.value.minus(cart)
         saveUserCart(_cart.value)
     }
 
