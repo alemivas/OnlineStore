@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.presentation.R
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
-import com.example.presentation.theme.Red
+import com.example.presentation.theme.Pink
 
 @Composable
 fun Cart(
@@ -40,7 +40,7 @@ fun Cart(
                         x = 2.dp,
                         y = (-2).dp
                     ),
-                containerColor = Red,
+                containerColor = Pink,
                 contentColor = Color.White,
                 content = {
                     Text(
