@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.presentation.account_screen.AccountScreen
+import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.login_screen.LoginScreen
@@ -21,7 +22,8 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
-                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)}
+                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)},
+                navigationToDetailScreen = { navController.navigate(NavigationObject.DetailScreen.route) },
             )
         }
 
@@ -40,7 +42,8 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.SearchScreen.route) {
             SearchScreen(
                 homeViewModel = homeViewModel,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                navigationToDetailScreen = { navController.navigate(NavigationObject.DetailScreen.route) },
             )
         }
 
@@ -56,6 +59,10 @@ fun Navigation(navController: NavHostController) {
                 navigateToHome = { navController.navigate(NavigationItem.Home.route) },
                 navigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(NavigationObject.DetailScreen.route) {
+            DetailScreen()
         }
     }
 }

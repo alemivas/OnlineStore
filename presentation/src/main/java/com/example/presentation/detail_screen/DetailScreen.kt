@@ -1,5 +1,6 @@
 package com.example.presentation.detail_screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
+import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.Mint
 
@@ -40,12 +43,15 @@ fun DetailScreen(
     Column(
 
     ) {
+        //srollable part
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
+                //чтобы "закрепить" кнопки снизу
                 .weight(weight = 1f, fill = false)
         ){
             // img slider
+//            val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -54,10 +60,13 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(286.dp),
+                        .height(286.dp)
+//                        .width(screenWidth.dp)
+                        ,
                     painter = painterResource(id = R.drawable.imgslider1),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
+//                    contentScale = ContentScale.Fit,
                 )
                 Image(
                     modifier = Modifier
@@ -77,7 +86,7 @@ fun DetailScreen(
                 )
             }
 
-            // text
+            // all text
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,10 +105,22 @@ fun DetailScreen(
                     ) {
                         // title
     //                    Text(text = "Air pods max by Apple Air pods max by AppleAir pods max by Apple")
-                        Text(text = "Air pods max by Apple")
+                        Text(
+                            text = "Air pods max by Apple",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 19.sp,
+                            color = GrayDark
+                        )
 
                         // cost
-                        Text(text = "\$ 1999,99")
+                        Text(
+                            text = "\$ 1999,99",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 22.sp,
+                            color = GrayDark
+                        )
                     }
                     // wish
                     IconButton(
@@ -110,15 +131,24 @@ fun DetailScreen(
                         Icon(
                             modifier = Modifier
                                 .size(22.dp),
-    //                        imageVector = ImageVector.vectorResource(R.drawable.back),
                             painter = painterResource(id = R.drawable.heart),
                             tint = Gray,
                             contentDescription = null
                         )
                     }
                 }
-                Text(text = "Description of product")
-                Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquet arcu id tincidunt tellus arcu rhoncus, turpis nisl sed. Neque viverra ipsum orci, morbi semper. Nulla bibendum purus tempor semper purus. Ut curabitur platea sed blandit. Amet non at proin justo nulla et. A, blandit morbi suspendisse vel malesuada purus massa mi. Faucibus neque a mi hendrerit.\n" +
+                Text(
+                    text = "Description of product",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    lineHeight = 19.sp,
+                    color = GrayDark
+                )
+                Text(
+                    //region desc
+                    modifier = Modifier
+                        .padding(bottom = 16.dp),
+                    text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquet arcu id tincidunt tellus arcu rhoncus, turpis nisl sed. Neque viverra ipsum orci, morbi semper. Nulla bibendum purus tempor semper purus. Ut curabitur platea sed blandit. Amet non at proin justo nulla et. A, blandit morbi suspendisse vel malesuada purus massa mi. Faucibus neque a mi hendrerit.\n" +
                         "\n" +
                         "Audio Technology\n" +
                         "Apple-designed dynamic driver\n" +
@@ -191,52 +221,67 @@ fun DetailScreen(
                         "iPad models with the latest version of iPadOS\n" +
                         "Apple Watch models with the latest version of watchOS\n" +
                         "Mac models with the latest version of macOS\n" +
-                        "Apple TV models with the latest version of tvOS"
+                        "Apple TV models with the latest version of tvOS",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 21.sp,
+                    color = GrayDark
+                    // endregion
                 )
             }
         }
 
         HorizontalDivider(thickness = 2.dp, color = GrayLighter)
 
+        //bottom button
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 9.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(start = 20.dp, end = 20.dp/*, top = 9.dp*/)
+                .height(102.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+
         ) {
             Button(
                 modifier = Modifier
-//                    .fillMaxWidth()
                     .width(150.dp)
-                    .padding(top = 6.dp),
+                    .padding(top = 14.dp)
+                    .height(45.dp),
                 shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    /*containerColor = if (homeViewModel.cart.value.contains(product)) Red else*/ Mint
-                ),
-                onClick = { /*homeViewModel.checkCart(product)*/ }
+                colors = ButtonDefaults.buttonColors(Mint),
+                onClick = {  }
             ) {
                 Text(
-                    text = /*if (homeViewModel.cart.value.contains(product)) "Remove from cart" else*/ "Add to cart",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400),
+                    modifier = Modifier
+//                        .padding(14.dp, 10.dp, 14.dp, 10.dp)
+                        ,
+                    text = "Add to cart",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight(500),
+                    lineHeight = 17.sp,
+                    color = Color.White
                 )
             }
 
             Button(
                 modifier = Modifier
-//                    .fillMaxWidth()
                     .width(150.dp)
-                    .padding(top = 6.dp),
+                    .padding(top = 14.dp)
+                    .height(45.dp)
+                    ,
                 shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    /*containerColor = if (homeViewModel.cart.value.contains(product)) Red else*/ GrayLighter
-                ),
-                onClick = { /*homeViewModel.checkCart(product)*/ }
+                border = BorderStroke(1.dp, GrayLight),
+                colors = ButtonDefaults.buttonColors(GrayLighter),
+                onClick = {  }
             ) {
                 Text(
-                    text = /*if (homeViewModel.cart.value.contains(product)) "Remove from cart" else*/ "Buy Now",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400),
+                    modifier = Modifier
+//                        .padding(14.dp, 10.dp, 14.dp, 10.dp)
+                    ,
+                    text = "Buy Now",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight(500),
+                    lineHeight = 17.sp,
                     color = GrayDark
                 )
             }

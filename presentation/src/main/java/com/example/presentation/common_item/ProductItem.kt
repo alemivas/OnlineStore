@@ -28,12 +28,13 @@ import com.example.presentation.theme.Red
 @Composable
 fun ProductItem(
     homeViewModel: HomeViewModel,
-    product: Product
+    product: Product,
+    navigationToDetailScreen: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { },
+            .clickable { navigationToDetailScreen() },
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
         AsyncImage(
