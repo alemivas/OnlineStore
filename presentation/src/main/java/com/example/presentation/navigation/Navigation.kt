@@ -11,10 +11,12 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.wishlist_screen.WishlistScreen
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val wishlistViewModel = hiltViewModel<WishlistViewModel>()
     NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
@@ -24,7 +26,11 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Wishlist.route) {
-            WishlistScreen()
+            WishlistScreen(
+                wishlistViewModel = wishlistViewModel,
+                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)}
+
+            )
         }
 
         composable(NavigationItem.Manager.route) {

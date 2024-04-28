@@ -40,7 +40,7 @@ fun HomeScreen(
     val products by homeViewModel.products.collectAsState()
     var isShowAll by remember { mutableStateOf(false) }
     var isFilter by remember { mutableStateOf(false) }
-
+//поисковая строка
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,7 +97,7 @@ fun HomeScreen(
                 }
             }
         }
-
+//фильтр
         FilterProduct(
             homeViewModel = homeViewModel,
             sortedClicked = { isFilter = true }
@@ -108,6 +108,7 @@ fun HomeScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            //здась выводит продукт
             when (products) {
                 is ApiResult.Error -> {
                     Toast.makeText(LocalContext.current, products.error, Toast.LENGTH_SHORT).show()
