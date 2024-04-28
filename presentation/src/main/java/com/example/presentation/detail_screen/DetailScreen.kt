@@ -7,10 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,155 +61,149 @@ fun DetailScreen(
     val selectedProduct by remember { homeViewModel.selectedProduct }
 
     if (selectedProduct != null) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-        ) {
-            val pageCount = selectedProduct?.images?.size ?: 0
-            val pagerState = rememberPagerState(pageCount = { pageCount })
-
+        Column {
             DetailTopBar(
                 homeViewModel = homeViewModel,
                 isDetailScreen = true,
                 title = "Detail product",
                 navigateBack = { navigateBack() }
             )
-            Box {
-                HorizontalPager(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(290.dp),
-                    pageSpacing = 24.dp,
-                    state = pagerState
-                ) {
-                    AsyncImage(
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                val pageCount = selectedProduct?.images?.size ?: 0
+                val pagerState = rememberPagerState(pageCount = { pageCount })
+                Box {
+                    HorizontalPager(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(290.dp),
-                        contentScale = ContentScale.Crop,
-                        model = selectedProduct?.images?.get(it)?.removePrefix("[\"")?.removeSuffix("\"]"),
-                        contentDescription = null,
-                    )
-                }
-                DotsIndicator(
-                    dotCount = pageCount,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp),
-                    type = ShiftIndicatorType(dotsGraphic = DotGraphic(color = GrayLighter)),
-                    pagerState = pagerState
-                )
-
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        pageSpacing = 24.dp,
+                        state = pagerState
                     ) {
-                        Text(
-                            text = selectedProduct!!.title,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = GrayDark
-                        )
-                        Text(
-                            text = "$ ${selectedProduct!!.price}",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight(500),
-                            color = GrayDark
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(46.dp)
-                            .background(GrayLighter, CircleShape)
-                            .clickable { homeViewModel.toggleFavorite(selectedProduct!!) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            imageVector = ImageVector.vectorResource(id =
-                            if (homeViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
-                            else R.drawable.heart),
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(290.dp),
+                            contentScale = ContentScale.Crop,
+                            model = selectedProduct?.images?.get(it)?.removePrefix("[\"")?.removeSuffix("\"]"),
                             contentDescription = null,
                         )
                     }
+                    DotsIndicator(
+                        dotCount = pageCount,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 16.dp),
+                        type = ShiftIndicatorType(dotsGraphic = DotGraphic(color = GrayLighter)),
+                        pagerState = pagerState
+                    )
                 }
-                Text(
-                    text = "Description of product",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight(500),
-                    color = GrayDark
-                )
-                Text(
-                    text = selectedProduct!!.description,
-                    fontSize = 12.sp,
-                    color = GrayDark,
-                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = selectedProduct!!.title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight(500),
+                                color = GrayDark
+                            )
+                            Text(
+                                text = "$ ${selectedProduct!!.price}",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight(500),
+                                color = GrayDark
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .background(GrayLighter, CircleShape)
+                                .clickable { homeViewModel.toggleFavorite(selectedProduct!!) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                imageVector = ImageVector.vectorResource(id =
+                                if (homeViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
+                                else R.drawable.heart),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+                    Text(
+                        text = "Description of product",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight(500),
+                        color = GrayDark
+                    )
+                    Text(
+                        text = selectedProduct!!.description,
+                        fontSize = 12.sp,
+                        color = GrayDark,
+                    )
+                }
             }
 
-            BoxWithConstraints(
+            Spacer(modifier = Modifier.weight(1f))
+            HorizontalDivider(color = GrayLighter)
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                HorizontalDivider(color = GrayLighter)
-                Row(
+                Button(
                     modifier = Modifier
-                        .fillMaxWidth(constraints.maxWidth.toFloat())
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        .weight(1f)
+                        .height(55.dp),
+                    onClick = {
+                        if (homeViewModel.isContainsCart(selectedProduct!!)) {
+                            homeViewModel.removeFromCart(selectedProduct!!)
+                        }
+                        else homeViewModel.addToCart(selectedProduct!!)
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (homeViewModel.isContainsCart(selectedProduct!!)) Red else Mint
+                    ),
                 ) {
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(55.dp),
-                        onClick = {
-                            if (homeViewModel.isContainsCart(selectedProduct!!)) {
-                                homeViewModel.removeFromCart(selectedProduct!!)
-                            }
-                            else homeViewModel.addToCart(selectedProduct!!)
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (homeViewModel.isContainsCart(selectedProduct!!)) Red else Mint
-                        ),
-                    ) {
-                        Text(
-                            text = if (homeViewModel.isContainsCart(selectedProduct!!)) "Remove from cart" else "Add to cart",
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
-                        )
-                    }
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(55.dp),
-                        onClick = { },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(GrayLighter),
-                        border = BorderStroke(1.dp, GrayLight)
-                    ) {
-                        Text(
-                            text = "Buy Now",
-                            color = GrayDark,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
-                        )
-                    }
+                    Text(
+                        text = if (homeViewModel.isContainsCart(selectedProduct!!)) "Remove from cart" else "Add to cart",
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
+                }
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(55.dp),
+                    onClick = { },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(GrayLighter),
+                    border = BorderStroke(1.dp, GrayLight)
+                ) {
+                    Text(
+                        text = "Buy Now",
+                        color = GrayDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
                 }
             }
         }
