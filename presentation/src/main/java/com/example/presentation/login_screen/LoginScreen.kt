@@ -41,7 +41,7 @@ import com.example.presentation.theme.LoginBackgroundColor
 import com.example.presentation.theme.LoginBorderColor
 import com.example.presentation.theme.LoginLabelColor
 import com.example.presentation.theme.Mint
-import com.example.presentation.theme.Red
+import com.example.presentation.theme.Pink
 
 @Composable
 fun LoginScreen(
@@ -179,7 +179,7 @@ fun MinimalDialog(
                 .padding(16.dp),
             colors = CardColors(
                 containerColor = GrayLighter,
-                contentColor = Red,
+                contentColor = Pink,
                 disabledContainerColor = GrayLighter,
                 disabledContentColor = GrayLighter
             ),
