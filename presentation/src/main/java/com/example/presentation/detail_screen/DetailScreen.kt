@@ -19,12 +19,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,15 +45,14 @@ fun DetailScreen(
     Column(
 
     ) {
-        //srollable part
+        //vertical scrollable part
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                //чтобы "закрепить" кнопки снизу
-                .weight(weight = 1f, fill = false)
+                .weight(weight = 1f, fill = false)     //чтобы "закрепить" кнопки снизу
         ){
             // img slider
-//            val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
+            val screenWidth = LocalConfiguration.current.screenWidthDp.dp
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -59,27 +60,24 @@ fun DetailScreen(
             ) {
                 Image(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .height(286.dp)
-//                        .width(screenWidth.dp)
-                        ,
+                        .width(screenWidth),
                     painter = painterResource(id = R.drawable.imgslider1),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-//                    contentScale = ContentScale.Fit,
-                )
+                    )
                 Image(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(286.dp),
+                        .height(286.dp)
+                        .width(screenWidth),
                     painter = painterResource(id = R.drawable.imgslider2),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                 )
                 Image(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(286.dp),
+                        .height(286.dp)
+                        .width(screenWidth),
                     painter = painterResource(id = R.drawable.imgslider3),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
@@ -104,6 +102,7 @@ fun DetailScreen(
 
                     ) {
                         // title
+                        //TODO
     //                    Text(text = "Air pods max by Apple Air pods max by AppleAir pods max by Apple")
                         Text(
                             text = "Air pods max by Apple",
@@ -115,6 +114,8 @@ fun DetailScreen(
 
                         // cost
                         Text(
+                            modifier = Modifier
+                                .padding(top = 6.dp),
                             text = "\$ 1999,99",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.W500,
@@ -125,8 +126,9 @@ fun DetailScreen(
                     // wish
                     IconButton(
                         modifier = Modifier
-                            .size(24.dp),
-                        onClick = {  }
+                            .size(46.dp),
+                        onClick = {  },
+                        colors = IconButtonDefaults.iconButtonColors(GrayLighter),
                     ) {
                         Icon(
                             modifier = Modifier
@@ -138,6 +140,7 @@ fun DetailScreen(
                     }
                 }
                 Text(
+                    modifier = Modifier.padding(top = 15.dp),
                     text = "Description of product",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
@@ -145,9 +148,10 @@ fun DetailScreen(
                     color = GrayDark
                 )
                 Text(
-                    //region desc
+
                     modifier = Modifier
-                        .padding(bottom = 16.dp),
+                        .padding(top = 9.dp),
+                    //region desc
                     text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquet arcu id tincidunt tellus arcu rhoncus, turpis nisl sed. Neque viverra ipsum orci, morbi semper. Nulla bibendum purus tempor semper purus. Ut curabitur platea sed blandit. Amet non at proin justo nulla et. A, blandit morbi suspendisse vel malesuada purus massa mi. Faucibus neque a mi hendrerit.\n" +
                         "\n" +
                         "Audio Technology\n" +
@@ -231,30 +235,32 @@ fun DetailScreen(
             }
         }
 
-        HorizontalDivider(thickness = 2.dp, color = GrayLighter)
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 16.dp),
+            thickness = 1.dp,
+            color = GrayLighter
+        )
 
         //bottom button
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp/*, top = 9.dp*/)
-                .height(102.dp),
+                .height(80.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
 
         ) {
             Button(
                 modifier = Modifier
-                    .width(150.dp)
-                    .padding(top = 14.dp)
+                    .weight(1f)
+                    .padding(top = 14.dp, end = 7.dp)
                     .height(45.dp),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(Mint),
                 onClick = {  }
             ) {
                 Text(
-                    modifier = Modifier
-//                        .padding(14.dp, 10.dp, 14.dp, 10.dp)
-                        ,
+                    modifier = Modifier,
                     text = "Add to cart",
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500),
@@ -265,19 +271,16 @@ fun DetailScreen(
 
             Button(
                 modifier = Modifier
-                    .width(150.dp)
-                    .padding(top = 14.dp)
-                    .height(45.dp)
-                    ,
+                    .weight(1f)
+                    .padding(top = 14.dp, start = 7.dp)
+                    .height(45.dp),
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(1.dp, GrayLight),
                 colors = ButtonDefaults.buttonColors(GrayLighter),
                 onClick = {  }
             ) {
                 Text(
-                    modifier = Modifier
-//                        .padding(14.dp, 10.dp, 14.dp, 10.dp)
-                    ,
+                    modifier = Modifier,
                     text = "Buy Now",
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500),
