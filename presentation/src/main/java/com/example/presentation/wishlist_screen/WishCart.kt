@@ -15,12 +15,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
+import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.Red
 
 @Composable
 fun WishCart(
-    wishlistViewModel: WishlistViewModel,
+    wishlistViewModel: HomeViewModel,
     onCartClick: () -> Unit,
 ) {
     Box {

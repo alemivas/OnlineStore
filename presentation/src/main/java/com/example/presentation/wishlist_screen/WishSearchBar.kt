@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
@@ -32,7 +33,7 @@ import com.example.presentation.theme.GrayLighter
 
 @Composable
 fun WishSearchBar(
-    wishlistViewModel: WishlistViewModel,
+    wishlistViewModel: HomeViewModel,
     isSearchScreen: Boolean,
     padding: Dp,
     navigateToSearch: () -> Unit,
@@ -83,7 +84,7 @@ fun WishSearchBar(
                 unfocusedBorderColor = GrayLighter,
             ),
             keyboardActions = KeyboardActions(onSearch = {
-                //wishlistViewModel.fetchSearchList(10, 0, title = wishlistViewModel.searchQuery.value)
+               // wishlistViewModel.fetchSearchList(10, 0, title = wishlistViewModel.searchQuery.value)
                 wishlistViewModel.checkSearchList(wishlistViewModel.searchQuery.value)
                 navigateToSearch()
             }),

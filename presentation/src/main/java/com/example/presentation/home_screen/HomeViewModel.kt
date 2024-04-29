@@ -26,10 +26,13 @@ class HomeViewModel @Inject constructor(
     private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
+
     val countryList = listOf(
         "USA", "Canada", "Brazil", "Argentina", "Australia",
         "Europe", "United Kingdom", "Japan", "Russia", "China"
     )
+    private val _favoriteList: MutableState<List<Product>> = mutableStateOf(emptyList())
+    val favoriteList: State<List<Product>> = _favoriteList
 
 //    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
 
@@ -66,9 +69,19 @@ class HomeViewModel @Inject constructor(
                 .catch {
                     _categories.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
-                .collect{
+                .collect {
                     _categories.value = it
                 }
+        }
+    }
+
+    fun favSave(
+        product: Product,
+    ) {
+        if (_favoriteList.value.contains(product)) {
+            _favoriteList.value -= product
+        } else {
+            _favoriteList.value += product
         }
     }
 
@@ -79,14 +92,14 @@ class HomeViewModel @Inject constructor(
         categoryId: Int? = null,
         priceMin: Int? = null,
         priceMax: Int? = null,
-        ) {
+    ) {
         viewModelScope.launch {
             getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
                 .flowOn(defaultDispatcher)
                 .catch {
                     _products.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
-                .collect{
+                .collect {
                     _products.value = it
                 }
         }
@@ -99,17 +112,17 @@ class HomeViewModel @Inject constructor(
         categoryId: Int? = null,
         priceMin: Int? = null,
         priceMax: Int? = null,
-        ) {
-            viewModelScope.launch {
-                getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-                    .flowOn(defaultDispatcher)
-                    .catch {
-                        _searchList.value = ApiResult.Error(it.message ?: "Something went wrong")
-                    }
-                    .collect{
-                        _searchList.value = it
-                    }
-            }
+    ) {
+        viewModelScope.launch {
+            getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
+                .flowOn(defaultDispatcher)
+                .catch {
+                    _searchList.value = ApiResult.Error(it.message ?: "Something went wrong")
+                }
+                .collect {
+                    _searchList.value = it
+                }
+        }
     }
 
     fun checkSearchList(searchQuery: String) {
@@ -130,6 +143,9 @@ class HomeViewModel @Inject constructor(
 
     fun clearSearchList() {
         _searchHistoryList.value = emptyList()
+    }
+    fun isFavorite(product: Product):Boolean{
+        return _favoriteList.value.contains(product)
     }
 
     fun checkCart(product: Product) {

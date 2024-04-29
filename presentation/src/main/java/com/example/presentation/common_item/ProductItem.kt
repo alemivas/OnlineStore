@@ -2,6 +2,7 @@ package com.example.presentation.common_item
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +38,8 @@ fun ProductItem(
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
         AsyncImage(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(112.dp),
             contentScale = ContentScale.Crop,
             model = product.images.first().removePrefix("[\"").removeSuffix("\"]"),
@@ -63,6 +65,7 @@ fun ProductItem(
                 fontWeight = FontWeight(600),
                 maxLines = 1,
             )
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -71,7 +74,10 @@ fun ProductItem(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (homeViewModel.cart.value.contains(product)) Red else Mint
                 ),
-                onClick = { homeViewModel.checkCart(product) }
+                onClick = {
+                    homeViewModel.checkCart(product)
+                    homeViewModel.favSave(product)
+                }
             ) {
                 Text(
                     text = if (homeViewModel.cart.value.contains(product)) "Remove from cart" else "Add to cart",

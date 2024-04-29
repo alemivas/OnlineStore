@@ -1,20 +1,19 @@
 package com.example.presentation.wishlist_screen
 
 
-import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -23,44 +22,40 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.domain.models.Product
+import com.example.presentation.R
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.SearchBar
-import com.example.presentation.common_item.TopBar
+import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
-import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
 import com.example.presentation.theme.Red
-import com.example.utils.ApiResult
 
 @Composable
 fun WishlistScreen(
-    wishlistViewModel: WishlistViewModel ,
+    wishlistViewModel: HomeViewModel,
     navigationToSearchScreen: () -> Unit
 ) {
-    val products by wishlistViewModel.products.collectAsState()
     var isFilter by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -75,38 +70,22 @@ fun WishlistScreen(
             padding = 0.dp,
             navigateToSearch = { navigationToSearchScreen() },
             navigateBack = {})
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            when (products) {
-                is ApiResult.Error -> {
-                    Toast.makeText(LocalContext.current, products.error, Toast.LENGTH_SHORT).show()
-                }
-
-                is ApiResult.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.size(40.dp), color = GrayLight)
-                }
-
-                is ApiResult.Success -> {
-                    val list = products.data ?: emptyList()
-                    if (isFilter) {
-                        if (wishlistViewModel.sortedList.value.isEmpty()) NoResultBox("No results")
-                        else EmptyState(wishlistViewModel, wishlistViewModel.sortedList.value)
-                    } else {
-                        if (list.isEmpty()) NoResultBox("No results")
-                        else EmptyState(wishlistViewModel, list)
-                    }
-                }
-            }
-
+        val list = wishlistViewModel.favoriteList.value
+        if (wishlistViewModel.favoriteList.value.isEmpty()) {
+            NoResultBox("No results")
+            //if (wishlistViewModel.sortedList.value.isEmpty()) NoResultBox("No results")
+            //else EmptyState(wishlistViewModel, wishlistViewModel.sortedList.value)
+        } else {
+            FavoriteState(wishlistViewModel, list)
+//            if (list.isEmpty()) NoResultBox("No results")
+//            else EmptyState(wishlistViewModel, list)
         }
     }
 }
+
 @Composable
-fun EmptyState(
-    wishlistViewModel: WishlistViewModel,
+fun FavoriteState(
+    wishlistViewModel: HomeViewModel,
     listProduct: List<Product>
 ) {
     LazyVerticalGrid(
@@ -122,7 +101,7 @@ fun EmptyState(
 
 @Composable
 fun CardMarks(
-    wishlistViewModel: WishlistViewModel,
+    wishlistViewModel: HomeViewModel,
     product: Product
 ) {
 
@@ -140,7 +119,8 @@ fun CardMarks(
             colors = CardDefaults.cardColors(containerColor = GrayLightest),
         ) {
             AsyncImage(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(112.dp),
                 contentScale = ContentScale.Crop,
                 model = product.images.first().removePrefix("[\"").removeSuffix("\"]"),
@@ -167,23 +147,26 @@ fun CardMarks(
                     maxLines = 1,
                 )
                 Row {
-                    var isPressed by remember { mutableStateOf(false) }
-                    IconButton(onClick = {isPressed = !isPressed  }) {
-                        Icon(
-                            imageVector = if (isPressed) Icons.Filled.FavoriteBorder else Icons.Filled.Favorite ,
-                            contentDescription = "Favorite"
-                        )
-                    }
+
+                    Image(
+                        imageVector = ImageVector
+                            .vectorResource(id = if (wishlistViewModel.isFavorite(product)) R.drawable.heart_fill else R.drawable.heart),
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            wishlistViewModel.favSave(product)
+                        }
+                    )
+
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 6.dp),
                         shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
-                            // containerColor = if (wishlistViewModel.cart.value.contains(product)) Red else Mint
+                            containerColor = if (wishlistViewModel.cart.value.contains(product)) Red else Mint
                         ),
                         onClick = {
-                            //wishlistViewModel.checkCart(product)
+                            wishlistViewModel.checkCart(product)
                         }
                     ) {
                         Text(
