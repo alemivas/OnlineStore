@@ -68,9 +68,7 @@ class HomeViewModel @Inject constructor(
     val selectedProduct: State<Product?> = _selectedProduct
 
     private val _favoriteList: MutableState<List<Product>> = mutableStateOf(emptyList())
-
     private val _checkedProducts: MutableState<List<Cart>> = mutableStateOf(emptyList())
-    val checkedProducts: State<List<Cart>> = _checkedProducts
 
     init {
         fetchCategories()
@@ -102,6 +100,16 @@ class HomeViewModel @Inject constructor(
                     _categories.value = it
 
                 }
+        }
+    }
+
+    private fun saveUserCart(carts: List<Cart>) {
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = carts)
+                saveUser(updatedCartList)
+            }
         }
     }
 
@@ -226,7 +234,6 @@ class HomeViewModel @Inject constructor(
 
         val checkedCart = _checkedProducts.value.find { it == cart}
         if (checkedCart != null) _checkedProducts.value = _checkedProducts.value.minus(checkedCart)
-//        _checkedProducts.value = _checkedProducts.value.minus(cart)
         saveUserCart(_cart.value)
     }
 
@@ -303,14 +310,8 @@ class HomeViewModel @Inject constructor(
         saveUserCart(_cart.value)
     }
 
-    private fun saveUserCart(carts: List<Cart>) {
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (user != null) {
-                val updatedCartList = user.copy(cartList = carts)
-                saveUser(updatedCartList)
-            }
-        }
+    fun checkedStates(cart: Cart): Boolean {
+        return _checkedProducts.value.contains(cart)
     }
 }
 

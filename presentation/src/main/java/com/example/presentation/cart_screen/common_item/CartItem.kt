@@ -20,8 +20,6 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +42,7 @@ fun CartItem(
     cart: Cart,
     navigateToDetail: (Int) -> Unit,
     ) {
-    val checkedState = remember { mutableStateOf(homeViewModel.checkedProducts.value.contains(cart)) }
+    val checkedState = homeViewModel.checkedStates(cart)
 
     Row(
         modifier = Modifier
@@ -56,11 +54,8 @@ fun CartItem(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Checkbox(
-            checked = checkedState.value,
-            onCheckedChange = {
-                checkedState.value = it
-                homeViewModel.changeCheckedProducts(cart)
-            },
+            checked = checkedState,
+            onCheckedChange = { homeViewModel.changeCheckedProducts(cart) },
             colors = CheckboxDefaults.colors(
                 checkedColor = Mint,
                 uncheckedColor = GrayLighter)
