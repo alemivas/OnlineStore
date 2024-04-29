@@ -62,7 +62,9 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationObject.DetailScreen.route) {
-            DetailScreen()
+            DetailScreen(
+                homeViewModel = homeViewModel
+            )
         }
     }
 }
