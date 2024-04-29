@@ -77,7 +77,6 @@ fun ProductItem(
                 ),
                 onClick = {
                     homeViewModel.checkCart(product)
-                    homeViewModel.favSave(product)
                 }
             ) {
                 Text(

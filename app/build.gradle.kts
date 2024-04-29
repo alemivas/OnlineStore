@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
+
     //Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.serialization)

@@ -21,6 +21,7 @@ kotlinxCoroutinesCore = "1.8.0"
 ksp = "1.9.23-1.0.20"
 room = "2.6.1"
 coilCompose = "2.6.0"
+converterGson = "2.9.0"
 
 # Network : Ktor
 ktor = "2.3.10"
@@ -28,6 +29,7 @@ ktor = "2.3.10"
 kotlin-plugin-serialization = "1.9.23"
 kotlin-serialization = "1.6.3"
 firebaseCrashlyticsBuildtools = "2.9.9"
+roomCommon = "2.6.1"
 
 [libraries]
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -55,6 +57,8 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 # Serialization : Json
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -79,6 +83,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 
 [plugins]
 

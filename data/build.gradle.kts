@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -38,7 +39,12 @@ dependencies {
     implementation(project(":utils"))
 
     implementation(libs.javax.inject)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
+    implementation(libs.converter.gson)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.cio)

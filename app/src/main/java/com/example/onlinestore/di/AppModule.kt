@@ -1,7 +1,12 @@
 package com.example.onlinestore.di
 
+import android.app.Application
+import androidx.room.Room
 import com.example.data.api.ApiService
+import com.example.data.localdata.AppDataBase
+import com.example.data.localdata.UsersDao
 import com.example.utils.Constants
+import com.example.utils.Constants.NAME_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,4 +60,22 @@ object AppModule {
 
     @Provides
     fun provideDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(app: Application): AppDataBase {
+        return Room.databaseBuilder(
+            app,
+            AppDataBase::class.java,
+            NAME_DATABASE
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+    @Provides
+    @Singleton
+    fun provideUserDAO(appDataBase: AppDataBase):UsersDao{
+        return appDataBase.usersDao
+    }
+
+
 }
