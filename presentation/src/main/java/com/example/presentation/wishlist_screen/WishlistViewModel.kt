@@ -49,9 +49,8 @@ class WishlistViewModel @Inject constructor(
     }
 
     fun getSearchFavoriteList() : List<Product> {
-        return _favoriteList.value.filter { it.title.contains(_searchQuery.value) }
+        return _favoriteList.value.filter { it.title.contains(_searchQuery.value, ignoreCase = true) }
     }
-
 
     fun changeSearchQuery(query: String) {
         _searchQuery.value = query
