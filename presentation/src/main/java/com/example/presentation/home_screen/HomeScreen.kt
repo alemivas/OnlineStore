@@ -81,6 +81,7 @@ fun HomeScreen(
                 is ApiResult.Success -> {
                     val list = categories.data ?: emptyList()
                     if (!isShowAll) {
+                        if (list.isEmpty()) NoResultBox("No fetched categories")
                         CategoriesRow(
                             homeViewModel = homeViewModel,
                             list = list,
@@ -123,7 +124,7 @@ fun HomeScreen(
                 is ApiResult.Success -> {
                     val list = products.data ?: emptyList()
                     if (isFilter) {
-                        if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
+                        if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No search results")
                         else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
                             navigateToDetail(it)
                         }

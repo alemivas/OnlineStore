@@ -43,12 +43,12 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.presentation.R
 import com.example.presentation.cart_screen.common_item.CartItem
 import com.example.presentation.detail_screen.common_item.DetailTopBar
+import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
-import com.example.utils.Constants
 
 @Composable
 fun CartScreen(
@@ -58,7 +58,7 @@ fun CartScreen(
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-    val countryList = Constants.countryList
+    val countryList = Country.entries.map { it.toString() }
 
     Scaffold(
         topBar = {
@@ -158,7 +158,7 @@ fun CartScreen(
                         color = GrayDark,
                     )
                     Text(
-                        text = homeViewModel.getSum().toString(),
+                        text = homeViewModel.getSum(),
                         fontWeight = FontWeight(500),
                         fontSize = 16.sp,
                         lineHeight = 20.sp,
@@ -172,8 +172,10 @@ fun CartScreen(
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.buttonColors(Mint),
                     onClick = {
-                        showBottomSheet = true
-                        homeViewModel.makeOrder()
+                        if (homeViewModel.cart.value.isNotEmpty()) {
+                            showBottomSheet = true
+                            homeViewModel.makeOrder()
+                        }
                     }
                 ) {
                     Text(text = "Select payment method")

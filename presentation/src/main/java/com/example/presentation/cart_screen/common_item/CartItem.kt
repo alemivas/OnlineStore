@@ -85,7 +85,7 @@ fun CartItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$ ${cart.product.price}",
+                    text = homeViewModel.getConvertedPrice(cart.product.price),
                     modifier = Modifier.weight(1f),
                     color = GrayDarkest
                 )

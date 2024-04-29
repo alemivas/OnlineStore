@@ -9,6 +9,7 @@ import com.example.domain.models.Cart
 import com.example.domain.models.Product
 import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
+import com.example.presentation.home_screen.Country
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -19,6 +20,8 @@ class WishlistViewModel @Inject constructor(
     private val getIsLoginUser: GetIsLoginUserUseCase,
     private val saveUser: SaveUserUseCase,
 ) : ViewModel() {
+
+    private val _currentCountry: MutableState<String> = mutableStateOf(Country.USA.name)
 
     private val _cart: MutableState<List<Cart>> = mutableStateOf(emptyList())
     val cart: State<List<Cart>> = _cart
@@ -42,6 +45,7 @@ class WishlistViewModel @Inject constructor(
                 if (isLoginUser != null) {
                     _cart.value = isLoginUser.cartList
                     _favoriteList.value = isLoginUser.favoriteProductList
+                    _currentCountry.value = isLoginUser.country
                 }
                 delay(1000)
             }
@@ -99,6 +103,21 @@ class WishlistViewModel @Inject constructor(
                 val updatedCartList = user.copy(cartList = _cart.value)
                 saveUser(updatedCartList)
             }
+        }
+    }
+
+    fun getConvertedPrice(price: Int): String {
+        return when (_currentCountry.value) {
+            Country.USA.toString() -> "$ $price"
+            Country.BRAZIL.toString() -> "R$ ${price * 5}"
+            Country.ARGENTINA.toString() -> "$ ${price * 877}"
+            Country.MEXICO.toString() -> "$ ${price * 17}"
+            Country.EUROPE.toString() -> "€ ${price * 0.9}"
+            Country.UNITED_KINGDOM.toString() -> "£ ${price * 0.8}"
+            Country.JAPAN.toString() -> "¥ ${price * 156}"
+            Country.RUSSIA.toString() -> "₽ ${price * 90}"
+            Country.CHINA.toString() -> "¥ ${price * 7}"
+            else -> { "$ $price" }
         }
     }
 }

@@ -25,11 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
+import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLightest
-import com.example.utils.Constants
 
 @Composable
 fun TopBar(
@@ -37,7 +37,7 @@ fun TopBar(
     navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val countryList = Constants.countryList
+    val countryList = Country.entries.map { it.toString() }
 
     Row(
         modifier = Modifier.fillMaxWidth(),

@@ -13,7 +13,10 @@ data class UserDBO(
     @ColumnInfo("name") val name: String,
     @ColumnInfo("email") val email: String,
     @ColumnInfo("password") val password: String,
+    @ColumnInfo("image") val image: String,
     @ColumnInfo("favoriteProductList") val favoriteProductList: List<Product>,
     @ColumnInfo("cartList") val cartList: List<Cart>,
+    @ColumnInfo("country") val country: String,
+    @ColumnInfo("isManager") val isManager: Boolean,
     @ColumnInfo("isLogin") val isLogin: Boolean,
 )

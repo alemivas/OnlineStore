@@ -123,7 +123,7 @@ fun DetailScreen(
                                 color = GrayDark
                             )
                             Text(
-                                text = "$ ${selectedProduct!!.price}",
+                                text = homeViewModel.getConvertedPrice(selectedProduct!!.price),
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight(500),
                                 color = GrayDark

@@ -15,7 +15,6 @@ import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCac
 import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
 import com.example.utils.ApiResult
-import com.example.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -38,10 +37,8 @@ class HomeViewModel @Inject constructor(
     private val saveUser: SaveUserUseCase,
     ) : ViewModel() {
 
-    private val _currentCountry: MutableState<String> = mutableStateOf(Constants.countryList.first())
+    private val _currentCountry: MutableState<String> = mutableStateOf(Country.USA.name)
     val currentCountry = _currentCountry
-
-//    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
 
     private val _categories = MutableStateFlow<ApiResult<List<Category>>>(ApiResult.Loading())
     val categories = _categories.asStateFlow()
@@ -89,6 +86,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun saveUserCart(carts: List<Cart>) {
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = carts)
+                saveUser(updatedCartList)
+            }
+        }
+    }
+
     private fun fetchCategories() {
         viewModelScope.launch {
             getCategories()
@@ -98,18 +105,7 @@ class HomeViewModel @Inject constructor(
                 }
                 .collect{
                     _categories.value = it
-
                 }
-        }
-    }
-
-    private fun saveUserCart(carts: List<Cart>) {
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (user != null) {
-                val updatedCartList = user.copy(cartList = carts)
-                saveUser(updatedCartList)
-            }
         }
     }
 
@@ -158,6 +154,7 @@ class HomeViewModel @Inject constructor(
         if (_searchHistoryList.value.contains(searchQuery)) {
             _searchHistoryList.value = _searchHistoryList.value.minus(searchQuery)
         } else {
+            if (_searchHistoryList.value.size >= 10) return
             _searchHistoryList.value = _searchHistoryList.value.plus(searchQuery)
         }
     }
@@ -291,6 +288,28 @@ class HomeViewModel @Inject constructor(
 
     fun changeCurrentCountry(country: String) {
         _currentCountry.value = country
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedUser = user.copy(country = country)
+                saveUser(updatedUser)
+            }
+        }
+    }
+
+    fun getConvertedPrice(price: Int): String {
+        return when (_currentCountry.value) {
+            Country.USA.toString() -> "$ $price"
+            Country.BRAZIL.toString() -> "R$ ${price * 5}"
+            Country.ARGENTINA.toString() -> "$ ${price * 877}"
+            Country.MEXICO.toString() -> "$ ${price * 17}"
+            Country.EUROPE.toString() -> "€ ${price * 0.9}"
+            Country.UNITED_KINGDOM.toString() -> "£ ${price * 0.8}"
+            Country.JAPAN.toString() -> "¥ ${price * 156}"
+            Country.RUSSIA.toString() -> "₽ ${price * 90}"
+            Country.CHINA.toString() -> "¥ ${price * 7}"
+            else -> { "$ $price" }
+        }
     }
 
     fun changeCheckedProducts(cart: Cart) {
@@ -301,8 +320,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getSum(): Int {
-        return _checkedProducts.value.sumOf { it.product.price * it.quantity }
+    fun getSum(): String {
+        val sum = _checkedProducts.value.sumOf { it.product.price * it.quantity }
+        return getConvertedPrice(sum)
     }
 
     fun makeOrder() {
@@ -313,6 +333,18 @@ class HomeViewModel @Inject constructor(
     fun checkedStates(cart: Cart): Boolean {
         return _checkedProducts.value.contains(cart)
     }
+}
+
+enum class Country {
+    USA,
+    BRAZIL,
+    ARGENTINA,
+    MEXICO,
+    EUROPE,
+    UNITED_KINGDOM,
+    JAPAN,
+    RUSSIA,
+    CHINA
 }
 
 enum class SortType {

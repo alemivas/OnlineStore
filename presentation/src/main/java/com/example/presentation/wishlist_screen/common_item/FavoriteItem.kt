@@ -67,7 +67,7 @@ fun FavoriteItem(
                 maxLines = 1,
             )
             Text(
-                text = "$${product.price}",
+                text = wishlistViewModel.getConvertedPrice(product.price),
                 color = GrayDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(600),

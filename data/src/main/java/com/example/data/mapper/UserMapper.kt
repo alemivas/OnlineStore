@@ -8,7 +8,10 @@ fun UserDBO.toUser() = User(
     name = name,
     email = email,
     password = password,
+    image = image,
     favoriteProductList = favoriteProductList,
     cartList = cartList,
+    country = country,
+    isManager = isManager,
     isLogin = isLogin,
 )

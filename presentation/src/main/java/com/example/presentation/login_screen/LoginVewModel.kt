@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.models.User
 import com.example.domain.usecases.user_db_use_case.GetAllUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
+import com.example.presentation.home_screen.Country
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,8 +54,11 @@ class LoginVewModel @Inject constructor(
                         name = name,
                         email = email,
                         password = password,
+                        image = "",
                         favoriteProductList = emptyList(),
                         cartList = emptyList(),
+                        country = Country.entries.map { it.toString() }.first(),
+                        isManager = false,
                         isLogin = true
                     )
                 )

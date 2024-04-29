@@ -1,6 +1,5 @@
 package com.example.presentation.common_item
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.domain.models.Product
+import com.example.presentation.R
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLightest
@@ -45,10 +45,7 @@ fun ProductItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                navigateToDetail(product.id)
-                       Log.i("!!!", homeViewModel.selectedProduct.value.toString())
-                       },
+            .clickable { navigateToDetail(product.id) },
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
         val pageCount = product.images.size
@@ -65,7 +62,9 @@ fun ProductItem(
                     modifier = Modifier
                         .fillMaxSize(),
                     contentScale = ContentScale.Crop,
-                    model = product.images[it].removePrefix("[\"").removeSuffix("\"]"),
+                    model =
+                    if (product.images.isEmpty()) R.drawable.img
+                    else product.images[it].removePrefix("[\"").removeSuffix("\"]"),
                     contentDescription = null,
                 )
             }
@@ -92,7 +91,7 @@ fun ProductItem(
                 maxLines = 1,
             )
             Text(
-                text = "$${product.price}",
+                text = homeViewModel.getConvertedPrice(product.price),
                 color = GrayDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(600),

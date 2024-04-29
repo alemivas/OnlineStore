@@ -18,15 +18,14 @@ class UserDBRepositoryImpl @Inject constructor(
                 name = user.name,
                 email = user.email,
                 password = user.password,
+                image = user.image,
                 favoriteProductList = user.favoriteProductList,
                 cartList = user.cartList,
+                country = user.country,
+                isManager = user.isManager,
                 isLogin = user.isLogin,
             )
         )
-    }
-
-    override suspend fun getUserById(id: String): User? {
-        return userDao.getUserById(id)?.toUser()
     }
 
     override suspend fun getIsLoginUser(): User? {
