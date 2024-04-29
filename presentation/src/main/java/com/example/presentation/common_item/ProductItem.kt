@@ -34,7 +34,10 @@ fun ProductItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { navigationToDetailScreen() },
+            .clickable {
+                homeViewModel.setProduct(product)
+                navigationToDetailScreen()
+            },
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
         AsyncImage(

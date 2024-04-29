@@ -2,7 +2,9 @@ package com.example.presentation.home_screen
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.models.Category
@@ -158,6 +160,14 @@ class HomeViewModel @Inject constructor(
                 filteredProducts.sortedBy { it.price }
             }
         }
+    }
+
+    private var _sharedProduct by mutableStateOf<Product?>(null)
+    fun setProduct(product: Product) {
+        _sharedProduct = product
+    }
+    fun getProduct(): Product? {
+        return _sharedProduct
     }
 }
 
