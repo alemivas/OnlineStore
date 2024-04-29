@@ -49,25 +49,7 @@ class WishlistViewModel @Inject constructor(
             _cart.value = _cart.value.plus(product)
         }
     }
-    //fun fetchSearchList(
-    //    limit: Int,
-    //    offset: Int,
-    //    title: String? = null,
-    //    categoryId: Int? = null,
-    //    priceMin: Int? = null,
-    //    priceMax: Int? = null,
-    //) {
-    //    viewModelScope.launch {
-    //        getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-    //            .flowOn(defaultDispatcher)
-    //            .catch {
-    //                _searchList.value = ApiResult.Error(it.message ?: "Something went wrong")
-    //            }
-    //            .collect{
-    //                _searchList.value = it
-    //            }
-    //    }
-    //}
+
     fun checkSearchList(searchQuery: String) {
         if (_searchHistoryList.value.contains(searchQuery)) {
             _searchHistoryList.value = _searchHistoryList.value.minus(searchQuery)
