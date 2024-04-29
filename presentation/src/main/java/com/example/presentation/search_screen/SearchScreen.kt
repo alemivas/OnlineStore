@@ -34,13 +34,14 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
-import com.example.presentation.theme.Red
+import com.example.presentation.theme.Pink
 import com.example.utils.ApiResult
 
 @Composable
 fun SearchScreen(
     homeViewModel: HomeViewModel,
     navigateBack: () -> Unit,
+    navigationToDetailScreen: () -> Unit,
 ) {
     val products by homeViewModel.searchList.collectAsState()
 
@@ -84,7 +85,7 @@ fun SearchScreen(
                                 sortedClicked = {}
                             )
                             if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list)
+                                ProductVerticalGrid(homeViewModel, list, navigationToDetailScreen)
                             } else {
                                 NoResultBox("No results")
                             }
@@ -124,7 +125,7 @@ fun HistorySearch(
                 fontWeight = FontWeight(500),
                 fontSize = 12.sp,
                 lineHeight = 15.sp,
-                color = Red,
+                color = Pink,
             )
         }
         if (homeViewModel.searchHistoryList.value.isEmpty()) {

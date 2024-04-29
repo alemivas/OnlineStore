@@ -24,17 +24,18 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
-import com.example.presentation.theme.Red
+import com.example.presentation.theme.Pink
 
 @Composable
 fun ProductItem(
     homeViewModel: HomeViewModel,
-    product: Product
+    product: Product,
+    navigationToDetailScreen: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { },
+            .clickable { navigationToDetailScreen() },
         colors = CardDefaults.cardColors(containerColor = GrayLightest),
     ) {
         AsyncImage(
@@ -72,7 +73,7 @@ fun ProductItem(
                     .padding(top = 6.dp),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (homeViewModel.cart.value.contains(product)) Red else Mint
+                    containerColor = if (homeViewModel.cart.value.contains(product)) Pink else Mint
                 ),
                 onClick = {
                     homeViewModel.checkCart(product)

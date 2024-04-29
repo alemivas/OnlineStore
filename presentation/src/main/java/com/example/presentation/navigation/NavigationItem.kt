@@ -11,4 +11,7 @@ sealed class NavigationItem(val title: String, val route: String, val icon: Int,
 
 sealed class NavigationObject(val route: String) {
     data object SearchScreen : NavigationObject("SearchScreen")
+    data object LoginScreen : NavigationObject("LoginScreen")
+    data object RegistrationScreen : NavigationObject("RegistrationScreen")
+    data object DetailScreen : NavigationObject("DetailScreen")
 }
