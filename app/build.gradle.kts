@@ -74,6 +74,8 @@ dependencies {
     //Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    //Gson
+    implementation(libs.converter.gson)
 
     //Ktor
     implementation(libs.ktor.client.core)
@@ -86,6 +88,8 @@ dependencies {
 
     //Coil
     implementation(libs.coil.compose)
+    //Lottie
+    implementation(libs.lottie.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

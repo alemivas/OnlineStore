@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -24,13 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.presentation.R
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.Gray
@@ -43,7 +40,8 @@ import com.example.presentation.theme.Mint
 fun DetailScreen(
     homeViewModel: HomeViewModel
 ){
-    val product = homeViewModel.getProduct()!!
+//    val product = homeViewModel.getProduct()!!
+
 
     Column(
         modifier = Modifier,
@@ -61,16 +59,16 @@ fun DetailScreen(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
             ) {
-                product.images.forEach { image ->
-                    AsyncImage(
-                        modifier = Modifier
-                            .height(286.dp)
-                            .width(screenWidth.dp),
-                        contentScale = ContentScale.Crop,
-                        model = image.removePrefix("[\"").removeSuffix("\"]"),
-                        contentDescription = null,
-                    )
-                }
+//                product.images.forEach { image ->
+//                    AsyncImage(
+//                        modifier = Modifier
+//                            .height(286.dp)
+//                            .width(screenWidth.dp),
+//                        contentScale = ContentScale.Crop,
+//                        model = image.removePrefix("[\"").removeSuffix("\"]"),
+//                        contentDescription = null,
+//                    )
+//                }
             }
 
             // all text
@@ -91,26 +89,26 @@ fun DetailScreen(
 
                     ) {
                         // title
-                        Text(
-                            modifier = Modifier
-                                .width((screenWidth-102).dp),
-                            text = product.title,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 19.sp,
-                            color = GrayDark
-                        )
+//                        Text(
+//                            modifier = Modifier
+//                                .width((screenWidth-102).dp),
+//                            text = product.title,
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.W500,
+//                            lineHeight = 19.sp,
+//                            color = GrayDark
+//                        )
 
                         // cost
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 6.dp),
-                            text = "$${product.price}",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp,
-                            color = GrayDark
-                        )
+//                        Text(
+//                            modifier = Modifier
+//                                .padding(top = 6.dp),
+//                            text = "$${product.price}",
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.W500,
+//                            lineHeight = 22.sp,
+//                            color = GrayDark
+//                        )
                     }
                     // wish
                     IconButton(
@@ -136,16 +134,16 @@ fun DetailScreen(
                     lineHeight = 19.sp,
                     color = GrayDark
                 )
-                Text(
-
-                    modifier = Modifier
-                        .padding(top = 9.dp),
-                    text = product.description,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W400,
-                    lineHeight = 21.sp,
-                    color = GrayDark
-                )
+//                Text(
+//
+//                    modifier = Modifier
+//                        .padding(top = 9.dp),
+//                    text = product.description,
+//                    fontSize = 12.sp,
+//                    fontWeight = FontWeight.W400,
+//                    lineHeight = 21.sp,
+//                    color = GrayDark
+//                )
             }
         }
 

@@ -15,13 +15,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
-import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
-import com.example.presentation.theme.Pink
+import com.example.presentation.theme.Red
 
 @Composable
 fun Cart(
-    homeViewModel: HomeViewModel,
+    count: Int?,
     onCartClick: () -> Unit,
 ) {
     Box {
@@ -31,7 +30,7 @@ fun Cart(
             contentDescription = null,
             tint = GrayDark
         )
-        if (homeViewModel.cart.value.isNotEmpty()) {
+        if (count != null && count > 0) {
             Badge(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -40,11 +39,11 @@ fun Cart(
                         x = 2.dp,
                         y = (-2).dp
                     ),
-                containerColor = Pink,
+                containerColor = Red,
                 contentColor = Color.White,
                 content = {
                     Text(
-                        text = homeViewModel.cart.value.size.toString(),
+                        text = count.toString(),
                         textAlign = TextAlign.Center,
                     )
                 }

@@ -6,6 +6,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,18 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem.Manager,
         NavigationItem.Account
     )
+
+    // Обновляем selectedItem при изменении текущего маршрута
+    LaunchedEffect(currentRoute) {
+        selectedItem = when (currentRoute) {
+            NavigationItem.Home.route -> 0
+            NavigationItem.Wishlist.route -> 1
+            NavigationItem.Manager.route -> 2
+            NavigationItem.Account.route -> 3
+            else -> 0
+        }
+    }
+
     NavigationBar(
         containerColor = Color.White,
     ) {

@@ -1,4 +1,4 @@
-package com.example.presentation.common_item
+package com.example.presentation.home_screen.common_item
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.common_item.Cart
+import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
@@ -35,8 +37,7 @@ fun TopBar(
 //    navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val countryList = homeViewModel.countryList
-    var currentCountry by remember { mutableStateOf(countryList.first()) }
+    val countryList = Country.entries.map { it.toString() }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -55,7 +56,7 @@ fun TopBar(
                 modifier = Modifier.clickable { expanded = true }
             ) {
                 Text(
-                    text = currentCountry,
+                    text = homeViewModel.currentCountry.value,
                     color = GrayDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight(500)
@@ -75,14 +76,16 @@ fun TopBar(
                     DropdownMenuItem(
                         text = { Text(countryList[it]) },
                         onClick = {
-                            currentCountry = countryList[it]
+                            homeViewModel.changeCurrentCountry(countryList[it])
                             expanded = false
                         },
                     )
                 }
             }
         }
-        Cart(homeViewModel) { }
+        Cart(homeViewModel.cart.value.size) {
+//            navigationToCartScreen()
+        }
         Icon(
             painter = painterResource(id = R.drawable.notification),
             contentDescription = null,

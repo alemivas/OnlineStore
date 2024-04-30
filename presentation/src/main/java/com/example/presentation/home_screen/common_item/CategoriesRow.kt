@@ -1,4 +1,4 @@
-package com.example.presentation.common_item
+package com.example.presentation.home_screen.common_item
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding

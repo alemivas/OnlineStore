@@ -25,23 +25,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.common_item.FilterProduct
-import com.example.presentation.common_item.LastSearchItem
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.ProductVerticalGrid
-import com.example.presentation.common_item.SearchBar
 import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.home_screen.common_item.FilterProduct
+import com.example.presentation.home_screen.common_item.ProductVerticalGrid
+import com.example.presentation.home_screen.common_item.SearchBar
+import com.example.presentation.search_screen.common_item.LastSearchItem
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLight
 import com.example.presentation.theme.GrayLighter
-import com.example.presentation.theme.Pink
+import com.example.presentation.theme.Red
 import com.example.utils.ApiResult
 
 @Composable
 fun SearchScreen(
     homeViewModel: HomeViewModel,
+//    navigateToDetail: (Int) -> Unit,
+//    navigateToCart: () -> Unit,
     navigateBack: () -> Unit,
-    navigationToDetailScreen: () -> Unit,
 ) {
     val products by homeViewModel.searchList.collectAsState()
 
@@ -55,6 +56,7 @@ fun SearchScreen(
             isSearchScreen = true,
             padding = 16.dp,
             navigateToSearch = {},
+//            navigateToCart = navigateToCart,
             navigateBack = navigateBack
         )
         HorizontalDivider(color = GrayLighter)
@@ -85,7 +87,9 @@ fun SearchScreen(
                                 sortedClicked = {}
                             )
                             if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list, navigationToDetailScreen)
+                                ProductVerticalGrid(homeViewModel, list) {
+//                                    navigateToDetail(it)
+                                }
                             } else {
                                 NoResultBox("No results")
                             }
@@ -99,7 +103,7 @@ fun SearchScreen(
 
 @Composable
 fun HistorySearch(
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
     val searchList = homeViewModel.searchHistoryList.value
     Column(
@@ -125,7 +129,7 @@ fun HistorySearch(
                 fontWeight = FontWeight(500),
                 fontSize = 12.sp,
                 lineHeight = 15.sp,
-                color = Pink,
+                color = Red,
             )
         }
         if (homeViewModel.searchHistoryList.value.isEmpty()) {
