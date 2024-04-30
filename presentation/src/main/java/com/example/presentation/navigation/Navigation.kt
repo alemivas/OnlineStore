@@ -18,12 +18,17 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    NavHost(navController, startDestination = NavigationItem.Home.route) {
+    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
-                navigationToSearchScreen = {navController.navigate(NavigationObject.SearchScreen.route)},
-                navigationToDetailScreen = { navController.navigate(NavigationObject.DetailScreen.route) },
+                navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
+//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+//                navigateToDetail = { productId ->
+//                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+//                        popUpTo(NavigationItem.Home.route)
+//                    }
+//                }
             )
         }
 
@@ -42,8 +47,13 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.SearchScreen.route) {
             SearchScreen(
                 homeViewModel = homeViewModel,
-                navigateBack = { navController.popBackStack() },
-                navigationToDetailScreen = { navController.navigate(NavigationObject.DetailScreen.route) },
+//                navigateToDetail = { productId ->
+//                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+//                        popUpTo(NavigationObject.SearchScreen.route)
+//                    }
+//                },
+//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateBack = { navController.navigateUp() }
             )
         }
 
@@ -57,7 +67,7 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.RegistrationScreen.route) {
             RegistrationScreen(
                 navigateToHome = { navController.navigate(NavigationItem.Home.route) },
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.navigateUp() }
             )
         }
 

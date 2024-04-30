@@ -2,18 +2,23 @@ package com.example.presentation.home_screen
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.models.Cart
 import com.example.domain.models.Category
 import com.example.domain.models.Product
-import com.example.domain.usecases.GetCategoriesUseCase
-import com.example.domain.usecases.GetProductsUseCase
+import com.example.domain.usecases.api_use_cases.GetCategoriesUseCase
+import com.example.domain.usecases.api_use_cases.GetProductsUseCase
+import com.example.domain.usecases.product_db_use_cases.GetAllProductsFromCacheUseCase
+import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCache
+import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
+import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
 import com.example.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -23,17 +28,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getCategoriesUseCase: GetCategoriesUseCase,
-    private val getProductsUseCase: GetProductsUseCase,
-    private val defaultDispatcher: CoroutineDispatcher
-) : ViewModel() {
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val getCategories: GetCategoriesUseCase,
+    private val getProducts: GetProductsUseCase,
+    private val insertProductListIntoCache: InsertProductListIntoCache,
+    private val getAllProductsFromCache: GetAllProductsFromCacheUseCase,
+    private val getIsLoginUser: GetIsLoginUserUseCase,
+    private val saveUser: SaveUserUseCase,
+    ) : ViewModel() {
 
-    val countryList = listOf(
-        "USA", "Canada", "Brazil", "Argentina", "Australia",
-        "Europe", "United Kingdom", "Japan", "Russia", "China"
-    )
-
-//    val country = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.country
+    private val _currentCountry: MutableState<String> = mutableStateOf(Country.USA.name)
+    val currentCountry = _currentCountry
 
     private val _categories = MutableStateFlow<ApiResult<List<Category>>>(ApiResult.Loading())
     val categories = _categories.asStateFlow()
@@ -47,8 +52,8 @@ class HomeViewModel @Inject constructor(
     private val _sortedList: MutableState<List<Product>> = mutableStateOf(emptyList())
     val sortedList: State<List<Product>> = _sortedList
 
-    private val _cart: MutableState<List<Product>> = mutableStateOf(emptyList())
-    val cart: State<List<Product>> = _cart
+    private val _cart: MutableState<List<Cart>> = mutableStateOf(emptyList())
+    val cart: State<List<Cart>> = _cart
 
     private val _searchHistoryList: MutableState<List<String>> = mutableStateOf(emptyList())
     val searchHistoryList: State<List<String>> = _searchHistoryList
@@ -56,15 +61,45 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery: MutableState<String> = mutableStateOf("")
     val searchQuery = _searchQuery
 
+    private val _selectedProduct = mutableStateOf<Product?>(null)
+    val selectedProduct: State<Product?> = _selectedProduct
+
+    private val _favoriteList: MutableState<List<Product>> = mutableStateOf(emptyList())
+    private val _checkedProducts: MutableState<List<Cart>> = mutableStateOf(emptyList())
+
     init {
         fetchCategories()
         fetchProducts(30, 0)
+        getUser()
+    }
+
+    private fun getUser() {
+        viewModelScope.launch {
+            while (true) {
+                val isLoginUser = getIsLoginUser()
+                if (isLoginUser != null) {
+                    _cart.value = isLoginUser.cartList
+                    _favoriteList.value = isLoginUser.favoriteProductList
+                }
+                delay(1000)
+            }
+        }
+    }
+
+    private fun saveUserCart(carts: List<Cart>) {
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedCartList = user.copy(cartList = carts)
+                saveUser(updatedCartList)
+            }
+        }
     }
 
     private fun fetchCategories() {
         viewModelScope.launch {
-            getCategoriesUseCase()
-                .flowOn(defaultDispatcher)
+            getCategories()
+                .flowOn(dispatcher)
                 .catch {
                     _categories.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
@@ -83,13 +118,14 @@ class HomeViewModel @Inject constructor(
         priceMax: Int? = null,
         ) {
         viewModelScope.launch {
-            getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-                .flowOn(defaultDispatcher)
+            getProducts(limit, offset, title, categoryId, priceMin, priceMax)
+                .flowOn(dispatcher)
                 .catch {
                     _products.value = ApiResult.Error(it.message ?: "Something went wrong")
                 }
                 .collect{
                     _products.value = it
+                    insertProductListIntoCache(it.data ?: emptyList())
                 }
         }
     }
@@ -103,8 +139,8 @@ class HomeViewModel @Inject constructor(
         priceMax: Int? = null,
         ) {
             viewModelScope.launch {
-                getProductsUseCase(limit, offset, title, categoryId, priceMin, priceMax)
-                    .flowOn(defaultDispatcher)
+                getProducts(limit, offset, title, categoryId, priceMin, priceMax)
+                    .flowOn(dispatcher)
                     .catch {
                         _searchList.value = ApiResult.Error(it.message ?: "Something went wrong")
                     }
@@ -118,6 +154,7 @@ class HomeViewModel @Inject constructor(
         if (_searchHistoryList.value.contains(searchQuery)) {
             _searchHistoryList.value = _searchHistoryList.value.minus(searchQuery)
         } else {
+            if (_searchHistoryList.value.size >= 10) return
             _searchHistoryList.value = _searchHistoryList.value.plus(searchQuery)
         }
     }
@@ -134,12 +171,67 @@ class HomeViewModel @Inject constructor(
         _searchHistoryList.value = emptyList()
     }
 
+    fun isContainsCart(product: Product): Boolean {
+        return _cart.value.find { it.product == product } != null
+    }
+
     fun checkCart(product: Product) {
-        if (_cart.value.contains(product)) {
-            _cart.value = _cart.value.minus(product)
-        } else {
-            _cart.value = _cart.value.plus(product)
+        val currentCart = _cart.value.find { it.product == product}
+
+        val shoppingCartLastId = _cart.value.lastOrNull()?.id ?: 0
+        val newId = shoppingCartLastId + 1
+        val newShoppingCart = Cart(newId, product, 1)
+
+        if (currentCart == null) _cart.value += newShoppingCart
+        else {
+            _cart.value = _cart.value.minus(currentCart)
+            val checkedCart = _checkedProducts.value.find { it.product == product}
+            if (checkedCart != null) _checkedProducts.value = _checkedProducts.value.minus(checkedCart)
         }
+
+        saveUserCart(_cart.value)
+    }
+
+    fun addToCart(cart: Cart) {
+        val currentProduct = _cart.value.find { it.product == cart.product}
+
+        if (currentProduct != null) {
+            _cart.value = _cart.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity + 1)
+                else it
+            }
+            _checkedProducts.value = _checkedProducts.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity + 1)
+                else it
+            }
+        }
+        saveUserCart(_cart.value)
+    }
+
+    fun removeFromCart(cart: Cart) {
+        val currentProduct = _cart.value.find { it.product == cart.product}
+
+        if (currentProduct != null && currentProduct.quantity > 1) {
+            _cart.value = _cart.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity - 1)
+                else it
+            }
+            _checkedProducts.value = _checkedProducts.value.map {
+                if (it.product == cart.product) it.copy(quantity = currentProduct.quantity - 1)
+                else it
+            }
+        } else if (currentProduct != null && currentProduct.quantity == 1) {
+            deleteFromCart(cart)
+        }
+        saveUserCart(_cart.value)
+    }
+
+    fun deleteFromCart(cart: Cart) {
+        _cart.value = _cart.value.minus(cart)
+
+        val checkedCart = _checkedProducts.value.find { it == cart}
+        if (checkedCart != null) _checkedProducts.value = _checkedProducts.value.minus(checkedCart)
+        saveUserCart(_cart.value)
     }
 
     fun sortedProductList(
@@ -162,13 +254,97 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private var _sharedProduct by mutableStateOf<Product?>(null)
-    fun setProduct(product: Product) {
-        _sharedProduct = product
+    fun getProduct(id: Int) {
+        viewModelScope.launch {
+            val products = getAllProductsFromCache()
+            if (products != null) {
+                _selectedProduct.value = products.find { it.id == id }
+            }
+        }
     }
-    fun getProduct(): Product? {
-        return _sharedProduct
+
+    fun toggleFavorite(product: Product) {
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (_favoriteList.value.contains(product) && user != null) {
+                val updatedFavoriteList = user.copy(
+                    favoriteProductList = user.favoriteProductList - listOf(product).toSet()
+                )
+                saveUser(updatedFavoriteList)
+                _favoriteList.value = updatedFavoriteList.favoriteProductList
+            } else if (!_favoriteList.value.contains(product) && user != null) {
+                val updatedFavoriteList = user.copy(
+                    favoriteProductList = user.favoriteProductList + listOf(product).toSet()
+                )
+                saveUser(updatedFavoriteList)
+                _favoriteList.value = updatedFavoriteList.favoriteProductList
+            }
+        }
     }
+
+    fun isFavoriteChecked(product: Product): Boolean {
+        return _favoriteList.value.contains(product)
+    }
+
+    fun changeCurrentCountry(country: String) {
+        _currentCountry.value = country
+        viewModelScope.launch {
+            val user = getIsLoginUser()
+            if (user != null) {
+                val updatedUser = user.copy(country = country)
+                saveUser(updatedUser)
+            }
+        }
+    }
+
+    fun getConvertedPrice(price: Int): String {
+        return when (_currentCountry.value) {
+            Country.USA.toString() -> "$ $price"
+            Country.BRAZIL.toString() -> "R$ ${price * 5}"
+            Country.ARGENTINA.toString() -> "$ ${price * 877}"
+            Country.MEXICO.toString() -> "$ ${price * 17}"
+            Country.EUROPE.toString() -> "€ ${price * 0.9}"
+            Country.UNITED_KINGDOM.toString() -> "£ ${price * 0.8}"
+            Country.JAPAN.toString() -> "¥ ${price * 156}"
+            Country.RUSSIA.toString() -> "₽ ${price * 90}"
+            Country.CHINA.toString() -> "¥ ${price * 7}"
+            else -> { "$ $price" }
+        }
+    }
+
+    fun changeCheckedProducts(cart: Cart) {
+        if (_checkedProducts.value.contains(cart)) {
+            _checkedProducts.value = _checkedProducts.value.minus(cart)
+        } else {
+            _checkedProducts.value = _checkedProducts.value.plus(cart)
+        }
+    }
+
+    fun getSum(): String {
+        val sum = _checkedProducts.value.sumOf { it.product.price * it.quantity }
+        return getConvertedPrice(sum)
+    }
+
+    fun makeOrder() {
+        _cart.value = emptyList()
+        saveUserCart(_cart.value)
+    }
+
+    fun checkedStates(cart: Cart): Boolean {
+        return _checkedProducts.value.contains(cart)
+    }
+}
+
+enum class Country {
+    USA,
+    BRAZIL,
+    ARGENTINA,
+    MEXICO,
+    EUROPE,
+    UNITED_KINGDOM,
+    JAPAN,
+    RUSSIA,
+    CHINA
 }
 
 enum class SortType {

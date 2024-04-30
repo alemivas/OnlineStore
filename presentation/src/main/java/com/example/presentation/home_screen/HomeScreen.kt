@@ -21,21 +21,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.presentation.common_item.CategoriesRow
-import com.example.presentation.common_item.CategoriesVerticalGrid
-import com.example.presentation.common_item.FilterProduct
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.ProductVerticalGrid
-import com.example.presentation.common_item.SearchBar
-import com.example.presentation.common_item.TopBar
+import com.example.presentation.home_screen.common_item.CategoriesRow
+import com.example.presentation.home_screen.common_item.CategoriesVerticalGrid
+import com.example.presentation.home_screen.common_item.FilterProduct
+import com.example.presentation.home_screen.common_item.ProductVerticalGrid
+import com.example.presentation.home_screen.common_item.SearchBar
+import com.example.presentation.home_screen.common_item.TopBar
 import com.example.presentation.theme.GrayLight
 import com.example.utils.ApiResult
 
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    navigationToSearchScreen: () -> Unit,
-    navigationToDetailScreen: () -> Unit,
+    navigateToSearch: () -> Unit,
+//    navigateToCart: () -> Unit,
+//    navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
     val products by homeViewModel.products.collectAsState()
@@ -50,11 +51,15 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TopBar(homeViewModel)
+//        {
+//            navigateToCart()
+//        }
         SearchBar(
             homeViewModel = homeViewModel,
             isSearchScreen = false,
             padding = 0.dp,
-            navigateToSearch = { navigationToSearchScreen() },
+            navigateToSearch = { navigateToSearch() },
+//            navigateToCart = navigateToCart,
             navigateBack = {})
         Box(
             modifier = Modifier
@@ -79,6 +84,7 @@ fun HomeScreen(
                 is ApiResult.Success -> {
                     val list = categories.data ?: emptyList()
                     if (!isShowAll) {
+                        if (list.isEmpty()) NoResultBox("No fetched categories")
                         CategoriesRow(
                             homeViewModel = homeViewModel,
                             list = list,
@@ -121,11 +127,15 @@ fun HomeScreen(
                 is ApiResult.Success -> {
                     val list = products.data ?: emptyList()
                     if (isFilter) {
-                        if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value, navigationToDetailScreen,)
+                        if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No search results")
+                        else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
+//                            navigateToDetail(it)
+                        }
                     } else {
                         if (list.isEmpty())  NoResultBox("No results")
-                        else ProductVerticalGrid(homeViewModel, list, navigationToDetailScreen,)
+                        else ProductVerticalGrid(homeViewModel, list) {
+//                            navigateToDetail(it)
+                        }
                     }
                 }
             }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -36,6 +37,14 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":utils"))
+
+    // For room
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    //Gson
+    implementation(libs.converter.gson)
 
     implementation(libs.javax.inject)
 

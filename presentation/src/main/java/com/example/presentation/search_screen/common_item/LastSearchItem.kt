@@ -1,4 +1,4 @@
-package com.example.presentation.common_item
+package com.example.presentation.search_screen.common_item
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
