@@ -36,7 +36,7 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     navigateToSearch: () -> Unit,
 //    navigateToCart: () -> Unit,
-//    navigateToDetail: (Int) -> Unit,
+    navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
     val products by homeViewModel.products.collectAsState()
@@ -129,12 +129,12 @@ fun HomeScreen(
                     if (isFilter) {
                         if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No search results")
                         else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
-//                            navigateToDetail(it)
+                            navigateToDetail(it)
                         }
                     } else {
                         if (list.isEmpty())  NoResultBox("No results")
                         else ProductVerticalGrid(homeViewModel, list) {
-//                            navigateToDetail(it)
+                            navigateToDetail(it)
                         }
                     }
                 }

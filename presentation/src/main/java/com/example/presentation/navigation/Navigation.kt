@@ -14,6 +14,7 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
+import com.example.presentation.navigation.NavigationObject.Companion.PRODUCT_ID_PARAM_KEY
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.wishlist_screen.WishlistScreen
 
@@ -27,11 +28,11 @@ fun Navigation(navController: NavHostController) {
                 homeViewModel = homeViewModel,
                 navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
 //                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
-//                navigateToDetail = { productId ->
-//                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
-//                        popUpTo(NavigationItem.Home.route)
-//                    }
-//                }
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationItem.Home.route)
+                    }
+                }
             )
         }
 
@@ -50,11 +51,11 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.SearchScreen.route) {
             SearchScreen(
                 homeViewModel = homeViewModel,
-//                navigateToDetail = { productId ->
-//                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
-//                        popUpTo(NavigationObject.SearchScreen.route)
-//                    }
-//                },
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationObject.SearchScreen.route)
+                    }
+                },
 //                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
@@ -84,7 +85,7 @@ fun Navigation(navController: NavHostController) {
                 homeViewModel = homeViewModel,
                 productId = productId,
 //                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
-//                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() }
             )
         }
     }

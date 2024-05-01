@@ -25,7 +25,7 @@ import com.example.presentation.theme.Mint
 import com.example.presentation.theme.Red
 
 @Composable
-fun BottomBarDetail(
+fun DetailBottomBar(
     product: Product,
     homeViewModel: HomeViewModel,
     onClickAction: () -> Unit,
