@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,13 +42,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.domain.models.Cart
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
+import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.home_screen.common_item.CartItem
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
@@ -55,19 +57,15 @@ import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
 
 
-@Preview(showBackground = true)
-@Composable
-fun Prev() {
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    ShoppingCart(homeViewModel, navigateBack =  {})
-}
 
 @Composable
 fun ShoppingCart(
     homeViewModel: HomeViewModel,
-    navigateBack: () -> Unit,
+    navigateToDetail: (Int) -> Unit,
+    navigateBack: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val countryList = Country.entries.map { it.toString() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,17 +126,23 @@ fun ShoppingCart(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(GrayLightest)
             ) {
-                repeat(10) {
+                repeat(countryList.size) {
                     DropdownMenuItem(
-                        text = { Text("Item ${it + 1}") },
-                        onClick = { /* TODO */ },
+                        text = { Text(countryList[it]) },
+                        onClick = {
+                            homeViewModel.changeCurrentCountry(countryList[it])
+                            expanded = false
+                        },
                     )
                 }
             }
         }
 
         HorizontalDivider(color = GrayLighter)
-        ColumnOfCart()
+        ColumnOfCart(
+            homeViewModel = homeViewModel,
+            cart = homeViewModel.cart
+        )
 
         BoxWithConstraints(
             modifier = Modifier
@@ -233,13 +237,16 @@ fun CheckboxWithColor() {
 
 
 @Composable
-fun ColumnOfCart() {
+fun ColumnOfCart(
+    homeViewModel: HomeViewModel,
+    cart: State<List<Cart>>
+) {
     LazyColumn(
         modifier = Modifier
             .background(Color.White),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(3) {
+        items(homeViewModel.cart.value.size) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -249,7 +256,6 @@ fun ColumnOfCart() {
             ) {
                 CheckboxWithColor()
                 Product()
-
             }
         }
     }

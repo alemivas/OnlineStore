@@ -34,7 +34,7 @@ import com.example.presentation.theme.GrayLightest
 @Composable
 fun TopBar(
     homeViewModel: HomeViewModel,
-//    navigationToCartScreen: () -> Unit
+    navigationToCartScreen: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val countryList = Country.entries.map { it.toString() }
@@ -84,7 +84,7 @@ fun TopBar(
             }
         }
         Cart(homeViewModel.cart.value.size) {
-//            navigationToCartScreen()
+            navigationToCartScreen()
         }
         Icon(
             painter = painterResource(id = R.drawable.notification),

@@ -35,7 +35,7 @@ import com.example.utils.ApiResult
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     navigateToSearch: () -> Unit,
-//    navigateToCart: () -> Unit,
+   navigateToCart: () -> Unit,
 //    navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
@@ -51,9 +51,9 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TopBar(homeViewModel)
-//        {
-//            navigateToCart()
-//        }
+        {
+            navigateToCart()
+        }
         SearchBar(
             homeViewModel = homeViewModel,
             isSearchScreen = false,

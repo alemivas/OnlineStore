@@ -23,7 +23,7 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(
                 homeViewModel = homeViewModel,
                 navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
-//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
 //                navigateToDetail = { productId ->
 //                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
 //                        popUpTo(NavigationItem.Home.route)
@@ -52,7 +52,7 @@ fun Navigation(navController: NavHostController) {
 //                        popUpTo(NavigationObject.SearchScreen.route)
 //                    }
 //                },
-//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+  //              navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
         }
