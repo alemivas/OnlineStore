@@ -13,6 +13,7 @@ import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.search_screen.SearchScreen
+import com.example.presentation.shopping_cart_screen.ShoppingCart
 import com.example.presentation.wishlist_screen.WishlistScreen
 
 @Composable
@@ -74,6 +75,17 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.DetailScreen.route) {
             DetailScreen(
                 homeViewModel = homeViewModel
+            )
+        }
+        composable(NavigationObject.ShoppingCartScreen.route) {
+            ShoppingCart(
+                homeViewModel = homeViewModel,
+            navigateToDetail = { productId ->
+                navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                    popUpTo(NavigationObject.ShoppingCartScreen.route)
+                }
+            },
+            navigateBack = { navController.navigateUp() }
             )
         }
     }
