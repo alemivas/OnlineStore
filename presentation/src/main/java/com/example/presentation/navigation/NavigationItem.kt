@@ -13,5 +13,11 @@ sealed class NavigationObject(val route: String) {
     data object SearchScreen : NavigationObject("SearchScreen")
     data object LoginScreen : NavigationObject("LoginScreen")
     data object RegistrationScreen : NavigationObject("RegistrationScreen")
-    data object DetailScreen : NavigationObject("DetailScreen")
+    data object DetailScreen : NavigationObject("DetailScreen") {
+        fun createRoute(productId: Int) = "$route/$productId"
+    }
+
+    companion object {
+        const val PRODUCT_ID_PARAM_KEY = "product"
+    }
 }
