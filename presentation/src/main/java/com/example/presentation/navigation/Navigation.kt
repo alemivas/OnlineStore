@@ -3,8 +3,10 @@ package com.example.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.presentation.account_screen.AccountScreen
 import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
@@ -18,7 +20,8 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
+//    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
+    NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -71,9 +74,17 @@ fun Navigation(navController: NavHostController) {
             )
         }
 
-        composable(NavigationObject.DetailScreen.route) {
+        composable(
+            route = "${NavigationObject.DetailScreen.route}/{$PRODUCT_ID_PARAM_KEY}",
+            arguments = listOf(navArgument(PRODUCT_ID_PARAM_KEY) { type = NavType.IntType })
+        ) {
+            val productId =
+                it.arguments?.getInt(PRODUCT_ID_PARAM_KEY) ?: throw IllegalStateException()
             DetailScreen(
-                homeViewModel = homeViewModel
+                homeViewModel = homeViewModel,
+                productId = productId,
+//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+//                navigateBack = { navController.navigateUp() }
             )
         }
     }
