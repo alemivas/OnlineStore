@@ -18,8 +18,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.common_item.NoResultBox
+import com.example.presentation.detail_screen.common_item.DetailBottomBar
+import com.example.presentation.detail_screen.common_item.DetailTopBar
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
@@ -38,9 +46,125 @@ import com.example.presentation.theme.Mint
 
 @Composable
 fun DetailScreen(
-    homeViewModel: HomeViewModel
-){
-//    val product = homeViewModel.getProduct()!!
+    homeViewModel: HomeViewModel,
+    productId: Int,
+    navigateToCart: () -> Unit,
+    navigateBack: () -> Unit
+) {
+    homeViewModel.getProduct(productId)
+    val selectedProduct by remember { homeViewModel.selectedProduct }
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    if (selectedProduct != null) {
+        Scaffold(
+            topBar = {
+                DetailTopBar(
+//                    homeViewModel = homeViewModel,
+//                    isDetailScreen = true,
+//                    title = "Detail product",
+//                    navigateToCart = { navigateToCart() },
+//                    navigateBack = { navigateBack() }
+                )
+            },
+            bottomBar = {
+                HorizontalDivider(color = GrayLighter)
+                DetailBottomBar(
+//                    product = selectedProduct!!,
+//                    homeViewModel = homeViewModel
+                ) /*{
+                    showBottomSheet = true
+                }*/
+            },
+            containerColor = Color.White
+        ) { contentPadding ->
+            Column(
+                modifier = Modifier.padding(contentPadding)
+            ) {
+                //vertical scrollable part
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+//                        .weight(weight = 1f, fill = true),     //чтобы "закрепить" кнопки снизу, даже если мало описания
+                ) {
+                    // img slider
+                    //                ImageBox(selectedProduct!!)
+                    // all text
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp, top = 9.dp),
+//                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // title & price & wish
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                // title
+                                Text(
+                                    text = selectedProduct!!.title,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = GrayDark
+                                )
+                                // price
+                                Text(
+                                    text = homeViewModel.getConvertedPrice(selectedProduct!!.price),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = GrayDark
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .background(GrayLighter, CircleShape)
+                                    .clickable { homeViewModel.toggleFavorite(selectedProduct!!) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    imageVector = ImageVector.vectorResource(id =
+                                    if (homeViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
+                                    else R.drawable.heart),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                        Text(
+                            text = "Description of product",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = GrayDark
+                        )
+                        Text(
+                            text = selectedProduct!!.description,
+                            fontSize = 12.sp,
+                            color = GrayDark,
+                        )
+                    }
+                }
+
+                if (showBottomSheet) {
+                    PaymentBottomSheet {
+                        showBottomSheet = it
+                    }
+                }
+            }
+        }
+    } else {
+        NoResultBox(message = "Something went wrong")
+    }
+}
+
+
+
+
+
 
 
     Column(
