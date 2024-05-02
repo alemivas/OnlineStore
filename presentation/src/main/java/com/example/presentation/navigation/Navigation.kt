@@ -22,7 +22,7 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    NavHost(navController, startDestination = NavigationItem.Home.route) {
+    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,

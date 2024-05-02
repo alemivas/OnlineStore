@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.presentation.login_screen.common_item.ErrorMinimalDialog
 import com.example.presentation.login_screen.common_item.PasswordScreenTextField
+import com.example.presentation.login_screen.common_item.TypeAccountBottomSheet
 import com.example.presentation.theme.GrayDarkest
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.LoginLabelColor
@@ -42,6 +43,7 @@ import com.example.presentation.theme.Mint
 import com.example.presentation.theme.PasswordBackgroundColor
 import com.example.presentation.theme.PasswordLabelColor
 import com.example.presentation.theme.Purple
+import com.example.utils.Constants
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,7 +56,10 @@ fun RegistrationScreen(
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
+    val typeAccount = remember { mutableStateOf(Constants.TypeOfAccount.USER) }
+    var showTypeAccountDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showCheckUserDialog by remember { mutableStateOf(false) }
     var isErrorName by remember { mutableStateOf(false) }
     var isErrorEmail by remember { mutableStateOf(false) }
     var isErrorPassword by remember { mutableStateOf(false) }
@@ -114,7 +119,7 @@ fun RegistrationScreen(
                     name.value = it
                     isErrorName = loginVewModel.isValidName(name.value)
                 },
-                isHidden = true,
+                isHidden = false,
                 isError = isErrorName
             )
 
@@ -126,7 +131,7 @@ fun RegistrationScreen(
                     email.value = it
                     isErrorEmail = loginVewModel.isValidEmail(email.value)
                 },
-                isHidden = true,
+                isHidden = false,
                 isError = isErrorEmail
             )
 
@@ -138,7 +143,7 @@ fun RegistrationScreen(
                     password.value = it
                     isErrorPassword = loginVewModel.isValidPassword(password.value)
                 },
-                isHidden = false,
+                isHidden = true,
                 isError = isErrorPassword
             )
 
@@ -151,14 +156,14 @@ fun RegistrationScreen(
                     isErrorConfirmPassword = loginVewModel.isValidPassword(confirmPassword.value)
                     isErrorConfirmPassword = password.value != confirmPassword.value
                 },
-                isHidden = false,
+                isHidden = true,
                 isError = isErrorConfirmPassword
             )
         }
 
         Button(
             onClick = {
-
+                showTypeAccountDialog = true
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -189,10 +194,11 @@ fun RegistrationScreen(
                         && !isErrorEmail && !isErrorName && !isErrorPassword && !isErrorConfirmPassword
                         && name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()
                     ) {
-                        loginVewModel.saveUser(name.value, email.value, password.value)
+                        loginVewModel.saveUser(name.value, email.value, password.value, typeAccount.value)
+                        loginVewModel.saveIsLoginStatus(email.value)
                         navigateToHome()
                     } else {
-                        showErrorDialog = true
+                        showCheckUserDialog = true
                     }
                 }
             },
@@ -220,11 +226,24 @@ fun RegistrationScreen(
                 fontWeight = FontWeight(600),
             )
         }
+
     }
     if (showErrorDialog) {
         ErrorMinimalDialog(
             text = "Enter data in all fields",
             onDismissRequest = { showErrorDialog = false }
+        )
+    }
+    if (showCheckUserDialog) {
+        ErrorMinimalDialog(
+            text = "User already exists",
+            onDismissRequest = { showCheckUserDialog = false }
+        )
+    }
+    if (showTypeAccountDialog) {
+        TypeAccountBottomSheet(
+            typeAccount = { typeAccount.value = it },
+            showTypeAccountDialog = { showTypeAccountDialog = false }
         )
     }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.models.User
 import com.example.domain.usecases.user_db_use_case.GetAllUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
-import com.example.presentation.home_screen.Country
+import com.example.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +43,7 @@ class LoginVewModel @Inject constructor(
         }
     }
 
-    fun saveUser(name: String, email: String, password: String) {
+    fun saveUser(name: String, email: String, password: String, typeAccount: Constants.TypeOfAccount) {
         viewModelScope.launch {
             val userList = getAllUsers() ?: emptyList()
             val user = userList.find { it.email == email }
@@ -57,8 +57,8 @@ class LoginVewModel @Inject constructor(
                         image = "",
                         favoriteProductList = emptyList(),
                         cartList = emptyList(),
-                        country = Country.entries.map { it.toString() }.first(),
-                        isManager = false,
+                        country = Constants.Country.entries.map { it.toString() }.first(),
+                        isManager = typeAccount != Constants.TypeOfAccount.USER,
                         isLogin = true
                     )
                 )
@@ -78,3 +78,4 @@ class LoginVewModel @Inject constructor(
         return text.isEmpty() || !text.contains("@").and(text.endsWith(".ru") || text.endsWith(".com"))
     }
 }
+

@@ -48,7 +48,6 @@ import coil.compose.AsyncImage
 import com.example.domain.models.Cart
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
-import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.home_screen.common_item.CartItem
 import com.example.presentation.theme.Gray
@@ -56,6 +55,7 @@ import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
+import com.example.utils.Constants
 
 
 @Composable
@@ -65,7 +65,7 @@ fun ShoppingCart(
     navigateBack: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val countryList = Country.entries.map { it.toString() }
+    val countryList = Constants.Country.entries.map { it.toString() }
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -52,7 +52,7 @@ fun PasswordScreenTextField(
             shape = RoundedCornerShape(24.dp),
             placeholder = { Text(text = placeholder, color = PasswordLabelColor) },
             trailingIcon = {
-                if (!isHidden) {
+                if (isHidden) {
                     Icon(
                         painter = painterResource(
                             id = if (!isHiddenPassword.value) R.drawable.eye else R.drawable.hide
@@ -76,7 +76,7 @@ fun PasswordScreenTextField(
                 unfocusedContainerColor = PasswordBackgroundColor
             ),
             visualTransformation =
-            if (!isHidden) {
+            if (isHidden) {
                 if (isHiddenPassword.value) PasswordVisualTransformation()
                 else VisualTransformation.None
             } else VisualTransformation.None
