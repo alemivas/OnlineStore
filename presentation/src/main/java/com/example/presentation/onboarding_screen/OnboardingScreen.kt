@@ -20,12 +20,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -37,7 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +43,7 @@ import com.example.presentation.R
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
-    navigateToLoginScreen: () -> Unit,
+    navigateToHomeScreen: () -> Unit,
 ) {
     val state = rememberPagerState(pageCount = { images.size })
     Column(
@@ -73,7 +69,7 @@ fun OnboardingScreen(
             }
                 if(state.currentPage == 2){
                     IconButton(onClick = {
-                        navigateToLoginScreen()
+                        navigateToHomeScreen()
                     }, colors = IconButtonColors(
                         Color.Black, Color.White,
                         Color.Black, Color.White),

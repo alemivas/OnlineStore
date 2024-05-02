@@ -46,6 +46,8 @@ dependencies {
 
     implementation(libs.dotsindicator)
 
+    // For collectAsStateWithLifecycle
+    implementation(libs.androidx.lifecycle.runtime.compose)
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     //Hilt

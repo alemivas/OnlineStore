@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.common_item.NoResultBox
 import com.example.presentation.home_screen.common_item.CategoriesRow
 import com.example.presentation.home_screen.common_item.CategoriesVerticalGrid
@@ -38,8 +38,8 @@ fun HomeScreen(
     navigateToCart: () -> Unit,
     navigateToDetail: (Int) -> Unit,
 ) {
-    val categories by homeViewModel.categories.collectAsState()
-    val products by homeViewModel.products.collectAsState()
+    val categories by homeViewModel.categories.collectAsStateWithLifecycle()
+    val products by homeViewModel.products.collectAsStateWithLifecycle()
     var isShowAll by remember { mutableStateOf(false) }
     var isFilter by remember { mutableStateOf(false) }
 

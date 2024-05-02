@@ -15,6 +15,7 @@ import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.navigation.NavigationObject.Companion.PRODUCT_ID_PARAM_KEY
+import com.example.presentation.onboarding_screen.OnboardingScreen
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.shopping_cart_screen.ShoppingCart
 import com.example.presentation.wishlist_screen.WishlistScreen
@@ -70,9 +71,15 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationObject.RegistrationScreen.route) {
             RegistrationScreen(
-                navigateToHome = { navController.navigate(NavigationItem.Home.route) },
+                navigateToOnboarding = { navController.navigate(NavigationObject.OnBoardingScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
+        }
+
+        composable(NavigationObject.OnBoardingScreen.route) {
+            OnboardingScreen {
+                navController.navigate(NavigationItem.Home.route)
+            }
         }
 
         composable(
