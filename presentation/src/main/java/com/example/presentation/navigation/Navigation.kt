@@ -16,18 +16,18 @@ import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.navigation.NavigationObject.Companion.PRODUCT_ID_PARAM_KEY
 import com.example.presentation.search_screen.SearchScreen
+import com.example.presentation.shopping_cart_screen.ShoppingCart
 import com.example.presentation.wishlist_screen.WishlistScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
-//    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
     NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
                 navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
-//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
                 navigateToDetail = { productId ->
                     navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
                         popUpTo(NavigationItem.Home.route)
@@ -86,6 +86,17 @@ fun Navigation(navController: NavHostController) {
                 productId = productId,
 //                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
                 navigateBack = { navController.navigateUp() }
+            )
+        }
+        composable(NavigationObject.ShoppingCartScreen.route) {
+            ShoppingCart(
+                homeViewModel = homeViewModel,
+            navigateToDetail = { productId ->
+                navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                    popUpTo(NavigationObject.ShoppingCartScreen.route)
+                }
+            },
+            navigateBack = { navController.navigateUp() }
             )
         }
     }

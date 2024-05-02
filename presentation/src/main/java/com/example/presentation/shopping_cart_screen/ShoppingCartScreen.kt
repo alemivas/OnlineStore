@@ -1,6 +1,5 @@
 package com.example.presentation.shopping_cart_screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,11 +7,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,24 +30,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.domain.models.Cart
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
+import com.example.presentation.home_screen.Country
 import com.example.presentation.home_screen.HomeViewModel
+import com.example.presentation.home_screen.common_item.CartItem
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
@@ -55,19 +59,14 @@ import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
 
 
-@Preview(showBackground = true)
-@Composable
-fun Prev() {
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    ShoppingCart(homeViewModel, navigateBack =  {})
-}
-
 @Composable
 fun ShoppingCart(
     homeViewModel: HomeViewModel,
-    navigateBack: () -> Unit,
+    navigateToDetail: (Int) -> Unit,
+    navigateBack: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val countryList = Country.entries.map { it.toString() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,31 +127,45 @@ fun ShoppingCart(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(GrayLightest)
             ) {
-                repeat(10) {
+                repeat(countryList.size) {
                     DropdownMenuItem(
-                        text = { Text("Item ${it + 1}") },
-                        onClick = { /* TODO */ },
+                        text = { Text(countryList[it]) },
+                        onClick = {
+                            homeViewModel.changeCurrentCountry(countryList[it])
+                            expanded = false
+                        },
                     )
                 }
             }
         }
 
         HorizontalDivider(color = GrayLighter)
-        ColumnOfCart()
+        LazyColumn(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(homeViewModel.cart.value.size) {
+                CartItem(
+                    homeViewModel = homeViewModel,
+                    cart = homeViewModel.cart.value[it],
+                    navigateToDetail = navigateToDetail
+                )
+            }
+        }
 
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize(),
             contentAlignment = Alignment.BottomCenter,
 
-        ) {
+            ) {
             HorizontalDivider(color = GrayLighter)
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(constraints.maxWidth.toFloat())
-                ,
+                    .fillMaxWidth(constraints.maxWidth.toFloat()),
 
-            ) {
+                ) {
                 HorizontalDivider(color = GrayLighter)
                 Text(
                     text = "Order Summary",
@@ -179,7 +192,7 @@ fun ShoppingCart(
                     Text(
                         modifier = Modifier
                             .padding(10.dp),
-                        text = "$ 123123",
+                        text = homeViewModel.getSum(),
                         color = GrayDark,
                         fontSize = 14.sp,
                         fontWeight = FontWeight(400),
@@ -210,65 +223,40 @@ fun ShoppingCart(
 }
 
 @Composable
-fun CheckboxWithColor() {
+fun CheckboxWithColor(
+    homeViewModel: HomeViewModel,
+    cart: Cart
+    ) {
+    val checkedState = homeViewModel.checkedStates(cart)
     // Состояние для отслеживания выбранного состояния
-    val checkedState = remember { mutableStateOf(false) }
-
-    // Цвет фона в зависимости от состояния Checkbox
-    val backgroundColor = if (checkedState.value) Color(0xFF03DAC5) else Color.Transparent
-
-    // Отрисовка Checkbox с возможностью изменения цвета фона и состояния
     Checkbox(
-        checked = checkedState.value,
-        onCheckedChange = { checkedState.value = it },
+        checked = checkedState,
+        onCheckedChange = { homeViewModel.changeCheckedProducts(cart) },
         colors = CheckboxDefaults.colors(
-            checkedColor = Color.Transparent, // Прозрачный цвет при активации
-            uncheckedColor = Color.Transparent // Прозрачный цвет при деактивации
-        ),
-        modifier = Modifier
-            .size(24.dp) // Размер Checkbox
-            .background(color = backgroundColor) // Цвет фона Checkbox
+            checkedColor = Mint,
+            uncheckedColor = GrayLighter
+        )
     )
 }
-
-
 @Composable
-fun ColumnOfCart() {
-    LazyColumn(
-        modifier = Modifier
-            .background(Color.White),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(3) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CheckboxWithColor()
-                Product()
-
-            }
-        }
-    }
-}
-
-@Composable
-fun Product() {
+fun Product(
+    homeViewModel: HomeViewModel,
+    cart: Cart,
+    navigateToDetail: (Int) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { },
     ) {
-        Image(
+        AsyncImage(
             modifier = Modifier
-                .width(100.dp)
-                .height(112.dp),
-            painter = painterResource(id = R.drawable.img),
+                .fillMaxHeight()
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop,
+            model = cart.product.images.first().removePrefix("[\"").removeSuffix("\"]"),
             contentDescription = null,
-            contentScale = ContentScale.Crop
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -277,7 +265,7 @@ fun Product() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
-                text = "Monitor LG 22”inc 4K 120Fps",
+                text = cart.product.title,
                 color = GrayDark,
                 fontSize = 12.sp,
                 fontWeight = FontWeight(400),
@@ -286,7 +274,7 @@ fun Product() {
                 )
             Row {
                 Text(
-                    text = "$199.99",
+                    text = homeViewModel.getConvertedPrice(cart.product.price),
                     color = GrayDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight(600),
@@ -294,7 +282,7 @@ fun Product() {
                     modifier = Modifier.padding(top = 50.dp, start = 8.dp)
                 )
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { homeViewModel.removeFromCart(cart)  },
                     modifier = Modifier.padding(top = 33.dp)
                 ) {
                     Icon(
@@ -305,14 +293,15 @@ fun Product() {
                     )
                 }
                 Text(
-                    text = "1", color = GrayDark,
+                    text = cart.quantity.toString(),
+                    color = GrayDark,
                     fontSize = 16.sp,
                     fontWeight = FontWeight(600),
                     maxLines = 1,
                     modifier = Modifier.padding(top = 48.dp)
                 )
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { homeViewModel.addToCart(cart) },
                     modifier = Modifier.padding(top = 33.dp)
                 ) {
                     Icon(
@@ -323,7 +312,7 @@ fun Product() {
                     )
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { homeViewModel.deleteFromCart(cart) },
                     modifier = Modifier.padding(top = 33.dp)
                 ) {
                     Icon(
