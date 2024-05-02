@@ -38,7 +38,7 @@ fun SearchBar(
     isSearchScreen: Boolean,
     padding: Dp,
     navigateToSearch: () -> Unit,
-//    navigateToCart: () -> Unit,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit,
 ) {
     Row(
@@ -93,9 +93,7 @@ fun SearchBar(
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search)
         )
         if (isSearchScreen) {
-            Cart(homeViewModel.cart.value.size) {
-//                navigateToCart()
-            }
+            Cart(homeViewModel.cart.value.size) { navigateToCart() }
         }
     }
 }

@@ -35,7 +35,7 @@ import com.example.utils.ApiResult
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     navigateToSearch: () -> Unit,
-   navigateToCart: () -> Unit,
+    navigateToCart: () -> Unit,
     navigateToDetail: (Int) -> Unit,
 ) {
     val categories by homeViewModel.categories.collectAsState()
@@ -59,7 +59,7 @@ fun HomeScreen(
             isSearchScreen = false,
             padding = 0.dp,
             navigateToSearch = { navigateToSearch() },
-//            navigateToCart = navigateToCart,
+            navigateToCart = {},
             navigateBack = {})
         Box(
             modifier = Modifier
@@ -107,6 +107,7 @@ fun HomeScreen(
 
         FilterProduct(
             homeViewModel = homeViewModel,
+            isHomeScreen = true,
             sortedClicked = { isFilter = true }
         )
 

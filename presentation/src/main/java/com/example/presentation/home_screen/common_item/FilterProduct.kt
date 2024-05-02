@@ -46,6 +46,7 @@ import com.example.presentation.theme.Mint
 @Composable
 fun FilterProduct(
     homeViewModel: HomeViewModel,
+    isHomeScreen: Boolean,
     sortedClicked: () -> Unit
 ) {
     var alertShow by remember { mutableStateOf(false) }
@@ -105,7 +106,9 @@ fun FilterProduct(
                         expanded = false
                         homeViewModel.sortedProductList(
                             filter = SortType.NAME,
-                            products = homeViewModel.products.value.data ?: emptyList(),
+                            products =
+                            if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                            else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
                             priceMax = null
                         )
@@ -118,7 +121,8 @@ fun FilterProduct(
                         expanded = false
                         homeViewModel.sortedProductList(
                             filter = SortType.PRICE,
-                            products = homeViewModel.products.value.data ?: emptyList(),
+                            products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                            else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
                             priceMax = null
                         )
@@ -131,9 +135,10 @@ fun FilterProduct(
                         expanded = false
                         homeViewModel.sortedProductList(
                             filter = SortType.RANGE,
-                            products = homeViewModel.products.value.data ?: emptyList(),
-                            priceMin = 15,
-                            priceMax = 33
+                            products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                            else homeViewModel.searchList.value.data ?: emptyList(),
+                            priceMin = priceMin.toIntOrNull() ?: 0,
+                            priceMax = priceMax.toIntOrNull() ?: 100000
                         )
                         alertShow = true
                     },
@@ -184,7 +189,8 @@ fun FilterProduct(
                         if (priceMin.isNotBlank() && priceMax.isNotBlank()) {
                             homeViewModel.sortedProductList(
                                 filter = SortType.RANGE,
-                                products = homeViewModel.products.value.data ?: emptyList(),
+                                products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                                else homeViewModel.searchList.value.data ?: emptyList(),
                                 priceMin = priceMin.toInt(),
                                 priceMax = priceMax.toInt()
                             )

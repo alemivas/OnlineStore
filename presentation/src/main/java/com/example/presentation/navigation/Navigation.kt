@@ -56,7 +56,7 @@ fun Navigation(navController: NavHostController) {
                         popUpTo(NavigationObject.SearchScreen.route)
                     }
                 },
-//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
         }
@@ -84,7 +84,7 @@ fun Navigation(navController: NavHostController) {
             DetailScreen(
                 homeViewModel = homeViewModel,
                 productId = productId,
-//                navigateToCart = { navController.navigate(NavigationObject.CartScreen.route) },
+                navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )
         }

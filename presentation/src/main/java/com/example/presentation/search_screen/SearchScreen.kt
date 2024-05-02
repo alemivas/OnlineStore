@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +44,11 @@ import com.example.utils.ApiResult
 fun SearchScreen(
     homeViewModel: HomeViewModel,
     navigateToDetail: (Int) -> Unit,
-//    navigateToCart: () -> Unit,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit,
 ) {
     val products by homeViewModel.searchList.collectAsState()
+    var isFilter by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -56,7 +60,7 @@ fun SearchScreen(
             isSearchScreen = true,
             padding = 16.dp,
             navigateToSearch = {},
-//            navigateToCart = navigateToCart,
+            navigateToCart = navigateToCart,
             navigateBack = navigateBack
         )
         HorizontalDivider(color = GrayLighter)
@@ -84,14 +88,19 @@ fun SearchScreen(
                         ) {
                             FilterProduct(
                                 homeViewModel = homeViewModel,
-                                sortedClicked = {}
+                                isHomeScreen = false,
+                                sortedClicked = { isFilter = true}
                             )
-                            if (list.isNotEmpty()) {
-                                ProductVerticalGrid(homeViewModel, list) {
+                            if (isFilter) {
+                                if (homeViewModel.sortedList.value.isEmpty())  NoResultBox("No search results")
+                                else ProductVerticalGrid(homeViewModel, homeViewModel.sortedList.value) {
                                     navigateToDetail(it)
                                 }
                             } else {
-                                NoResultBox("No results")
+                                if (list.isEmpty())  NoResultBox("No results")
+                                else ProductVerticalGrid(homeViewModel, list) {
+                                    navigateToDetail(it)
+                                }
                             }
                         }
                     }

@@ -43,7 +43,7 @@ import com.example.presentation.theme.Mint
 fun DetailScreen(
     homeViewModel: HomeViewModel,
     productId: Int,
-//    navigateToCart: () -> Unit,
+    navigateToCart: () -> Unit,
     navigateBack: () -> Unit
 ) {
     homeViewModel.getProduct(productId)
@@ -57,7 +57,7 @@ fun DetailScreen(
                     homeViewModel = homeViewModel,
                     isDetailScreen = true,
                     title = "Detail product",
-//                    navigateToCart = { navigateToCart() },
+                    navigateToCart = { navigateToCart() },
                     navigateBack = { navigateBack() }
                 )
             },

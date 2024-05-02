@@ -30,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,8 +98,7 @@ fun ShoppingCart(
         }
         HorizontalDivider(color = GrayLighter)
         Row(
-            modifier = Modifier.clickable { expanded = true },
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Delivery to",
@@ -108,14 +106,15 @@ fun ShoppingCart(
                 fontSize = 14.sp,
                 fontWeight = FontWeight(500),
                 modifier = Modifier.padding(top = 2.dp)
+                    .weight(1f)
             )
-            Spacer(modifier = Modifier.width(120.dp))
             Text(
-                text = "Salatiga City, Central Java",
+                text = homeViewModel.currentCountry.value,
                 color = GrayDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(500),
                 modifier = Modifier.padding(top = 2.dp)
+                    .clickable { expanded = true }
             )
             Icon(
                 imageVector = Icons.Outlined.KeyboardArrowDown,
