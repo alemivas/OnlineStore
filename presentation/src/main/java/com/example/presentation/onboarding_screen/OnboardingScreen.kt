@@ -167,9 +167,9 @@ fun OnboardingScreenPreview(){
     OnboardingScreen {}
 }
 val images = listOf(
-    R.drawable.imgslider1,
-    R.drawable.imgslider2,
-    R.drawable.imgslider3
+    R.drawable.onboard1,
+    R.drawable.onboard2,
+    R.drawable.onboard3
 )
 val text = listOf(
     "20% Discount \nNew Arrival Product",
