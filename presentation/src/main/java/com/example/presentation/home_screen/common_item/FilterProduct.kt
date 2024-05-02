@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.home_screen.HomeViewModel
-import com.example.presentation.home_screen.SortType
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.GrayLightest
 import com.example.presentation.theme.Mint
+import com.example.utils.Constants
 
 @Composable
 fun FilterProduct(
@@ -101,11 +101,11 @@ fun FilterProduct(
                 modifier = Modifier.background(GrayLightest),
             ) {
                 DropdownMenuItem(
-                    text = { Text("По названию") },
+                    text = { Text("By name") },
                     onClick = {
                         expanded = false
                         homeViewModel.sortedProductList(
-                            filter = SortType.NAME,
+                            filter = Constants.SortType.NAME,
                             products =
                             if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                             else homeViewModel.searchList.value.data ?: emptyList(),
@@ -116,11 +116,11 @@ fun FilterProduct(
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text("По цене") },
+                    text = { Text("By price") },
                     onClick = {
                         expanded = false
                         homeViewModel.sortedProductList(
-                            filter = SortType.PRICE,
+                            filter = Constants.SortType.PRICE,
                             products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                             else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
@@ -130,11 +130,11 @@ fun FilterProduct(
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text("Ценовой диапазон") },
+                    text = { Text("Price range") },
                     onClick = {
                         expanded = false
                         homeViewModel.sortedProductList(
-                            filter = SortType.RANGE,
+                            filter = Constants.SortType.RANGE,
                             products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                             else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = priceMin.toIntOrNull() ?: 0,
@@ -150,13 +150,13 @@ fun FilterProduct(
     if (alertShow) {
         AlertDialog(
             onDismissRequest = { alertShow = false },
-            title = { Text("Введите ценовой диапазон") },
+            title = { Text("Enter the price range") },
             text = {
                 Column {
                     OutlinedTextField(
                         value = priceMin,
                         onValueChange = { priceMin = it },
-                        label = { Text("Минимальная цена") },
+                        label = { Text("Minimum price") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Mint,
@@ -170,7 +170,7 @@ fun FilterProduct(
                     OutlinedTextField(
                         value = priceMax,
                         onValueChange = { priceMax = it },
-                        label = { Text("Максимальная цена") },
+                        label = { Text("Maximum price") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Mint,
@@ -188,7 +188,7 @@ fun FilterProduct(
                     onClick = {
                         if (priceMin.isNotBlank() && priceMax.isNotBlank()) {
                             homeViewModel.sortedProductList(
-                                filter = SortType.RANGE,
+                                filter = Constants.SortType.RANGE,
                                 products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
                                 priceMin = priceMin.toInt(),
@@ -202,7 +202,7 @@ fun FilterProduct(
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.buttonColors(Mint),
                 ) {
-                    Text("Применить")
+                    Text("Apply")
                 }
             },
             containerColor = GrayLightest

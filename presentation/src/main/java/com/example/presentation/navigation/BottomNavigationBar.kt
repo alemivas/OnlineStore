@@ -15,9 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
+import com.example.domain.models.User
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController, user: User) {
     val currentRoute = navController.currentBackStackEntry?.destination?.route
 
     var selectedItem by remember {
@@ -32,10 +33,10 @@ fun BottomNavigationBar(navController: NavController) {
         )
     }
 
-    val items = listOf(
+    val items = listOfNotNull(
         NavigationItem.Home,
         NavigationItem.Wishlist,
-        NavigationItem.Manager,
+        if (!user.isManager) NavigationItem.Manager else null,
         NavigationItem.Account
     )
 

@@ -11,16 +11,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.presentation.navigation.BottomNavigationBar
 import com.example.presentation.navigation.Navigation
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
     var showBottomBar by rememberSaveable { mutableStateOf(true) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val user = mainViewModel.user
 
     showBottomBar = when (navBackStackEntry?.destination?.route) {
         "homeScreen" -> true
@@ -32,7 +36,7 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) BottomNavigationBar(navController)
+            if (showBottomBar) user.value?.let { BottomNavigationBar(navController, it) }
         },
         content = { padding ->
             Box(modifier = Modifier.padding(padding)

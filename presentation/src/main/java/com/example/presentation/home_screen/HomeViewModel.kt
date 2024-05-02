@@ -15,6 +15,7 @@ import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCac
 import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
 import com.example.utils.ApiResult
+import com.example.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private val saveUser: SaveUserUseCase,
     ) : ViewModel() {
 
-    private val _currentCountry: MutableState<String> = mutableStateOf(Country.USA.name)
+    private val _currentCountry: MutableState<String> = mutableStateOf(Constants.Country.USA.name)
     val currentCountry = _currentCountry
 
     private val _categories = MutableStateFlow<ApiResult<List<Category>>>(ApiResult.Loading())
@@ -235,15 +236,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun sortedProductList(
-        filter: SortType,
+        filter: Constants.SortType,
         products: List<Product>,
         priceMin: Int?,
         priceMax: Int?
     ) {
         _sortedList.value = when (filter) {
-            SortType.NAME -> products.sortedBy { it.title }
-            SortType.PRICE -> products.sortedBy { it.price }
-            SortType.RANGE -> {
+            Constants.SortType.NAME -> products.sortedBy { it.title }
+            Constants.SortType.PRICE -> products.sortedBy { it.price }
+            Constants.SortType.RANGE -> {
                 val filteredProducts = products.filter { product ->
                     val price = product.price
                     if (priceMin == null || priceMax == null) return
@@ -299,15 +300,15 @@ class HomeViewModel @Inject constructor(
 
     fun getConvertedPrice(price: Int): String {
         return when (_currentCountry.value) {
-            Country.USA.toString() -> "$ $price"
-            Country.BRAZIL.toString() -> "R$ ${price * 5}"
-            Country.ARGENTINA.toString() -> "$ ${price * 877}"
-            Country.MEXICO.toString() -> "$ ${price * 17}"
-            Country.EUROPE.toString() -> "€ ${"%.2f".format(price * 0.9)}"
-            Country.UNITED_KINGDOM.toString() -> "£ ${"%.2f".format(price * 0.8)}"
-            Country.JAPAN.toString() -> "¥ ${price * 156}"
-            Country.RUSSIA.toString() -> "₽ ${price * 90}"
-            Country.CHINA.toString() -> "¥ ${price * 7}"
+            Constants.Country.USA.toString() -> "$ $price"
+            Constants.Country.BRAZIL.toString() -> "R$ ${price * 5}"
+            Constants.Country.ARGENTINA.toString() -> "$ ${price * 877}"
+            Constants.Country.MEXICO.toString() -> "$ ${price * 17}"
+            Constants.Country.EUROPE.toString() -> "€ ${"%.2f".format(price * 0.9)}"
+            Constants.Country.UNITED_KINGDOM.toString() -> "£ ${"%.2f".format(price * 0.8)}"
+            Constants.Country.JAPAN.toString() -> "¥ ${price * 156}"
+            Constants.Country.RUSSIA.toString() -> "₽ ${price * 90}"
+            Constants.Country.CHINA.toString() -> "¥ ${price * 7}"
             else -> { "$ $price" }
         }
     }
@@ -333,22 +334,4 @@ class HomeViewModel @Inject constructor(
     fun checkedStates(cart: Cart): Boolean {
         return _checkedProducts.value.contains(cart)
     }
-}
-
-enum class Country {
-    USA,
-    BRAZIL,
-    ARGENTINA,
-    MEXICO,
-    EUROPE,
-    UNITED_KINGDOM,
-    JAPAN,
-    RUSSIA,
-    CHINA
-}
-
-enum class SortType {
-    NAME,
-    PRICE,
-    RANGE
 }
