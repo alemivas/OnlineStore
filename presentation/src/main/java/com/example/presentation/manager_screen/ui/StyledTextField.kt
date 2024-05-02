@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StyledTextField(
     value: MutableState<TextFieldValue>,
-    onValueChange: (TextFieldValue) -> Unit
+    onValueChange: (TextFieldValue) -> Unit = {}
 ) {
     OutlinedTextField(
         value = value.value,
