@@ -57,6 +57,8 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":utils"))
 
+    // For collectAsStateWithLifecycle
+    implementation(libs.androidx.lifecycle.runtime.compose)
     // viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     // For room

@@ -2,21 +2,11 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\kriti\.android\avd\Pixel_4_XL_API_34.ini" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-03T15:41:07.838216700Z" />
-        </State>
+      <entry key="On">
+        <State />
+      </entry>
+      <entry key="OnboardingScreenPreview">
+        <State />
       </entry>
     </value>
   </component>

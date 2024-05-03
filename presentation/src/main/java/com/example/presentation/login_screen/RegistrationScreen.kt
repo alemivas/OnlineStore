@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RegistrationScreen(
     loginVewModel: LoginVewModel = hiltViewModel(),
-    navigateToHome: () -> Unit,
+    navigateToOnboarding: () -> Unit,
     navigateBack: () -> Unit,
 ) {
     val name = remember { mutableStateOf("") }
@@ -196,7 +196,7 @@ fun RegistrationScreen(
                     ) {
                         loginVewModel.saveUser(name.value, email.value, password.value, typeAccount.value)
                         loginVewModel.saveIsLoginStatus(email.value)
-                        navigateToHome()
+                        navigateToOnboarding()
                     } else {
                         showCheckUserDialog = true
                     }

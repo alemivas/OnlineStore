@@ -15,3 +15,16 @@ fun UserDBO.toUser() = User(
     isManager = isManager,
     isLogin = isLogin,
 )
+
+fun User.toUserDBO() = UserDBO(
+    id = id,
+    name = name,
+    email = email,
+    password = password,
+    image = image,
+    favoriteProductList = favoriteProductList,
+    cartList = cartList,
+    country = country,
+    isManager = isManager,
+    isLogin = isLogin,
+)
