@@ -15,7 +15,7 @@ data class Product(
 )
 
 @Serializable
-data class ProductCreateRequest(
+data class ProductRequest(
     val title: String,
     val price: Int,
     val description: String,

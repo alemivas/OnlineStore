@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.presentation.theme.OnlineStoreTheme
 import com.example.presentation.main_screen.MainScreen
+import com.example.presentation.theme.OnlineStoreTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
