@@ -12,7 +12,7 @@ data class Category(
 )
 
 @Serializable
-data class CategoryCreateRequest(
+data class CategoryRequest(
     val name: String,
     val image: String
 )

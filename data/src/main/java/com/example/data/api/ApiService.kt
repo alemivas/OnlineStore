@@ -1,14 +1,16 @@
 package com.example.data.api
 
 import com.example.domain.models.Category
-import com.example.domain.models.CategoryCreateRequest
+import com.example.domain.models.CategoryRequest
 import com.example.domain.models.Product
-import com.example.domain.models.ProductCreateRequest
+import com.example.domain.models.ProductRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
@@ -53,11 +55,23 @@ class ApiService @Inject constructor(
     }.body<Product>()
 
     suspend fun postProduct(
-        request: ProductCreateRequest
+        request: ProductRequest
     ) = client.post(PRODUCTS) {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body<Product>()
+
+    suspend fun updateProduct(
+        id: Int,
+        request: ProductRequest
+    ) = client.put("$PRODUCTS/$id") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }
+
+    suspend fun deleteProduct(
+        id: Int
+    ) = client.delete("$PRODUCTS/$id")
 
     suspend fun fetchCategoryProducts(
         categoryId: Int,
@@ -84,9 +98,21 @@ class ApiService @Inject constructor(
     }.body<Category>()
 
     suspend fun postCategory(
-        request: CategoryCreateRequest
+        request: CategoryRequest
     ) = client.post(CATEGORIES) {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body<Category>()
+
+    suspend fun updateCategory(
+        id: Int,
+        request: CategoryRequest
+    ) = client.put("$CATEGORIES/$id") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }
+
+    suspend fun deleteCategory(
+        id: Int
+    ) = client.delete("$CATEGORIES/$id")
 }
