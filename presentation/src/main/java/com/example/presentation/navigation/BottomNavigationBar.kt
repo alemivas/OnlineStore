@@ -36,7 +36,7 @@ fun BottomNavigationBar(navController: NavController, user: User) {
     val items = listOfNotNull(
         NavigationItem.Home,
         NavigationItem.Wishlist,
-        if (!user.isManager) NavigationItem.Manager else null,
+        if (user.isManager) NavigationItem.Manager else null,
         NavigationItem.Account
     )
 
