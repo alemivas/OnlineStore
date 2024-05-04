@@ -64,7 +64,9 @@ import java.util.Locale
 @Composable
 fun AccountScreen(
     accountProfileViewModel: AccountProfileViewModel = hiltViewModel(),
-    activity: Activity
+    activity: Activity,
+    toTermsConditionScreen: () -> Unit,
+    toLoginScreen: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val userState by accountProfileViewModel.userState.collectAsStateWithLifecycle()
@@ -86,8 +88,13 @@ fun AccountScreen(
     ImageProfile(userProfilePhotoUri = userProfilePhotoUri, editIcon = { showDialog = true })
     userState?.let { ProfileInfo(it) }
     TypeOfAccount() {/* TODO typeAcc */ }
-    TermsConditions {/* TODO termsCond */ }
-    SignOut {/* TODO signOut */ }
+    TermsConditions { toTermsConditionScreen() }
+    SignOut {
+        accountProfileViewModel.signOut()
+        toLoginScreen()
+    }
+
+
 
     if (showDialog) {
         EditProfileDialog(
@@ -100,7 +107,11 @@ fun AccountScreen(
 }
 
 @Composable
-fun ImageProfile(iconProfile: Int = R.drawable.ic_profile, editIcon: () -> Unit, userProfilePhotoUri: Uri?) {
+fun ImageProfile(
+    iconProfile: Int = R.drawable.ic_profile,
+    editIcon: () -> Unit,
+    userProfilePhotoUri: Uri?
+) {
     val userProfilePhotoUri = /* URI фотографии профиля пользователя */
 
         Box(
@@ -359,6 +370,7 @@ fun SignOut(toSignOut: () -> Unit) {
     }
 }
 
+
 @Composable
 fun EditProfileDialog(
     onDismiss: () -> Unit,
@@ -512,7 +524,8 @@ fun EditProfileDialog(
 }
 
 fun selectImageFromGallery(launcher: ActivityResultLauncher<String>) {
-    val downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val downloadsDirectory =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val uri = Uri.parse(downloadsDirectory.path)
 
     val intent = Intent(Intent.ACTION_PICK)
@@ -526,7 +539,8 @@ fun takePhoto(context: Context, launcher: ActivityResultLauncher<Uri>) {
         put(MediaStore.Images.Media.TITLE, "New Photo")
         put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
     }
-    val photoUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    val photoUri =
+        context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
     photoUri?.let { uri ->
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
@@ -560,19 +574,29 @@ fun rememberCameraLauncher(onResult: (Uri) -> Unit): ActivityResultLauncher<Uri>
 }
 
 fun checkCameraPermission(activity: Activity, launcher: ActivityResultLauncher<Uri>) {
-     val CAMERA_PERMISSION_REQUEST_CODE = 100
+    val CAMERA_PERMISSION_REQUEST_CODE = 100
     when {
-        ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+        ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED -> {
             takePhoto(activity, launcher)
         }
+
         else -> {
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST_CODE
+            )
         }
     }
 }
+
 private fun createTempImageFile(context: Context): File? {
     return try {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         File.createTempFile(
             "JPEG_${timeStamp}_",
@@ -589,6 +613,7 @@ fun checkStoragePermission(activity: Activity, launcher: ActivityResultLauncher<
         activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
             selectImageFromGallery(launcher)
         }
+
         else -> {
             launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }

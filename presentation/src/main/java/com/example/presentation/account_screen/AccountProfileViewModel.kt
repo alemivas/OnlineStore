@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 @HiltViewModel
 class AccountProfileViewModel @Inject constructor(
-    private val getAllUsers: GetAllUserUseCase
+    private val getAllUsers: GetAllUserUseCase,
+    private val saveUser: SaveUserUseCase
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow<User?>(null)
@@ -40,6 +41,14 @@ class AccountProfileViewModel @Inject constructor(
             getAllUsers()?.find { it.isLogin }?.let {
                 _userState.value = it
                 _loading.value = false
+            }
+        }
+    }
+    fun signOut() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _userState.value?.let { currentUser ->
+                val updatedUser = currentUser.copy(isLogin = false)
+                saveUser(updatedUser)
             }
         }
     }
