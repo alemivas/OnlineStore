@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,12 +49,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberImagePainter
 import com.example.domain.models.User
 import com.example.presentation.R
+import com.example.presentation.login_screen.common_item.TypeAccountBottomSheet
 import com.example.presentation.theme.DarkBlue
 import com.example.presentation.theme.GrayWhite
 import com.example.presentation.theme.GrayWithBlue
 import com.example.presentation.theme.LightDarkGray
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
+import com.example.utils.Constants
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -71,7 +74,10 @@ fun AccountScreen(
     var showDialog by remember { mutableStateOf(false) }
     val userState by accountProfileViewModel.userState.collectAsStateWithLifecycle()
     var userProfilePhotoUri by remember { mutableStateOf<Uri?>(null) }
-    var loading by remember { mutableStateOf(true) }
+    var showTypeAccountDialog by remember { mutableStateOf(false) }
+    val typeAccount =
+        remember { mutableStateOf(if (userState?.isManager == true) Constants.TypeOfAccount.MANAGER else Constants.TypeOfAccount.USER) }
+
 
     // Получение лаунчеров для выбора изображения из галереи и съемки с камеры
     val imagePickerLauncher = rememberImagePickerLauncher { uri ->
@@ -83,18 +89,30 @@ fun AccountScreen(
         showDialog = false
         userProfilePhotoUri = uri
     }
-    Log.d("userPh", userProfilePhotoUri.toString())
+
 
     ImageProfile(userProfilePhotoUri = userProfilePhotoUri, editIcon = { showDialog = true })
     userState?.let { ProfileInfo(it) }
-    TypeOfAccount() {/* TODO typeAcc */ }
+    TypeOfAccount() { showTypeAccountDialog = true }
     TermsConditions { toTermsConditionScreen() }
     SignOut {
         accountProfileViewModel.signOut()
         toLoginScreen()
     }
 
-
+    if (showTypeAccountDialog) {
+        TypeAccountBottomSheet(
+            typeAccount = { typeAccount.value = it },
+            showTypeAccountDialog = { showTypeAccountDialog = false }
+        )
+    }
+    LaunchedEffect(typeAccount.value) {
+        if (typeAccount.value == Constants.TypeOfAccount.MANAGER) {
+            accountProfileViewModel.updateTypeAccount(true)
+        } else {
+            accountProfileViewModel.updateTypeAccount(false)
+        }
+    }
 
     if (showDialog) {
         EditProfileDialog(
@@ -112,8 +130,6 @@ fun ImageProfile(
     editIcon: () -> Unit,
     userProfilePhotoUri: Uri?
 ) {
-    val userProfilePhotoUri = /* URI фотографии профиля пользователя */
-
         Box(
             modifier = Modifier
                 .padding(vertical = 113.1.dp, horizontal = 27.dp)
@@ -126,7 +142,8 @@ fun ImageProfile(
                     contentDescription = "User profile photo",
                     modifier = Modifier
                         .size(100.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             } ?: run {
                 Image(
@@ -134,7 +151,8 @@ fun ImageProfile(
                     contentDescription = "icon",
                     modifier = Modifier
                         .size(100.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             }
         }

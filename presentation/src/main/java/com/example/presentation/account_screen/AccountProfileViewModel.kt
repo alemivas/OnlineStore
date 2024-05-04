@@ -52,5 +52,14 @@ class AccountProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateTypeAccount(isManager:Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _userState.value?.let { currentUser ->
+                val updatedUser = currentUser.copy(isManager = isManager)
+                saveUser(updatedUser)
+            }
+        }
+    }
 }
 
