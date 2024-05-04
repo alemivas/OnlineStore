@@ -1,18 +1,22 @@
 package com.example.presentation.account_screen
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -21,15 +25,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -39,6 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberImagePainter
+import com.example.domain.models.User
 import com.example.presentation.R
 import com.example.presentation.theme.DarkBlue
 import com.example.presentation.theme.GrayWhite
@@ -46,40 +54,79 @@ import com.example.presentation.theme.GrayWithBlue
 import com.example.presentation.theme.LightDarkGray
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun AccountScreen() {
+fun AccountScreen(
+    accountProfileViewModel: AccountProfileViewModel = hiltViewModel(),
+    activity: Activity
+) {
     var showDialog by remember { mutableStateOf(false) }
+    val userState by accountProfileViewModel.userState.collectAsStateWithLifecycle()
+    var userProfilePhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var loading by remember { mutableStateOf(true) }
 
+    // Получение лаунчеров для выбора изображения из галереи и съемки с камеры
+    val imagePickerLauncher = rememberImagePickerLauncher { uri ->
+        showDialog = false
+        userProfilePhotoUri = uri
+    }
 
-    ImageProfile() {showDialog = true}
-    ProfileInfo()
-    TypeOfAccount(){/* TODO typeAcc */}
-    TermsConditions {/* TODO termsCond */}
-    SignOut {/* TODO signOut */}
+    val cameraLauncher = rememberCameraLauncher { uri ->
+        showDialog = false
+        userProfilePhotoUri = uri
+    }
+    Log.d("userPh", userProfilePhotoUri.toString())
+
+    ImageProfile(userProfilePhotoUri = userProfilePhotoUri, editIcon = { showDialog = true })
+    userState?.let { ProfileInfo(it) }
+    TypeOfAccount() {/* TODO typeAcc */ }
+    TermsConditions {/* TODO termsCond */ }
+    SignOut {/* TODO signOut */ }
+
     if (showDialog) {
-        EditProfileDialog(onDismiss = { showDialog = false }, toTakePhoto = {}, toFindPhotoDir = {}, toDeletePhoto = {})
+        EditProfileDialog(
+            onDismiss = { showDialog = false },
+            toTakePhoto = { checkCameraPermission(activity, cameraLauncher) },
+            toFindPhotoDir = { checkStoragePermission(activity, imagePickerLauncher) },
+            toDeletePhoto = { deletePhoto() }
+        )
     }
 }
 
 @Composable
-fun ImageProfile(iconProfile: Int = R.drawable.ic_profile, editIcon: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .width(105.dp)
-            .height(100.dp)
-            .padding(vertical = 113.1.dp, horizontal = 27.dp)
-    ) {
-        Image(
-            painter = painterResource(id = iconProfile),
-            contentDescription = "icon",
+fun ImageProfile(iconProfile: Int = R.drawable.ic_profile, editIcon: () -> Unit, userProfilePhotoUri: Uri?) {
+    val userProfilePhotoUri = /* URI фотографии профиля пользователя */
+
+        Box(
             modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-        )
-
-
-    }
+                .padding(vertical = 113.1.dp, horizontal = 27.dp)
+                .width(105.dp)
+                .height(100.dp)
+        ) {
+            userProfilePhotoUri?.let { uri ->
+                Image(
+                    painter = rememberImagePainter(uri),
+                    contentDescription = "User profile photo",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                )
+            } ?: run {
+                Image(
+                    painter = painterResource(id = iconProfile),
+                    contentDescription = "icon",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                )
+            }
+        }
     Box(
         modifier = Modifier
             .padding(
@@ -97,30 +144,25 @@ fun ImageProfile(iconProfile: Int = R.drawable.ic_profile, editIcon: () -> Unit)
                 .clickable { editIcon() }
         )
     }
-
 }
 
 @Composable
 fun ProfileInfo(
-    profileName: String = "Dev P",
-    profileEmail: String = "dev@gmail.com",
-    profilePassword: String = "12345678"
+    user: User
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
-            .width(105.dp)
-            .height(69.5.dp)
             .padding(
                 top = 126.6.dp,
                 start = 167.5.dp
-
             )
-
+            .width(105.dp)
+            .height(69.5.dp)
     ) {
         Column {
             Text(
-                text = profileName,
+                text = user.name,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.W600,
@@ -134,7 +176,7 @@ fun ProfileInfo(
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = profileEmail,
+                text = user.email,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.W400,
@@ -156,7 +198,7 @@ fun ProfileInfo(
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = if (isPasswordVisible) profilePassword else "*".repeat(profilePassword.length),
+                    text = if (isPasswordVisible) user.password else "*".repeat(user.password.length),
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.W400,
@@ -213,7 +255,8 @@ fun TypeOfAccount(toTypeOfAccount: () -> Unit) {
                     tint = LightDarkGray,
                     modifier = Modifier
                         .width(6.25.dp)
-                        .height(10.49.dp))
+                        .height(10.49.dp)
+                )
             }
 
         }
@@ -260,7 +303,8 @@ fun TermsConditions(toTermsConditions: () -> Unit) {
                     tint = LightDarkGray,
                     modifier = Modifier
                         .width(6.25.dp)
-                        .height(10.49.dp))
+                        .height(10.49.dp)
+                )
             }
 
         }
@@ -307,7 +351,8 @@ fun SignOut(toSignOut: () -> Unit) {
                     tint = LightDarkGray,
                     modifier = Modifier
                         .width(16.dp)
-                        .height(20.dp))
+                        .height(20.dp)
+                )
             }
 
         }
@@ -320,7 +365,7 @@ fun EditProfileDialog(
     toTakePhoto: () -> Unit,
     toFindPhotoDir: () -> Unit,
     toDeletePhoto: () -> Unit
-    ) {
+) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnClickOutside = true)
@@ -335,8 +380,8 @@ fun EditProfileDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -354,7 +399,7 @@ fun EditProfileDialog(
                 Spacer(modifier = Modifier.padding(16.dp))
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { toTakePhoto() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
@@ -391,7 +436,7 @@ fun EditProfileDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { toFindPhotoDir() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
@@ -461,8 +506,91 @@ fun EditProfileDialog(
                         )
                     }
                 }
-
             }
+        }
+    }
+}
+
+fun selectImageFromGallery(launcher: ActivityResultLauncher<String>) {
+    val downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val uri = Uri.parse(downloadsDirectory.path)
+
+    val intent = Intent(Intent.ACTION_PICK)
+    intent.setDataAndType(uri, "image/*")
+
+    launcher.launch(intent.toString())
+}
+
+fun takePhoto(context: Context, launcher: ActivityResultLauncher<Uri>) {
+    val values = ContentValues().apply {
+        put(MediaStore.Images.Media.TITLE, "New Photo")
+        put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+    }
+    val photoUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    photoUri?.let { uri ->
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        launcher.launch(uri)
+    }
+}
+
+fun deletePhoto() {
+
+}
+
+
+@Composable
+fun rememberImagePickerLauncher(onResult: (Uri) -> Unit): ActivityResultLauncher<String> {
+    return rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { onResult(it) }
+    }
+}
+
+@Composable
+fun rememberCameraLauncher(onResult: (Uri) -> Unit): ActivityResultLauncher<Uri> {
+    val context = LocalContext.current
+    return rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+            val cameraOutputUri = createTempImageFile(context)?.toUri()
+            cameraOutputUri?.let { uri ->
+                onResult(uri)
+            }
+        }
+    }
+}
+
+fun checkCameraPermission(activity: Activity, launcher: ActivityResultLauncher<Uri>) {
+     val CAMERA_PERMISSION_REQUEST_CODE = 100
+    when {
+        ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+            takePhoto(activity, launcher)
+        }
+        else -> {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        }
+    }
+}
+private fun createTempImageFile(context: Context): File? {
+    return try {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        )
+    } catch (ex: IOException) {
+        null
+    }
+}
+
+fun checkStoragePermission(activity: Activity, launcher: ActivityResultLauncher<String>) {
+    when {
+        activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+            selectImageFromGallery(launcher)
+        }
+        else -> {
+            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 }
