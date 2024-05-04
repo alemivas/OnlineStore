@@ -3,10 +3,12 @@ package com.example.presentation.account_screen
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -15,8 +17,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -30,6 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -67,31 +76,21 @@ import java.util.Locale
 @Composable
 fun AccountScreen(
     accountProfileViewModel: AccountProfileViewModel = hiltViewModel(),
-    activity: Activity,
     toTermsConditionScreen: () -> Unit,
     toLoginScreen: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val userState by accountProfileViewModel.userState.collectAsStateWithLifecycle()
-    var userProfilePhotoUri by remember { mutableStateOf<Uri?>(null) }
     var showTypeAccountDialog by remember { mutableStateOf(false) }
     val typeAccount =
         remember { mutableStateOf(if (userState?.isManager == true) Constants.TypeOfAccount.MANAGER else Constants.TypeOfAccount.USER) }
 
 
-    // Получение лаунчеров для выбора изображения из галереи и съемки с камеры
-    val imagePickerLauncher = rememberImagePickerLauncher { uri ->
-        showDialog = false
-        userProfilePhotoUri = uri
-    }
 
-    val cameraLauncher = rememberCameraLauncher { uri ->
-        showDialog = false
-        userProfilePhotoUri = uri
-    }
-
-
-    ImageProfile(userProfilePhotoUri = userProfilePhotoUri, editIcon = { showDialog = true })
+    ImageProfile(
+        imageProfile = accountProfileViewModel.currentProfileImage.value ?: R.drawable.ic_profile,
+        editIcon = { showDialog = true }
+    )
     userState?.let { ProfileInfo(it) }
     TypeOfAccount() { showTypeAccountDialog = true }
     TermsConditions { toTermsConditionScreen() }
@@ -117,45 +116,35 @@ fun AccountScreen(
     if (showDialog) {
         EditProfileDialog(
             onDismiss = { showDialog = false },
-            toTakePhoto = { checkCameraPermission(activity, cameraLauncher) },
-            toFindPhotoDir = { checkStoragePermission(activity, imagePickerLauncher) },
-            toDeletePhoto = { deletePhoto() }
+            toTakePhoto = {
+                showDialog = false
+                accountProfileViewModel.updateImageAccount(it)
+            },
         )
     }
 }
 
 @Composable
 fun ImageProfile(
-    iconProfile: Int = R.drawable.ic_profile,
+    imageProfile: Int,
     editIcon: () -> Unit,
-    userProfilePhotoUri: Uri?
 ) {
-        Box(
+    Box(
+        modifier = Modifier
+            .padding(vertical = 113.1.dp, horizontal = 27.dp)
+            .width(105.dp)
+            .height(100.dp)
+    ) {
+        Image(
+            painter = painterResource(id = imageProfile),
+            contentDescription = "image",
             modifier = Modifier
-                .padding(vertical = 113.1.dp, horizontal = 27.dp)
-                .width(105.dp)
-                .height(100.dp)
-        ) {
-            userProfilePhotoUri?.let { uri ->
-                Image(
-                    painter = rememberImagePainter(uri),
-                    contentDescription = "User profile photo",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } ?: run {
-                Image(
-                    painter = painterResource(id = iconProfile),
-                    contentDescription = "icon",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
+                .size(100.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+
+    }
     Box(
         modifier = Modifier
             .padding(
@@ -392,9 +381,7 @@ fun SignOut(toSignOut: () -> Unit) {
 @Composable
 fun EditProfileDialog(
     onDismiss: () -> Unit,
-    toTakePhoto: () -> Unit,
-    toFindPhotoDir: () -> Unit,
-    toDeletePhoto: () -> Unit
+    toTakePhoto: (Int) -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -427,213 +414,140 @@ fun EditProfileDialog(
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.padding(16.dp))
+                ImageGrid(
+                    images = listOf(
+                        R.drawable.ic_profile,
+                        R.drawable.ic_profile2,
+                        R.drawable.ic_profile3,
+                        R.drawable.ic_profile4,
+                        R.drawable.ic_profile5,
+                        R.drawable.ic_profile6
 
-                Button(
-                    onClick = { toTakePhoto() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .clickable { toTakePhoto() },
-                    colors = ButtonDefaults.buttonColors(GrayWhite),
-                    shape = RoundedCornerShape(12)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_camera),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(17.72.dp),
-                            tint = Color.Black
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "Take a photo",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 14.sp,
-                                lineHeight = 22.sp,
-                                letterSpacing = 0.5.sp,
-                                textAlign = TextAlign.Start
-                            ),
-                            color = Color.Black
-                        )
-                    }
-                }
+                    ),
+                    onImageSelected = { it -> toTakePhoto(it) }
+                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = { toFindPhotoDir() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .clickable { toFindPhotoDir() },
-                    colors = ButtonDefaults.buttonColors(GrayWhite),
-                    shape = RoundedCornerShape(12)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_dir),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(17.72.dp),
-                            tint = Color.Black
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "Choose from your file",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 14.sp,
-                                lineHeight = 22.sp,
-                                letterSpacing = 0.5.sp,
-                                textAlign = TextAlign.Start
-                            ),
-                            color = Color.Black
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .clickable { toDeletePhoto() },
-                    colors = ButtonDefaults.buttonColors(GrayWhite),
-                    shape = RoundedCornerShape(12)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_del),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(17.72.dp),
-                            tint = Red
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "Delete photo",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 14.sp,
-                                lineHeight = 22.sp,
-                                letterSpacing = 0.5.sp,
-                                textAlign = TextAlign.Start
-                            ),
-                            color = Red
-                        )
-                    }
-                }
             }
         }
     }
 }
 
-fun selectImageFromGallery(launcher: ActivityResultLauncher<String>) {
-    val downloadsDirectory =
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val uri = Uri.parse(downloadsDirectory.path)
-
-    val intent = Intent(Intent.ACTION_PICK)
-    intent.setDataAndType(uri, "image/*")
-
-    launcher.launch(intent.toString())
-}
-
-fun takePhoto(context: Context, launcher: ActivityResultLauncher<Uri>) {
-    val values = ContentValues().apply {
-        put(MediaStore.Images.Media.TITLE, "New Photo")
-        put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
-    }
-    val photoUri =
-        context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-    photoUri?.let { uri ->
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        launcher.launch(uri)
-    }
-}
-
-fun deletePhoto() {
-
-}
-
-
 @Composable
-fun rememberImagePickerLauncher(onResult: (Uri) -> Unit): ActivityResultLauncher<String> {
-    return rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { onResult(it) }
-    }
-}
-
-@Composable
-fun rememberCameraLauncher(onResult: (Uri) -> Unit): ActivityResultLauncher<Uri> {
-    val context = LocalContext.current
-    return rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
-        if (success) {
-            val cameraOutputUri = createTempImageFile(context)?.toUri()
-            cameraOutputUri?.let { uri ->
-                onResult(uri)
-            }
-        }
-    }
-}
-
-fun checkCameraPermission(activity: Activity, launcher: ActivityResultLauncher<Uri>) {
-    val CAMERA_PERMISSION_REQUEST_CODE = 100
-    when {
-        ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED -> {
-            takePhoto(activity, launcher)
-        }
-
-        else -> {
-            ActivityCompat.requestPermissions(
-                activity,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
+fun ImageGrid(
+    images: List<Int>,
+    onImageSelected: (Int) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        items(images) { image ->
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(8.dp)
+                    .clickable { onImageSelected(image) }
+                    .clip(RectangleShape)
             )
         }
     }
 }
 
-private fun createTempImageFile(context: Context): File? {
-    return try {
-        val timeStamp: String =
-            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
-        )
-    } catch (ex: IOException) {
-        null
-    }
-}
-
-fun checkStoragePermission(activity: Activity, launcher: ActivityResultLauncher<String>) {
-    when {
-        activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-            selectImageFromGallery(launcher)
-        }
-
-        else -> {
-            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-    }
-}
+//fun selectImageFromGallery(launcher: ActivityResultLauncher<String>) {
+//    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//    launcher.launch(intent.toString())
+//}
+//
+//fun takePhoto(context: Context, launcher: ActivityResultLauncher<Uri>) {
+//    val values = ContentValues().apply {
+//        put(MediaStore.Images.Media.TITLE, "New Photo")
+//        put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+//    }
+//    val photoUri =
+//        context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+//    photoUri?.let {
+//        launcher.launch(it)
+//    }
+//}
+//
+//fun deletePhoto() {
+//
+//}
+//
+//
+//@Composable
+//fun rememberImagePickerLauncher(
+//    contentResolver: ContentResolver,
+//    onResult: (Bitmap) -> Unit
+//): ActivityResultLauncher<String> {
+//    return rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+//        uri?.let {
+//            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+//            onResult(bitmap)
+//        }
+//    }
+//}
+//
+//@Composable
+//fun rememberCameraLauncher(onResult: (Bitmap) -> Unit): ActivityResultLauncher<Uri> {
+//    val context = LocalContext.current
+//    return rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+//        if (success) {
+//            val cameraOutputUri = createTempImageFile(context)?.toUri()
+//            cameraOutputUri?.let { uri ->
+//                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+//                onResult(bitmap)
+//            }
+//        }
+//    }
+//}
+//
+//
+//fun checkCameraPermission(activity: Activity, launcher: ActivityResultLauncher<Uri>) {
+//    val CAMERA_PERMISSION_REQUEST_CODE = 100
+//    when {
+//        ContextCompat.checkSelfPermission(
+//            activity,
+//            Manifest.permission.CAMERA
+//        ) == PackageManager.PERMISSION_GRANTED -> {
+//            takePhoto(activity, launcher)
+//        }
+//
+//        else -> {
+//            ActivityCompat.requestPermissions(
+//                activity,
+//                arrayOf(Manifest.permission.CAMERA),
+//                CAMERA_PERMISSION_REQUEST_CODE
+//            )
+//        }
+//    }
+//}
+//
+//private fun createTempImageFile(context: Context): File? {
+//    return try {
+//        val timeStamp: String =
+//            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+//        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+//        File.createTempFile(
+//            "JPEG_${timeStamp}_",
+//            ".jpg",
+//            storageDir
+//        )
+//    } catch (ex: IOException) {
+//        null
+//    }
+//}
+//
+//fun checkStoragePermission(activity: Activity, launcher: ActivityResultLauncher<String>) {
+//    when {
+//        activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+//            selectImageFromGallery(launcher)
+//        }
+//
+//        else -> {
+//            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+//        }
+//    }
+//}
