@@ -52,6 +52,7 @@ import com.example.presentation.common_item.Cart
 import com.example.presentation.detail_screen.common_item.DetailTopBar
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.home_screen.common_item.CartItem
+import com.example.presentation.login_screen.common_item.ErrorMinimalDialog
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
@@ -69,6 +70,7 @@ fun ShoppingCart(
     var expanded by remember { mutableStateOf(false) }
     val countryList = Constants.Country.entries.map { it.toString() }
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showErrorDialog  by remember { mutableStateOf(true) }
     Scaffold(
         topBar = {
             DetailTopBar(
@@ -83,7 +85,8 @@ fun ShoppingCart(
         bottomBar = {
             HorizontalDivider(color = GrayLighter)
             BottomBarCart(homeViewModel = homeViewModel) {
-                showBottomSheet = true
+                showBottomSheet = homeViewModel.isCartNotEmpty()
+                showErrorDialog = homeViewModel.isCartNotEmpty()
                 homeViewModel.makeOrder()
             }
         },
@@ -156,6 +159,13 @@ fun ShoppingCart(
             }
             if (showBottomSheet) {
                 PaymentBottomSheet { showBottomSheet = it }
+            }
+
+            if (!showErrorDialog) {
+                ErrorMinimalDialog(
+                    text = "Check items for buying",
+                    onDismissRequest = { showErrorDialog = true }
+                )
             }
         }
     }
