@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.presentation.account_screen.AccountScreen
+import com.example.presentation.account_screen.TermsAndConditionsScreen
+import com.example.presentation.account_screen.TermsConditions
 import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
@@ -29,7 +31,7 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,
-                navigateToSearch = {navController.navigate(NavigationObject.SearchScreen.route)},
+                navigateToSearch = { navController.navigate(NavigationObject.SearchScreen.route) },
                 navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },
                 navigateToDetail = { productId ->
                     navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
@@ -48,7 +50,16 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Account.route) {
-            AccountScreen(activity = LocalContext.current as Activity)
+            AccountScreen(
+                activity = LocalContext.current as Activity,
+                toTermsConditionScreen = { navController.navigate(NavigationObject.TermsAndConditionsScreen.route) },
+                toLoginScreen = { navController.navigate(NavigationObject.LoginScreen.route) }
+            )
+        }
+        composable(NavigationObject.TermsAndConditionsScreen.route) {
+            TermsAndConditionsScreen {
+                navController.navigate(NavigationItem.Account.route)
+            }
         }
 
         composable(NavigationObject.SearchScreen.route) {
@@ -100,12 +111,12 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationObject.ShoppingCartScreen.route) {
             ShoppingCart(
                 homeViewModel = homeViewModel,
-            navigateToDetail = { productId ->
-                navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
-                    popUpTo(NavigationObject.ShoppingCartScreen.route)
-                }
-            },
-            navigateBack = { navController.navigateUp() }
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationObject.ShoppingCartScreen.route)
+                    }
+                },
+                navigateBack = { navController.navigateUp() }
             )
         }
     }

@@ -18,6 +18,7 @@ sealed class NavigationObject(val route: String) {
     }
     data object ShoppingCartScreen: NavigationObject("ShoppingCartScreen")
     data object OnBoardingScreen: NavigationObject("OnBoardingScreen")
+    data object TermsAndConditionsScreen: NavigationObject("TermsAndConditionsScreen")
 
     companion object {
         const val PRODUCT_ID_PARAM_KEY = "product"
