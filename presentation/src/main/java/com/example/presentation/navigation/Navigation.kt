@@ -1,6 +1,8 @@
 package com.example.presentation.navigation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -46,7 +48,7 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Account.route) {
-            AccountScreen()
+            AccountScreen(activity = LocalContext.current as Activity)
         }
 
         composable(NavigationObject.SearchScreen.route) {
