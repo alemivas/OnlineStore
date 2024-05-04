@@ -23,10 +23,12 @@ import com.example.presentation.onboarding_screen.OnboardingScreen
 import com.example.presentation.search_screen.SearchScreen
 import com.example.presentation.shopping_cart_screen.ShoppingCart
 import com.example.presentation.wishlist_screen.WishlistScreen
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
 fun Navigation(navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val wishlistViewModel = hiltViewModel<WishlistViewModel>()
     NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
@@ -42,7 +44,15 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Wishlist.route) {
-            WishlistScreen()
+            WishlistScreen(
+                wishlistViewModel = wishlistViewModel,
+                navigateToDetail = { productId ->
+                    navController.navigate(NavigationObject.DetailScreen.createRoute(productId)) {
+                        popUpTo(NavigationItem.Wishlist.route)
+                    }
+                },
+                navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) }
+            )
         }
 
         composable(NavigationItem.Manager.route) {
@@ -102,6 +112,7 @@ fun Navigation(navController: NavHostController) {
             val productId =
                 it.arguments?.getInt(PRODUCT_ID_PARAM_KEY) ?: throw IllegalStateException()
             DetailScreen(
+                wishlistViewModel = wishlistViewModel,
                 homeViewModel = homeViewModel,
                 productId = productId,
                 navigateToCart = { navController.navigate(NavigationObject.ShoppingCartScreen.route) },

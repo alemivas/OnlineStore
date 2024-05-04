@@ -1,7 +1,11 @@
 package com.example.presentation.detail_screen
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,9 +44,11 @@ import com.example.presentation.theme.Gray
 import com.example.presentation.theme.GrayDark
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.Mint
+import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
 fun DetailScreen(
+    wishlistViewModel: WishlistViewModel,
     homeViewModel: HomeViewModel,
     productId: Int,
     navigateToCart: () -> Unit,
@@ -118,25 +126,24 @@ fun DetailScreen(
                                     color = GrayDark
                                 )
                             }
-                            // wish
-                            IconButton(
+                            Box(
                                 modifier = Modifier
                                     .size(46.dp)
                                     .background(GrayLighter, CircleShape),
-                                onClick = { homeViewModel.toggleFavorite(selectedProduct!!) },
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(22.dp),
-                                    painter = painterResource(id =
-                                        if (homeViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
-                                        else R.drawable.heart),
-                                    tint =
-                                        if (homeViewModel.isFavoriteChecked(selectedProduct!!)) Mint
-                                        else Gray,
-                                    contentDescription = null
+                                Image(
+                                    imageVector = ImageVector.vectorResource(id =
+                                    if (wishlistViewModel.isFavoriteChecked(selectedProduct!!)) R.drawable.heart_fill
+                                    else R.drawable.heart),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(35.dp)
+                                        .clickable {
+                                            wishlistViewModel.toggleFavorite(selectedProduct!!)
+                                        },
                                 )
                             }
+
                         }
                         Text(
                             modifier = Modifier.padding(top = 15.dp),
