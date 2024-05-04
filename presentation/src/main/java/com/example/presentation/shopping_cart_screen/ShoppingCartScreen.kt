@@ -28,6 +28,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ import coil.compose.AsyncImage
 import com.example.domain.models.Cart
 import com.example.presentation.R
 import com.example.presentation.common_item.Cart
+import com.example.presentation.detail_screen.common_item.DetailTopBar
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.home_screen.common_item.CartItem
 import com.example.presentation.theme.Gray
@@ -66,263 +68,186 @@ fun ShoppingCart(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val countryList = Constants.Country.entries.map { it.toString() }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 25.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.clickable { navigateBack() },
-                tint = GrayDark
+    var showBottomSheet by remember { mutableStateOf(false) }
+    Scaffold(
+        topBar = {
+            DetailTopBar(
+                homeViewModel = homeViewModel,
+                isDetailScreen = false,
+                title = "Your Cart",
+                navigateToCart = {},
+                navigateBack = { navigateBack() }
             )
-            Text(
-                text = "Your Cart",
-                color = GrayDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight(500)
-            )
-            Spacer(modifier = Modifier.width(180.dp))
-            Cart(homeViewModel.cart.value.size)
-            {}
-        }
-        HorizontalDivider(color = GrayLighter)
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Delivery to",
-                color = GrayDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight(500),
-                modifier = Modifier.padding(top = 2.dp)
-                    .weight(1f)
-            )
-            Text(
-                text = homeViewModel.currentCountry.value,
-                color = GrayDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight(500),
-                modifier = Modifier.padding(top = 2.dp)
-                    .clickable { expanded = true }
-            )
-            Icon(
-                imageVector = Icons.Outlined.KeyboardArrowDown,
-                contentDescription = null,
-                tint = GrayDark
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.background(GrayLightest)
-            ) {
-                repeat(countryList.size) {
-                    DropdownMenuItem(
-                        text = { Text(countryList[it]) },
-                        onClick = {
-                            homeViewModel.changeCurrentCountry(countryList[it])
-                            expanded = false
-                        },
-                    )
-                }
-            }
-        }
-
-        HorizontalDivider(color = GrayLighter)
-        LazyColumn(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(homeViewModel.cart.value.size) {
-                CartItem(
-                    homeViewModel = homeViewModel,
-                    cart = homeViewModel.cart.value[it],
-                    navigateToDetail = navigateToDetail
-                )
-            }
-        }
-
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter,
-
-            ) {
             HorizontalDivider(color = GrayLighter)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(constraints.maxWidth.toFloat()),
-
-                ) {
-                HorizontalDivider(color = GrayLighter)
+        },
+        bottomBar = {
+            HorizontalDivider(color = GrayLighter)
+            BottomBarCart(homeViewModel = homeViewModel) {
+                showBottomSheet = true
+                homeViewModel.makeOrder()
+            }
+        },
+        containerColor = Color.White
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+                .background(Color.White)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "Order Summary",
+                    text = "Delivery to",
+                    modifier = Modifier.weight(1f),
                     color = GrayDark,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight(500),
-                    modifier = Modifier.padding(start = 7.dp, top = 11.dp)
+                    fontWeight = FontWeight(500)
                 )
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 25.dp, bottom = 110.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.clickable { expanded = true },
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(10.dp),
-                        text = "Totals",
+                        text = homeViewModel.currentCountry.value,
                         color = GrayDark,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight(400),
+                        fontWeight = FontWeight(500)
                     )
-                    Text(
-                        modifier = Modifier
-                            .padding(10.dp),
-                        text = homeViewModel.getSum(),
-                        color = GrayDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight(400),
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = GrayDark
                     )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(GrayLightest)
+                    ) {
+                        repeat(countryList.size) {
+                            DropdownMenuItem(
+                                text = { Text(countryList[it]) },
+                                onClick = {
+                                    homeViewModel.changeCurrentCountry(countryList[it])
+                                    expanded = false
+                                },
+                            )
+                        }
+                    }
                 }
-
             }
-            Button(
+            HorizontalDivider(color = GrayLighter)
+
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth(constraints.maxWidth.toFloat())
-                    .padding(bottom = 40.dp)
-                    .height(50.dp),
-                onClick = { },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(Mint),
+                    .padding(16.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
-                    text = "Select payment method",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
-                )
+                items(homeViewModel.cart.value.size) {
+                    CartItem(
+                        homeViewModel = homeViewModel,
+                        cart = homeViewModel.cart.value[it],
+                        navigateToDetail = navigateToDetail
+                    )
+                }
+            }
+            if (showBottomSheet) {
+                PaymentBottomSheet { showBottomSheet = it }
             }
         }
     }
 }
+//@Composable
+//fun Product(
+//    homeViewModel: HomeViewModel,
+//    cart: Cart,
+//    navigateToDetail: (Int) -> Unit
+//) {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { },
+//    ) {
+//        AsyncImage(
+//            modifier = Modifier
+//                .fillMaxHeight()
+//                .aspectRatio(1f)
+//                .clip(RoundedCornerShape(8.dp)),
+//            contentScale = ContentScale.Crop,
+//            model = cart.product.images.first().removePrefix("[\"").removeSuffix("\"]"),
+//            contentDescription = null,
+//        )
+//        Column(
+//            verticalArrangement = Arrangement.spacedBy(6.dp)
+//        ) {
+//            Text(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(10.dp),
+//                text = cart.product.title,
+//                color = GrayDark,
+//                fontSize = 12.sp,
+//                fontWeight = FontWeight(400),
+//                maxLines = 1,
+//
+//                )
+//            Row {
+//                Text(
+//                    text = homeViewModel.getConvertedPrice(cart.product.price),
+//                    color = GrayDark,
+//                    fontSize = 14.sp,
+//                    fontWeight = FontWeight(600),
+//                    maxLines = 1,
+//                    modifier = Modifier.padding(top = 50.dp, start = 8.dp)
+//                )
+//                IconButton(
+//                    onClick = { homeViewModel.removeFromCart(cart)  },
+//                    modifier = Modifier.padding(top = 33.dp)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.baseline_remove_circle_24),
+//                        contentDescription = null,
+//                        modifier = Modifier.padding(10.dp),
+//                        tint = Gray
+//                    )
+//                }
+//                Text(
+//                    text = cart.quantity.toString(),
+//                    color = GrayDark,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight(600),
+//                    maxLines = 1,
+//                    modifier = Modifier.padding(top = 48.dp)
+//                )
+//                IconButton(
+//                    onClick = { homeViewModel.addToCart(cart) },
+//                    modifier = Modifier.padding(top = 33.dp)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.baseline_add_circle_24),
+//                        contentDescription = null,
+//                        modifier = Modifier.padding(10.dp),
+//                        tint = Gray
+//                    )
+//                }
+//                IconButton(
+//                    onClick = { homeViewModel.deleteFromCart(cart) },
+//                    modifier = Modifier.padding(top = 33.dp)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.baseline_delete_24),
+//                        contentDescription = null,
+//                        modifier = Modifier.padding(2.dp),
+//                        tint = Gray
+//                    )
+//                }
+//            }
+//
+//        }
+//    }
+//}
 
-@Composable
-fun CheckboxWithColor(
-    homeViewModel: HomeViewModel,
-    cart: Cart
-    ) {
-    val checkedState = homeViewModel.checkedStates(cart)
-    // Состояние для отслеживания выбранного состояния
-    Checkbox(
-        checked = checkedState,
-        onCheckedChange = { homeViewModel.changeCheckedProducts(cart) },
-        colors = CheckboxDefaults.colors(
-            checkedColor = Mint,
-            uncheckedColor = GrayLighter
-        )
-    )
-}
-@Composable
-fun Product(
-    homeViewModel: HomeViewModel,
-    cart: Cart,
-    navigateToDetail: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { },
-    ) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop,
-            model = cart.product.images.first().removePrefix("[\"").removeSuffix("\"]"),
-            contentDescription = null,
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                text = cart.product.title,
-                color = GrayDark,
-                fontSize = 12.sp,
-                fontWeight = FontWeight(400),
-                maxLines = 1,
-
-                )
-            Row {
-                Text(
-                    text = homeViewModel.getConvertedPrice(cart.product.price),
-                    color = GrayDark,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight(600),
-                    maxLines = 1,
-                    modifier = Modifier.padding(top = 50.dp, start = 8.dp)
-                )
-                IconButton(
-                    onClick = { homeViewModel.removeFromCart(cart)  },
-                    modifier = Modifier.padding(top = 33.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_remove_circle_24),
-                        contentDescription = null,
-                        modifier = Modifier.padding(10.dp),
-                        tint = Gray
-                    )
-                }
-                Text(
-                    text = cart.quantity.toString(),
-                    color = GrayDark,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight(600),
-                    maxLines = 1,
-                    modifier = Modifier.padding(top = 48.dp)
-                )
-                IconButton(
-                    onClick = { homeViewModel.addToCart(cart) },
-                    modifier = Modifier.padding(top = 33.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_add_circle_24),
-                        contentDescription = null,
-                        modifier = Modifier.padding(10.dp),
-                        tint = Gray
-                    )
-                }
-                IconButton(
-                    onClick = { homeViewModel.deleteFromCart(cart) },
-                    modifier = Modifier.padding(top = 33.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_delete_24),
-                        contentDescription = null,
-                        modifier = Modifier.padding(2.dp),
-                        tint = Gray
-                    )
-                }
-            }
-
-        }
-    }
-}
+//
