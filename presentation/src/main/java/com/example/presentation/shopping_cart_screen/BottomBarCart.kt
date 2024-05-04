@@ -70,7 +70,7 @@ fun BottomBarCart(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
                 .height(50.dp),
-            onClick = { },
+            onClick = { onClickAction()},
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(Mint),
         ) {

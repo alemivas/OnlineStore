@@ -154,7 +154,9 @@ fun ShoppingCart(
                     )
                 }
             }
-
+            if (showBottomSheet) {
+                PaymentBottomSheet { showBottomSheet = it }
+            }
         }
     }
 }
