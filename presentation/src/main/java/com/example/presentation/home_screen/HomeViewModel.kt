@@ -327,8 +327,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun makeOrder() {
-        _cart.value = emptyList()
-        saveUserCart(_cart.value)
+        val newUserCart = _cart.value.minus(_checkedProducts.value)
+        saveUserCart(newUserCart)
+        _checkedProducts.value = emptyList()
     }
 
     fun checkedStates(cart: Cart): Boolean {
