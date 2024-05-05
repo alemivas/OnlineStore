@@ -61,7 +61,7 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationItem.Account.route) {
             AccountScreen(
-                activity = LocalContext.current as Activity,
+//                activity = LocalContext.current as Activity,
                 toTermsConditionScreen = { navController.navigate(NavigationObject.TermsAndConditionsScreen.route) },
                 toLoginScreen = { navController.navigate(NavigationObject.LoginScreen.route) }
             )
