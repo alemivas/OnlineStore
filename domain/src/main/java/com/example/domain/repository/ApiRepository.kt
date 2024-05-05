@@ -1,7 +1,9 @@
 package com.example.domain.repository
 
 import com.example.domain.models.Category
+import com.example.domain.models.CategoryRequest
 import com.example.domain.models.Product
+import com.example.domain.models.ProductRequest
 import com.example.utils.ApiResult
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +18,12 @@ interface ApiRepository {
         priceMin: Int?,
         priceMax: Int?,
         ) : Flow<ApiResult<List<Product>>>
+
+    suspend fun postProduct(request: ProductRequest)
+    suspend fun updateProduct(id: Int, request: ProductRequest)
+    suspend fun deleteProduct(id: Int)
+
+    suspend fun postCategory(request: CategoryRequest)
+    suspend fun updateCategory(id: Int, request: CategoryRequest)
+    suspend fun deleteCategory(id: Int)
 }

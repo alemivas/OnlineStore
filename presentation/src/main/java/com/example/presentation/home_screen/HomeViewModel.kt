@@ -1,6 +1,5 @@
 package com.example.presentation.home_screen
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +14,6 @@ import com.example.domain.usecases.product_db_use_cases.GetAllProductsFromCacheU
 import com.example.domain.usecases.product_db_use_cases.InsertProductListIntoCache
 import com.example.domain.usecases.user_db_use_case.GetIsLoginUserUseCase
 import com.example.domain.usecases.user_db_use_case.SaveUserUseCase
-import com.example.presentation.common_item.NoResultBox
 import com.example.utils.ApiResult
 import com.example.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel

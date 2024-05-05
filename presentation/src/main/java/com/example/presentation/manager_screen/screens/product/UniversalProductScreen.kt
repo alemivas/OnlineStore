@@ -1,6 +1,5 @@
 package com.example.presentation.manager_screen.screens.product
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,10 +21,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,15 +35,21 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domain.models.Category
+import com.example.domain.models.ProductRequest
+import com.example.presentation.manager_screen.ManagerViewModel
 import com.example.presentation.manager_screen.common.ScreenType
 import com.example.presentation.manager_screen.ui.ManagerTopAppBar
 import com.example.presentation.manager_screen.ui.StyledTextField
 
-
-
 @Composable
-fun UniversalProductScreen(type: ScreenType) {
+fun UniversalProductScreen(
+    managerViewModel: ManagerViewModel = hiltViewModel(),
+    type: ScreenType,
+    onBackClick: () -> Unit,
+) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +101,7 @@ fun UniversalProductScreen(type: ScreenType) {
                 .padding(16.dp)
         ) {
             
-            ManagerTopAppBar("${type.label} ${type.model}")
+            ManagerTopAppBar("${type.label} ${type.model}") { onBackClick() }
 
             if (type !is ScreenType.Create) {
                 Row(
@@ -273,18 +275,35 @@ fun UniversalProductScreen(type: ScreenType) {
                     is ScreenType.Create -> {
                         {
 //                            apiService.create
+                            managerViewModel.createNewProduct(ProductRequest(
+                                title.value.text,
+                                price.value.text.toInt(),
+                                description.value.text,
+                                category.value.text.toInt(),
+                                images.value.text
+                            ))
                         }
                     }
 
                     is ScreenType.Update -> {
                         {
 //                            apiService.update
+                            managerViewModel.updateProduct(
+                                id.value.text.toInt(),
+                                ProductRequest(
+                                    title.value.text,
+                                    price.value.text.toInt(),
+                                    description.value.text,
+                                    category.value.text.toInt(),
+                                    images.value.text
+                                ))
                         }
                     }
 
                     is ScreenType.Delete -> {
                         {
 //                            apiService.delete
+                            managerViewModel.deleteProduct(id.value.text.toInt())
                         }
                     }
                 },
