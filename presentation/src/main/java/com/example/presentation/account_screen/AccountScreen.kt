@@ -2,12 +2,14 @@ package com.example.presentation.account_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -71,41 +73,46 @@ fun AccountScreen(
         remember { mutableStateOf(if (userState?.isManager == true) Constants.TypeOfAccount.MANAGER else Constants.TypeOfAccount.USER) }
 
 
-
-    ImageProfile(
-        imageProfile = accountProfileViewModel.currentProfileImage.value ?: R.drawable.ic_profile,
-        editIcon = { showDialog = true }
-    )
-    userState?.let { ProfileInfo(it) }
-    TypeOfAccount() { showTypeAccountDialog = true }
-    TermsConditions { toTermsConditionScreen() }
-    SignOut {
-        accountProfileViewModel.signOut()
-        toLoginScreen()
-    }
-
-    if (showTypeAccountDialog) {
-        TypeAccountBottomSheet(
-            typeAccount = { typeAccount.value = it },
-            showTypeAccountDialog = { showTypeAccountDialog = false }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+    ) {
+        ImageProfile(
+            imageProfile = accountProfileViewModel.currentProfileImage.value ?: R.drawable.ic_profile,
+            editIcon = { showDialog = true }
         )
-    }
-    LaunchedEffect(typeAccount.value) {
-        if (typeAccount.value == Constants.TypeOfAccount.MANAGER) {
-            accountProfileViewModel.updateTypeAccount(true)
-        } else {
-            accountProfileViewModel.updateTypeAccount(false)
+        userState?.let { ProfileInfo(it) }
+        TypeOfAccount() { showTypeAccountDialog = true }
+        TermsConditions { toTermsConditionScreen() }
+        SignOut {
+            accountProfileViewModel.signOut()
+            toLoginScreen()
         }
-    }
 
-    if (showDialog) {
-        EditProfileDialog(
-            onDismiss = { showDialog = false },
-            toTakePhoto = {
-                showDialog = false
-                accountProfileViewModel.updateImageAccount(it)
-            },
-        )
+        if (showTypeAccountDialog) {
+            TypeAccountBottomSheet(
+                typeAccount = { typeAccount.value = it },
+                showTypeAccountDialog = { showTypeAccountDialog = false }
+            )
+        }
+        LaunchedEffect(typeAccount.value) {
+            if (typeAccount.value == Constants.TypeOfAccount.MANAGER) {
+                accountProfileViewModel.updateTypeAccount(true)
+            } else {
+                accountProfileViewModel.updateTypeAccount(false)
+            }
+        }
+
+        if (showDialog) {
+            EditProfileDialog(
+                onDismiss = { showDialog = false },
+                toTakePhoto = {
+                    showDialog = false
+                    accountProfileViewModel.updateImageAccount(it)
+                },
+            )
+        }
     }
 }
 
