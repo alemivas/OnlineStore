@@ -55,7 +55,6 @@ fun UniversalProductScreen(
             .fillMaxSize()
             .padding(16.dp, 8.dp)
     ) {
-
         val id = remember { mutableStateOf(TextFieldValue("")) }
         val title = remember { mutableStateOf(TextFieldValue("")) }
         val price = remember { mutableStateOf(TextFieldValue("")) }
@@ -69,14 +68,28 @@ fun UniversalProductScreen(
                 listOf(
                     Category(
                         1,
-                        "test",
+                        "Qwerty",
                         "test",
                         "test",
                         "test"
                     ),
                     Category(
-                        1,
-                        "sgfgsfsdfsdfsdfsdfsdf",
+                        2,
+                        "Electronics",
+                        "test",
+                        "test",
+                        "test"
+                    ),
+                    Category(
+                        3,
+                        "Chomba",
+                        "test",
+                        "test",
+                        "test"
+                    ),
+                    Category(
+                        4,
+                        "Shoes",
                         "test",
                         "test",
                         "test"
