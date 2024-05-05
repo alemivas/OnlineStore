@@ -2,7 +2,9 @@ package com.example.data.repository
 
 import com.example.data.api.ApiService
 import com.example.domain.models.Category
+import com.example.domain.models.CategoryRequest
 import com.example.domain.models.Product
+import com.example.domain.models.ProductRequest
 import com.example.domain.repository.ApiRepository
 import com.example.utils.ApiResult
 import io.ktor.client.call.body
@@ -48,5 +50,29 @@ class ApiServiceImpl @Inject constructor(
             e.printStackTrace()
             emit(ApiResult.Error(e.message ?: "Something went wrong"))
         }
+    }
+
+    override suspend fun postProduct(request: ProductRequest) {
+        apiService.postProduct(request)
+    }
+
+    override suspend fun updateProduct(id: Int, request: ProductRequest) {
+        apiService.updateProduct(id, request)
+    }
+
+    override suspend fun deleteProduct(id: Int) {
+        apiService.deleteProduct(id)
+    }
+
+    override suspend fun postCategory(request: CategoryRequest) {
+        apiService.postCategory(request)
+    }
+
+    override suspend fun updateCategory(id: Int, request: CategoryRequest) {
+        apiService.updateCategory(id, request)
+    }
+
+    override suspend fun deleteCategory(id: Int) {
+        apiService.deleteCategory(id)
     }
 }

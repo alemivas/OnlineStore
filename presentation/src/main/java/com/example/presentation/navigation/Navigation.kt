@@ -15,6 +15,9 @@ import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
 import com.example.presentation.manager_screen.ManagerScreen
+import com.example.presentation.manager_screen.common.ScreenType
+import com.example.presentation.manager_screen.screens.category.UniversalCategoryScreen
+import com.example.presentation.manager_screen.screens.product.UniversalProductScreen
 import com.example.presentation.navigation.NavigationObject.Companion.PRODUCT_ID_PARAM_KEY
 import com.example.presentation.onboarding_screen.OnboardingScreen
 import com.example.presentation.search_screen.SearchScreen
@@ -53,7 +56,16 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(NavigationItem.Manager.route) {
-            ManagerScreen()
+            ManagerScreen(
+                navigateTo = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("type", it)
+                    if (it.model == "category") {
+                        navController.navigate(NavigationObject.UniversalCategoryScreen.route)
+                    } else {
+                        navController.navigate(NavigationObject.UniversalProductScreen.route)
+                    }
+                }
+            )
         }
 
         composable(NavigationItem.Account.route) {
@@ -116,6 +128,7 @@ fun Navigation(navController: NavHostController) {
                 navigateBack = { navController.navigateUp() }
             )
         }
+        
         composable(NavigationObject.ShoppingCartScreen.route) {
             ShoppingCart(
                 homeViewModel = homeViewModel,
@@ -126,6 +139,34 @@ fun Navigation(navController: NavHostController) {
                 },
                 navigateBack = { navController.navigateUp() }
             )
+        }
+        
+        composable(NavigationObject.UniversalProductScreen.route) {
+            val type = if (navController.previousBackStackEntry?.savedStateHandle?.contains("type") == true) {
+                navController.previousBackStackEntry?.savedStateHandle?.get<ScreenType>("type")
+            } else {
+                null
+            }
+
+            if (type != null) {
+                UniversalProductScreen(type = type) {
+                    navController.popBackStack()
+                }
+            }
+        }
+        
+        composable(NavigationObject.UniversalCategoryScreen.route) {
+            val type = if (navController.previousBackStackEntry?.savedStateHandle?.contains("type") == true) {
+                navController.previousBackStackEntry?.savedStateHandle?.get<ScreenType>("type")
+            } else {
+                null
+            }
+
+            if (type != null) {
+                UniversalCategoryScreen(type = type) {
+                    navController.popBackStack()
+                }
+            }
         }
     }
 }

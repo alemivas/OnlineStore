@@ -25,12 +25,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.domain.models.CategoryRequest
+import com.example.presentation.manager_screen.ManagerViewModel
 import com.example.presentation.manager_screen.common.ScreenType
 import com.example.presentation.manager_screen.ui.ManagerTopAppBar
 import com.example.presentation.manager_screen.ui.StyledTextField
 
 @Composable
-fun UniversalCategoryScreen(type: ScreenType) {
+fun UniversalCategoryScreen(
+    managerViewModel: ManagerViewModel = hiltViewModel(),
+    type: ScreenType,
+    onBackClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +64,7 @@ fun UniversalCategoryScreen(type: ScreenType) {
                 .padding(16.dp)
         ) {
 
-            ManagerTopAppBar("${type.label} ${type.model}")
+            ManagerTopAppBar("${type.label} ${type.model}") { onBackClick() }
 
             if (type !is ScreenType.Create) {
                 Row(
@@ -125,18 +132,30 @@ fun UniversalCategoryScreen(type: ScreenType) {
                     is ScreenType.Create -> {
                         {
 //                            apiService.create
+                            managerViewModel.createNewCategory(CategoryRequest(
+                                name = name.value.text,
+                                image = image.value.text
+                            ))
                         }
                     }
 
                     is ScreenType.Update -> {
                         {
 //                            apiService.update
+                            managerViewModel.updateCategory(
+                                id = id.value.text.toInt(),
+                                CategoryRequest(
+                                    name = name.value.text,
+                                    image = image.value.text
+                                )
+                            )
                         }
                     }
 
                     is ScreenType.Delete -> {
                         {
 //                            apiService.delete
+                            managerViewModel.deleteCategory(id.value.text.toInt())
                         }
                     }
                 },
