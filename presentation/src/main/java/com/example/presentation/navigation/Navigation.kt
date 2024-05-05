@@ -1,8 +1,6 @@
 package com.example.presentation.navigation
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.presentation.account_screen.AccountScreen
 import com.example.presentation.account_screen.TermsAndConditionsScreen
-import com.example.presentation.account_screen.TermsConditions
 import com.example.presentation.detail_screen.DetailScreen
 import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
