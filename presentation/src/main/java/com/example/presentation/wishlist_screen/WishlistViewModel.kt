@@ -1,6 +1,5 @@
 package com.example.presentation.wishlist_screen
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

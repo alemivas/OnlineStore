@@ -6,84 +6,62 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
-import com.example.domain.models.User
+import com.example.presentation.main_screen.MainViewModel
 
 @Composable
-fun BottomNavigationBar(navController: NavController, user: User) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
+fun BottomNavigationBar(
+    mainViewModel: MainViewModel,
+    navController: NavController
+) {
+    val isManager by mainViewModel.isManager.collectAsState()
 
-    var selectedItem by remember {
-        mutableIntStateOf(
-            when (currentRoute) {
-                NavigationItem.Home.route -> 0
-                NavigationItem.Wishlist.route -> 1
-                NavigationItem.Manager.route -> 2
-                NavigationItem.Account.route -> 3
-                else -> 0
-            }
-        )
-    }
-
-    val items = listOfNotNull(
+    val screens = listOf(
         NavigationItem.Home,
         NavigationItem.Wishlist,
-        if (user.isManager) NavigationItem.Manager else null,
+        NavigationItem.Manager,
         NavigationItem.Account
     )
-
-    // Обновляем selectedItem при изменении текущего маршрута
-    LaunchedEffect(currentRoute) {
-        selectedItem = when (currentRoute) {
-            NavigationItem.Home.route -> 0
-            NavigationItem.Wishlist.route -> 1
-            NavigationItem.Manager.route -> 2
-            NavigationItem.Account.route -> 3
-            else -> 0
-        }
-    }
 
     NavigationBar(
         containerColor = Color.White,
     ) {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = {
-                    if (selectedItem == index) {
-                        Image(
-                            imageVector = ImageVector.vectorResource(item.iconFill),
-                            contentDescription = null
-                        )
-                    } else {
-                        Image(
-                            imageVector = ImageVector.vectorResource(item.icon),
-                            contentDescription = null
-                        )
-                    }
-                },
-                selected = selectedItem == index,
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF67C4A7),
-                    selectedTextColor = Color(0xFF67C4A7),
-                    unselectedIconColor = Color(0xFF939393),
-                    unselectedTextColor = Color(0xFF939393),
-                    indicatorColor = Color.Transparent
-                ),
-                label = {
-                    Text(text = item.title)
-                },
-                onClick = {
-                    if (selectedItem != index) {
-                        selectedItem = index
-                        navController.navigate(item.route) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+        screens.forEach { screen ->
+            if (screen.route != NavigationItem.Manager.route || isManager) {
+                val isSelected = screen.route == currentRoute
+                NavigationBarItem(
+                    icon = {
+                        if (isSelected) {
+                            Image(
+                                imageVector = ImageVector.vectorResource(screen.iconFill),
+                                contentDescription = null
+                            )
+                        } else {
+                            Image(
+                                imageVector = ImageVector.vectorResource(screen.icon),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    selected = isSelected,
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF67C4A7),
+                        selectedTextColor = Color(0xFF67C4A7),
+                        unselectedIconColor = Color(0xFF939393),
+                        unselectedTextColor = Color(0xFF939393),
+                        indicatorColor = Color.Transparent
+                    ),
+                    label = {
+                        Text(text = screen.title)
+                    },
+                    onClick = {
+                        navController.navigate(screen.route) {
                             navController.graph.startDestinationRoute?.let { route ->
                                 popUpTo(route) {
                                     saveState = true
@@ -93,8 +71,8 @@ fun BottomNavigationBar(navController: NavController, user: User) {
                             restoreState = true
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

@@ -48,11 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.models.User
 import com.example.presentation.R
 import com.example.presentation.login_screen.common_item.TypeAccountBottomSheet
+import com.example.presentation.main_screen.MainViewModel
 import com.example.presentation.theme.DarkBlue
 import com.example.presentation.theme.GrayWithBlue
 import com.example.presentation.theme.LightDarkGray
@@ -62,16 +61,17 @@ import com.example.utils.Constants
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AccountScreen(
-    accountProfileViewModel: AccountProfileViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel,
     toTermsConditionScreen: () -> Unit,
     toLoginScreen: () -> Unit
 ) {
+    val userState by remember { mutableStateOf(mainViewModel.currentUser.value) }
     var showDialog by remember { mutableStateOf(false) }
-    val userState by accountProfileViewModel.userState.collectAsStateWithLifecycle()
     var showTypeAccountDialog by remember { mutableStateOf(false) }
-    val typeAccount =
-        remember { mutableStateOf(if (userState?.isManager == true) Constants.TypeOfAccount.MANAGER else Constants.TypeOfAccount.USER) }
-
+    val typeAccount = remember { mutableStateOf(
+        if (mainViewModel.isManager.value) Constants.TypeOfAccount.MANAGER
+        else Constants.TypeOfAccount.USER)
+    }
 
     Box(
         modifier = Modifier
@@ -79,14 +79,14 @@ fun AccountScreen(
             .background(Color.White),
     ) {
         ImageProfile(
-            imageProfile = accountProfileViewModel.currentProfileImage.value ?: R.drawable.ic_profile,
+            imageProfile = mainViewModel.currentProfileImage.value,
             editIcon = { showDialog = true }
         )
         userState?.let { ProfileInfo(it) }
         TypeOfAccount() { showTypeAccountDialog = true }
         TermsConditions { toTermsConditionScreen() }
         SignOut {
-            accountProfileViewModel.signOut()
+            mainViewModel.signOut()
             toLoginScreen()
         }
 
@@ -98,9 +98,9 @@ fun AccountScreen(
         }
         LaunchedEffect(typeAccount.value) {
             if (typeAccount.value == Constants.TypeOfAccount.MANAGER) {
-                accountProfileViewModel.updateTypeAccount(true)
+                mainViewModel.updateUserStatus(true)
             } else {
-                accountProfileViewModel.updateTypeAccount(false)
+                mainViewModel.updateUserStatus(false)
             }
         }
 
@@ -109,7 +109,7 @@ fun AccountScreen(
                 onDismiss = { showDialog = false },
                 toTakePhoto = {
                     showDialog = false
-                    accountProfileViewModel.updateImageAccount(it)
+                    mainViewModel.updateImageAccount(it)
                 },
             )
         }
