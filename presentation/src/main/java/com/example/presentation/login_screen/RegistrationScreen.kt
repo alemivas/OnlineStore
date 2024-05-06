@@ -31,11 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.presentation.login_screen.common_item.ErrorMinimalDialog
 import com.example.presentation.login_screen.common_item.PasswordScreenTextField
 import com.example.presentation.login_screen.common_item.TypeAccountBottomSheet
+import com.example.presentation.main_screen.MainViewModel
 import com.example.presentation.theme.GrayDarkest
 import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.LoginLabelColor
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(
-    loginVewModel: LoginVewModel = hiltViewModel(),
+    mainViewModel: MainViewModel,
     navigateToOnboarding: () -> Unit,
     navigateBack: () -> Unit,
 ) {
@@ -57,9 +57,11 @@ fun RegistrationScreen(
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
     val typeAccount = remember { mutableStateOf(Constants.TypeOfAccount.USER) }
+
     var showTypeAccountDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var showCheckUserDialog by remember { mutableStateOf(false) }
+
     var isErrorName by remember { mutableStateOf(false) }
     var isErrorEmail by remember { mutableStateOf(false) }
     var isErrorPassword by remember { mutableStateOf(false) }
@@ -117,7 +119,7 @@ fun RegistrationScreen(
                 value = name.value,
                 newValue = {
                     name.value = it
-                    isErrorName = loginVewModel.isValidName(name.value)
+                    isErrorName = mainViewModel.isValidName(name.value)
                 },
                 isHidden = false,
                 isError = isErrorName
@@ -129,7 +131,7 @@ fun RegistrationScreen(
                 value = email.value,
                 newValue = {
                     email.value = it
-                    isErrorEmail = loginVewModel.isValidEmail(email.value)
+                    isErrorEmail = mainViewModel.isValidEmail(email.value)
                 },
                 isHidden = false,
                 isError = isErrorEmail
@@ -141,7 +143,7 @@ fun RegistrationScreen(
                 value = password.value,
                 newValue = {
                     password.value = it
-                    isErrorPassword = loginVewModel.isValidPassword(password.value)
+                    isErrorPassword = mainViewModel.isValidPassword(password.value)
                 },
                 isHidden = true,
                 isError = isErrorPassword
@@ -153,7 +155,7 @@ fun RegistrationScreen(
                 value = confirmPassword.value,
                 newValue = {
                     confirmPassword.value = it
-                    isErrorConfirmPassword = loginVewModel.isValidPassword(confirmPassword.value)
+                    isErrorConfirmPassword = mainViewModel.isValidPassword(confirmPassword.value)
                     isErrorConfirmPassword = password.value != confirmPassword.value
                 },
                 isHidden = true,
@@ -189,13 +191,13 @@ fun RegistrationScreen(
 
         Button(
             onClick = {
-                loginVewModel.viewModelScope.launch {
-                    if (!loginVewModel.checkUser(email.value, password.value)
+                mainViewModel.viewModelScope.launch {
+                    if (!mainViewModel.checkUser(email.value, password.value)
                         && !isErrorEmail && !isErrorName && !isErrorPassword && !isErrorConfirmPassword
                         && name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()
                     ) {
-                        loginVewModel.saveUser(name.value, email.value, password.value, typeAccount.value)
-                        loginVewModel.saveIsLoginStatus(email.value)
+                        mainViewModel.saveUser(name.value, email.value, password.value, typeAccount.value)
+                        mainViewModel.saveIsLoginStatus(email.value)
                         navigateToOnboarding()
                     } else {
                         showCheckUserDialog = true

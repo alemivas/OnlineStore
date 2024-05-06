@@ -14,6 +14,7 @@ import com.example.presentation.home_screen.HomeScreen
 import com.example.presentation.home_screen.HomeViewModel
 import com.example.presentation.login_screen.LoginScreen
 import com.example.presentation.login_screen.RegistrationScreen
+import com.example.presentation.main_screen.MainViewModel
 import com.example.presentation.manager_screen.ManagerScreen
 import com.example.presentation.manager_screen.common.ScreenType
 import com.example.presentation.manager_screen.screens.category.UniversalCategoryScreen
@@ -26,9 +27,10 @@ import com.example.presentation.wishlist_screen.WishlistScreen
 import com.example.presentation.wishlist_screen.WishlistViewModel
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(mainViewModel: MainViewModel, navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val wishlistViewModel = hiltViewModel<WishlistViewModel>()
+
     NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
@@ -70,7 +72,7 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationItem.Account.route) {
             AccountScreen(
-//                activity = LocalContext.current as Activity,
+                mainViewModel = mainViewModel,
                 toTermsConditionScreen = { navController.navigate(NavigationObject.TermsAndConditionsScreen.route) },
                 toLoginScreen = { navController.navigate(NavigationObject.LoginScreen.route) }
             )
@@ -96,6 +98,7 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationObject.LoginScreen.route) {
             LoginScreen(
+                mainViewModel = mainViewModel,
                 navigateToRegistration = { navController.navigate(NavigationObject.RegistrationScreen.route) },
                 navigateToHome = { navController.navigate(NavigationItem.Home.route) }
             )
@@ -103,6 +106,7 @@ fun Navigation(navController: NavHostController) {
 
         composable(NavigationObject.RegistrationScreen.route) {
             RegistrationScreen(
+                mainViewModel = mainViewModel,
                 navigateToOnboarding = { navController.navigate(NavigationObject.OnBoardingScreen.route) },
                 navigateBack = { navController.navigateUp() }
             )

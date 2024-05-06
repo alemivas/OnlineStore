@@ -22,17 +22,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.presentation.login_screen.common_item.ErrorMinimalDialog
 import com.example.presentation.login_screen.common_item.LoginScreenTextField
+import com.example.presentation.main_screen.MainViewModel
 import com.example.presentation.theme.LoginLabelColor
 import com.example.presentation.theme.Mint
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    loginVewModel: LoginVewModel = hiltViewModel(),
+    mainViewModel: MainViewModel,
     navigateToRegistration: () -> Unit,
     navigateToHome: () -> Unit,
 ) {
@@ -65,9 +65,9 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                loginVewModel.viewModelScope.launch {
-                    if (loginVewModel.checkUser(login.value, password.value)) {
-                        loginVewModel.saveIsLoginStatus(login.value)
+                mainViewModel.viewModelScope.launch {
+                    if (mainViewModel.checkUser(login.value, password.value)) {
+                        mainViewModel.saveIsLoginStatus(login.value)
                         navigateToHome()
                     } else {
                         showErrorDialog = true
