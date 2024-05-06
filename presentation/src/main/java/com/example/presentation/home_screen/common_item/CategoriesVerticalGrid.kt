@@ -18,7 +18,7 @@ fun CategoriesVerticalGrid(
     showAllClicked: () -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Fixed(5),
         modifier = Modifier.fillMaxWidth()
             .padding(vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),

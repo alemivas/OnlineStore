@@ -10,67 +10,61 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ShimmerAnimation(
-    isCategory: Boolean
+fun ShimmerItem(
+    isCategory: Boolean,
+    height: Dp
 ) {
-    val transition = rememberInfiniteTransition(label = "")
-    val translateAnim by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            tween(durationMillis = 1200, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        ), label = ""
-    )
-
-    val brush = Brush.linearGradient(
-        colors = ShimmerColorShades,
-        start = Offset(10f, 10f),
-        end = Offset(translateAnim, translateAnim)
-    )
     if (isCategory) {
-        ShimmerItemCategory(brush = brush)
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(height)
+                .shimmerEffect()
+        )
     } else {
-        ShimmerItemProduct(brush = brush)
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .shimmerEffect()
+        )
     }
 }
 
-val ShimmerColorShades = listOf(
-    Color.LightGray.copy(0.9f),
-    Color.LightGray.copy(0.2f),
-    Color.LightGray.copy(0.9f)
-)
+fun Modifier.shimmerEffect(): Modifier = composed {
 
-@Composable
-fun ShimmerItemCategory(
-    brush: Brush
-) {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(65.dp)
-            .background(brush = brush, shape = RoundedCornerShape(12.dp))
+    val transition = rememberInfiniteTransition(label = "")
+    val offsetX by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 2000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
     )
-}
-
-@Composable
-fun ShimmerItemProduct(
-    brush: Brush
-) {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(220.dp)
-            .background(brush = brush, shape = RoundedCornerShape(12.dp))
+    background(
+        brush = Brush.linearGradient(
+            colors = listOf(
+                Color.LightGray.copy(alpha = 0.9f),
+                Color.LightGray.copy(alpha = 0.2f),
+                Color.LightGray.copy(alpha = 0.9f)
+            ),
+            start = Offset(10f, 10f),
+            end = Offset(offsetX, offsetX)
+        ),
+        shape = RoundedCornerShape(12.dp)
     )
 }

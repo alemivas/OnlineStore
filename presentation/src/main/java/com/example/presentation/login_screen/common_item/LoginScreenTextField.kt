@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -11,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -22,7 +26,6 @@ import com.example.presentation.theme.LoginBorderColor
 import com.example.presentation.theme.LoginLabelColor
 import com.example.presentation.theme.Mint
 
-
 @Composable
 fun LoginScreenTextField(
     header: String,
@@ -30,6 +33,8 @@ fun LoginScreenTextField(
     value: MutableState<String>,
     isHidden: MutableState<Boolean>
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,7 +70,11 @@ fun LoginScreenTextField(
                 unfocusedLabelColor = LoginLabelColor,
                 unfocusedContainerColor = LoginBackgroundColor
             ),
-            visualTransformation = if (isHidden.value) PasswordVisualTransformation() else VisualTransformation.None
+            visualTransformation =
+            if (isHidden.value) PasswordVisualTransformation()
+            else VisualTransformation.None,
+            keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()}),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
     }
 }

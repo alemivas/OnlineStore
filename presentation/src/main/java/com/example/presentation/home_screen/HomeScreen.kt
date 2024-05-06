@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.common_item.NoResultBox
-import com.example.presentation.common_item.ShimmerAnimation
+import com.example.presentation.common_item.ShimmerItem
 import com.example.presentation.home_screen.common_item.CategoriesRow
 import com.example.presentation.home_screen.common_item.CategoriesVerticalGrid
 import com.example.presentation.home_screen.common_item.FilterProduct
@@ -106,7 +106,7 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     items(5) {
-                                        ShimmerAnimation(true)
+                                        ShimmerItem(true, 65.dp)
                                     }
                                 }
                             }
@@ -158,7 +158,7 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 ) {
                                     items(8) {
-                                        ShimmerAnimation(false)
+                                        ShimmerItem(false, 230.dp)
                                     }
                                 }
                             }

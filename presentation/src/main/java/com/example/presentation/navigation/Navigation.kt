@@ -31,7 +31,7 @@ fun Navigation(mainViewModel: MainViewModel, navController: NavHostController) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val wishlistViewModel = hiltViewModel<WishlistViewModel>()
 
-    NavHost(navController, startDestination = NavigationObject.LoginScreen.route) {
+    NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Home.route) {
             HomeScreen(
                 homeViewModel = homeViewModel,

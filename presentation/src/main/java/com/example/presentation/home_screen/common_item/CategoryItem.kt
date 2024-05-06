@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -58,7 +59,9 @@ fun CategoryItem(
             text = category.name,
             fontSize = 12.sp,
             fontWeight = FontWeight(400),
-            color = Gray
+            color = Gray,
+            maxLines = 2,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -91,7 +94,7 @@ fun CategoryItemAll(
             text = "All",
             fontSize = 12.sp,
             fontWeight = FontWeight(400),
-            color = Gray
+            color = Gray,
         )
     }
 }

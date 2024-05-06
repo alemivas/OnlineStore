@@ -1,6 +1,7 @@
 package com.example.presentation.home_screen.common_item
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
@@ -17,7 +18,8 @@ fun CategoriesRow(
     showAllClicked: () -> Unit
 ) {
     LazyRow(
-        modifier = Modifier.padding(vertical = 16.dp),
+        modifier = Modifier.padding(vertical = 16.dp)
+            .height(65.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(4) { category ->

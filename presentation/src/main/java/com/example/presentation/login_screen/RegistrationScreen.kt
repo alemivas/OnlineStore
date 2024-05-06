@@ -177,7 +177,7 @@ fun RegistrationScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Type of account",
+                    text = "Type of account: ${typeAccount.value}",
                     fontSize = 16.sp,
                     color = PasswordLabelColor
                 )
