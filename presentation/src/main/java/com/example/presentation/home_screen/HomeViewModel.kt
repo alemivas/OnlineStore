@@ -97,6 +97,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun refreshScreen() {
+        fetchCategories()
+        fetchProducts(30, 0)
+    }
+
     private fun fetchCategories() {
         viewModelScope.launch {
             getCategories()
