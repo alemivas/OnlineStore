@@ -36,12 +36,14 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.models.Category
 import com.example.domain.models.ProductRequest
 import com.example.presentation.manager_screen.ManagerViewModel
 import com.example.presentation.manager_screen.common.ScreenType
 import com.example.presentation.manager_screen.ui.ManagerTopAppBar
 import com.example.presentation.manager_screen.ui.StyledTextField
+import com.example.utils.ApiResult
 
 @Composable
 fun UniversalProductScreen(
@@ -55,6 +57,12 @@ fun UniversalProductScreen(
             .fillMaxSize()
             .padding(16.dp, 8.dp)
     ) {
+
+        val categories = remember { mutableStateOf<List<Category>>(emptyList()) }
+        if (managerViewModel.categories.collectAsStateWithLifecycle().value is ApiResult.Success) {
+            categories.value = managerViewModel.categories.value.data ?: emptyList()
+        }
+
         val id = remember { mutableStateOf(TextFieldValue("")) }
         val title = remember { mutableStateOf(TextFieldValue("")) }
         val price = remember { mutableStateOf(TextFieldValue("")) }
@@ -62,45 +70,10 @@ fun UniversalProductScreen(
         val images = remember { mutableStateOf(TextFieldValue("")) }
         val category = remember { mutableStateOf(TextFieldValue("")) }
         val categoryDropDown = remember { mutableStateOf(false) }
-        val categories = remember {
-            mutableStateOf<List<Category>>(
-//            emptyList()
-                listOf(
-                    Category(
-                        1,
-                        "Qwerty",
-                        "test",
-                        "test",
-                        "test"
-                    ),
-                    Category(
-                        2,
-                        "Electronics",
-                        "test",
-                        "test",
-                        "test"
-                    ),
-                    Category(
-                        3,
-                        "Chomba",
-                        "test",
-                        "test",
-                        "test"
-                    ),
-                    Category(
-                        4,
-                        "Shoes",
-                        "test",
-                        "test",
-                        "test"
-                    )
-                )
-            )
-        }
+        val enabledButton = remember { mutableStateOf(false) }
 
         val maxWidth = Modifier
             .fillMaxWidth()
-//            .height(40.dp)
 
         val textStyle = TextStyle(
             fontSize = 16.sp,
@@ -117,6 +90,7 @@ fun UniversalProductScreen(
             ManagerTopAppBar("${type.label} ${type.model}") { onBackClick() }
 
             if (type !is ScreenType.Create) {
+                enabledButton.value = id.value.text.isNotEmpty()
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -139,6 +113,13 @@ fun UniversalProductScreen(
             }
 
             if (type !is ScreenType.Delete) {
+                enabledButton.value = title.value.text.isNotEmpty()
+                        && price.value.text.isNotEmpty()
+                        && category.value.text.isNotEmpty()
+                        && description.value.text.isNotEmpty()
+                        && images.value.text.isNotEmpty()
+                        && images.value.text.startsWith("https://")
+
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -219,8 +200,6 @@ fun UniversalProductScreen(
                                 .copy(keyboardType = KeyboardType.Number)
                         )
 
-
-//                Spacer(Modifier.height(8.dp))
                         val scrollState = rememberScrollState()
                         DropdownMenu(expanded = categoryDropDown.value,
                             scrollState = scrollState,
@@ -287,20 +266,19 @@ fun UniversalProductScreen(
                 onClick = when (type) {
                     is ScreenType.Create -> {
                         {
-//                            apiService.create
                             managerViewModel.createNewProduct(ProductRequest(
                                 title.value.text,
                                 price.value.text.toInt(),
                                 description.value.text,
                                 category.value.text.toInt(),
-                                images.value.text
+                                images.value.text.split(",").map { it.trim('"') }
                             ))
+                            onBackClick()
                         }
                     }
 
                     is ScreenType.Update -> {
                         {
-//                            apiService.update
                             managerViewModel.updateProduct(
                                 id.value.text.toInt(),
                                 ProductRequest(
@@ -308,18 +286,20 @@ fun UniversalProductScreen(
                                     price.value.text.toInt(),
                                     description.value.text,
                                     category.value.text.toInt(),
-                                    images.value.text
+                                    images.value.text.split(",").map { it.trim('"') }
                                 ))
+                            onBackClick()
                         }
                     }
 
                     is ScreenType.Delete -> {
                         {
-//                            apiService.delete
                             managerViewModel.deleteProduct(id.value.text.toInt())
+                            onBackClick()
                         }
                     }
                 },
+                enabled = enabledButton.value,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors()

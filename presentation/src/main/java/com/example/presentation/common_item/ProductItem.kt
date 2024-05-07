@@ -64,7 +64,8 @@ fun ProductItem(
                     contentScale = ContentScale.Crop,
                     model =
                     if (product.images.isEmpty()) R.drawable.img
-                    else product.images[it].removePrefix("[\"").removeSuffix("\"]"),
+                    else product.images[it].removePrefix("[\"").removeSuffix("\"]")
+                        .removePrefix("\"").removeSuffix("\"").removeSuffix("\\\""),
                     contentDescription = null,
                 )
             }

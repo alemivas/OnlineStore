@@ -89,7 +89,7 @@ fun PasswordScreenTextField(
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down)}
             ),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
     }
 }

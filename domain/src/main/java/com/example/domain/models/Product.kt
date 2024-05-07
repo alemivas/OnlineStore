@@ -20,5 +20,5 @@ data class ProductRequest(
     val price: Int,
     val description: String,
     val categoryId: Int,
-    val images: String
+    val images: List<String>
 )

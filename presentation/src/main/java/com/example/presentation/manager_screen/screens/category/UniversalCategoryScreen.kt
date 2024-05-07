@@ -47,10 +47,10 @@ fun UniversalCategoryScreen(
         val id = remember { mutableStateOf(TextFieldValue("")) }
         val name = remember { mutableStateOf(TextFieldValue("")) }
         val image = remember { mutableStateOf(TextFieldValue("")) }
+        val enabledButton = remember { mutableStateOf(false) }
 
         val maxWidth = Modifier
             .fillMaxWidth()
-//            .height(40.dp)
 
         val textStyle = TextStyle(
             fontSize = 16.sp,
@@ -67,6 +67,8 @@ fun UniversalCategoryScreen(
             ManagerTopAppBar("${type.label} ${type.model}") { onBackClick() }
 
             if (type !is ScreenType.Create) {
+                enabledButton.value = id.value.text.isNotEmpty()
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -84,11 +86,13 @@ fun UniversalCategoryScreen(
                             .copy(keyboardType = KeyboardType.Number)
                     )
                 }
-
                 Spacer(Modifier.height(16.dp))
             }
 
             if (type !is ScreenType.Delete) {
+                enabledButton.value = image.value.text.isNotEmpty()
+                        && name.value.text.isNotEmpty()
+                        && image.value.text.startsWith("https://")
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -131,17 +135,16 @@ fun UniversalCategoryScreen(
                 onClick = when (type) {
                     is ScreenType.Create -> {
                         {
-//                            apiService.create
                             managerViewModel.createNewCategory(CategoryRequest(
                                 name = name.value.text,
                                 image = image.value.text
                             ))
+                            onBackClick()
                         }
                     }
 
                     is ScreenType.Update -> {
                         {
-//                            apiService.update
                             managerViewModel.updateCategory(
                                 id = id.value.text.toInt(),
                                 CategoryRequest(
@@ -149,16 +152,18 @@ fun UniversalCategoryScreen(
                                     image = image.value.text
                                 )
                             )
+                            onBackClick()
                         }
                     }
 
                     is ScreenType.Delete -> {
                         {
-//                            apiService.delete
                             managerViewModel.deleteCategory(id.value.text.toInt())
+                            onBackClick()
                         }
                     }
                 },
+                enabled = enabledButton.value ,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors()
