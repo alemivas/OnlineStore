@@ -318,6 +318,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun getBucksPrice(price: Int): Int {
+        return when (_currentCountry.value) {
+            Constants.Country.USA.toString() -> price
+            Constants.Country.BRAZIL.toString() -> price / 5
+            Constants.Country.ARGENTINA.toString() -> price / 877
+            Constants.Country.MEXICO.toString() -> price / 17
+            Constants.Country.EUROPE.toString() -> (price / 0.9).toInt()
+            Constants.Country.UNITED_KINGDOM.toString() -> (price / 0.8).toInt()
+            Constants.Country.JAPAN.toString() -> price / 156
+            Constants.Country.RUSSIA.toString() -> price / 90
+            Constants.Country.CHINA.toString() -> price / 7
+            else -> { price }
+        }
+    }
+
     fun changeCheckedProducts(cart: Cart) {
         if (_checkedProducts.value.contains(cart)) {
             _checkedProducts.value = _checkedProducts.value.minus(cart)
