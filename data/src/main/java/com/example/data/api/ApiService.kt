@@ -55,7 +55,7 @@ class ApiService @Inject constructor(
     ) = client.post(PRODUCTS) {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body<Product>()
+    }
 
     suspend fun updateProduct(
         id: Int,
