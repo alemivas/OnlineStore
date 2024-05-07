@@ -191,8 +191,8 @@ fun FilterProduct(
                                 filter = Constants.SortType.RANGE,
                                 products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
-                                priceMin = priceMin.toInt(),
-                                priceMax = priceMax.toInt()
+                                priceMin = homeViewModel.getBucksPrice (priceMin.toInt()),
+                                priceMax = homeViewModel.getBucksPrice (priceMax.toInt())
                             )
                             sortedClicked()
                             alertShow = false
