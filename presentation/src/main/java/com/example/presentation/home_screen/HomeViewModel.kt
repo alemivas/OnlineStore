@@ -65,7 +65,6 @@ class HomeViewModel @Inject constructor(
     private val _selectedProduct = mutableStateOf<Product?>(null)
     val selectedProduct: State<Product?> = _selectedProduct
 
-    private val _favoriteList: MutableState<List<Product>> = mutableStateOf(emptyList())
     private val _checkedProducts: MutableState<List<Cart>> = mutableStateOf(emptyList())
 
     init {
@@ -80,7 +79,6 @@ class HomeViewModel @Inject constructor(
                 val isLoginUser = getIsLoginUser()
                 if (isLoginUser != null) {
                     _cart.value = isLoginUser.cartList
-                    _favoriteList.value = isLoginUser.favoriteProductList
                 }
                 delay(1000)
             }
@@ -264,28 +262,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun toggleFavorite(product: Product) {
-        viewModelScope.launch {
-            val user = getIsLoginUser()
-            if (_favoriteList.value.contains(product) && user != null) {
-                val updatedFavoriteList = user.copy(
-                    favoriteProductList = user.favoriteProductList - listOf(product).toSet()
-                )
-                saveUser(updatedFavoriteList)
-                _favoriteList.value = updatedFavoriteList.favoriteProductList
-            } else if (!_favoriteList.value.contains(product) && user != null) {
-                val updatedFavoriteList = user.copy(
-                    favoriteProductList = user.favoriteProductList + listOf(product).toSet()
-                )
-                saveUser(updatedFavoriteList)
-                _favoriteList.value = updatedFavoriteList.favoriteProductList
-            }
-        }
-    }
-
-    fun isFavoriteChecked(product: Product): Boolean {
-        return _favoriteList.value.contains(product)
-    }
 
     fun changeCurrentCountry(country: String) {
         _currentCountry.value = country
