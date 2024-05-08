@@ -8,7 +8,9 @@ object Constants {
 
     enum class SortType {
         NAME,
+        REVERSE_NAME,
         PRICE,
+        REVERSE_PRICE,
         RANGE
     }
 

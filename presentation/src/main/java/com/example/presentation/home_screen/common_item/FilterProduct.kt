@@ -116,11 +116,40 @@ fun FilterProduct(
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text("By price") },
+                    text = { Text("By name: Reverse") },
+                    onClick = {
+                        expanded = false
+                        homeViewModel.sortedProductList(
+                            filter = Constants.SortType.REVERSE_NAME,
+                            products =
+                            if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                            else homeViewModel.searchList.value.data ?: emptyList(),
+                            priceMin = null,
+                            priceMax = null
+                        )
+                        sortedClicked()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("By price: Low to High") },
                     onClick = {
                         expanded = false
                         homeViewModel.sortedProductList(
                             filter = Constants.SortType.PRICE,
+                            products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                            else homeViewModel.searchList.value.data ?: emptyList(),
+                            priceMin = null,
+                            priceMax = null
+                        )
+                        sortedClicked()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("By price: High to Low") },
+                    onClick = {
+                        expanded = false
+                        homeViewModel.sortedProductList(
+                            filter = Constants.SortType.REVERSE_PRICE,
                             products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                             else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
