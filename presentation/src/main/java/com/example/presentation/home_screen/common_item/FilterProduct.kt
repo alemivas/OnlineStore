@@ -18,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -29,6 +30,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +56,12 @@ fun FilterProduct(
     var expanded by remember { mutableStateOf(false) }
     var priceMin by rememberSaveable { mutableStateOf("") }
     var priceMax by rememberSaveable { mutableStateOf("") }
+
+    var nameFilterIsActive by rememberSaveable { mutableStateOf(false) }
+    var nameFilterIncreaseOrder by rememberSaveable { mutableStateOf(true) }
+    var priceFilterIsActive by rememberSaveable { mutableStateOf(false) }
+    var priceFilterIncreaseOrder by rememberSaveable { mutableStateOf(true) }
+    var priceRangeFilterIsActive by rememberSaveable { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -102,13 +111,43 @@ fun FilterProduct(
             ) {
                 DropdownMenuItem(
                     text = { Text("By name") },
+                    trailingIcon = {
+                        if (nameFilterIsActive) {
+                            Icon(
+                                modifier =
+                                    if (nameFilterIncreaseOrder)
+                                        Modifier.graphicsLayer(scaleY = -1f)
+                                    else
+                                        Modifier
+                                ,
+                                painter = painterResource(id = R.drawable.baseline_sort_24),
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }else
+                            null
+                    },
+                    modifier = Modifier.background(if (nameFilterIsActive) Mint else Color.White),
+                    colors = MenuDefaults.itemColors(if (nameFilterIsActive) Color.White else GrayDark),
                     onClick = {
                         expanded = false
+                        nameFilterIncreaseOrder =
+                            if (nameFilterIsActive)
+                                !nameFilterIncreaseOrder
+                            else
+                                true
+                        nameFilterIsActive = true
+                        priceFilterIsActive = false
+                        priceRangeFilterIsActive = false
                         homeViewModel.sortedProductList(
-                            filter = Constants.SortType.NAME,
+                            filter =
+                                if (nameFilterIncreaseOrder)
+                                    Constants.SortType.NAME
+                                else
+                                    Constants.SortType.REVERSE_NAME,
                             products =
-                            if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
-                            else homeViewModel.searchList.value.data ?: emptyList(),
+                                if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                                else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
                             priceMax = null
                         )
@@ -117,12 +156,43 @@ fun FilterProduct(
                 )
                 DropdownMenuItem(
                     text = { Text("By price") },
+                    trailingIcon = {
+                        if (priceFilterIsActive) {
+                            Icon(
+                                modifier =
+                                if (priceFilterIncreaseOrder)
+                                    Modifier.graphicsLayer(scaleY = -1f)
+                                else
+                                    Modifier
+                                ,
+                                painter = painterResource(id = R.drawable.baseline_sort_24),
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }else
+                            null
+                    },
+                    modifier = Modifier.background(if (priceFilterIsActive) Mint else Color.White),
+                    colors = MenuDefaults.itemColors(if (priceFilterIsActive) Color.White else GrayDark),
                     onClick = {
                         expanded = false
+                        priceFilterIncreaseOrder =
+                            if (priceFilterIsActive)
+                                !priceFilterIncreaseOrder
+                            else
+                                true
+                        nameFilterIsActive = false
+                        priceFilterIsActive = true
+                        priceRangeFilterIsActive = false
                         homeViewModel.sortedProductList(
-                            filter = Constants.SortType.PRICE,
-                            products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
-                            else homeViewModel.searchList.value.data ?: emptyList(),
+                            filter =
+                                if (priceFilterIncreaseOrder)
+                                    Constants.SortType.PRICE
+                                else
+                                    Constants.SortType.REVERSE_PRICE,
+                            products =
+                                if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                                else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = null,
                             priceMax = null
                         )
@@ -131,12 +201,18 @@ fun FilterProduct(
                 )
                 DropdownMenuItem(
                     text = { Text("Price range") },
+                    modifier = Modifier.background(if (priceRangeFilterIsActive) Mint else Color.White),
+                    colors = MenuDefaults.itemColors(if (priceRangeFilterIsActive) Color.White else GrayDark),
                     onClick = {
                         expanded = false
+                        nameFilterIsActive = false
+                        priceFilterIsActive = false
+                        priceRangeFilterIsActive = true
                         homeViewModel.sortedProductList(
                             filter = Constants.SortType.RANGE,
-                            products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
-                            else homeViewModel.searchList.value.data ?: emptyList(),
+                            products =
+                                if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
+                                else homeViewModel.searchList.value.data ?: emptyList(),
                             priceMin = priceMin.toIntOrNull() ?: 0,
                             priceMax = priceMax.toIntOrNull() ?: 100000
                         )

@@ -246,7 +246,9 @@ class HomeViewModel @Inject constructor(
     ) {
         _sortedList.value = when (filter) {
             Constants.SortType.NAME -> products.sortedBy { it.title }
+            Constants.SortType.REVERSE_NAME -> products.sortedByDescending { it.title }
             Constants.SortType.PRICE -> products.sortedBy { it.price }
+            Constants.SortType.REVERSE_PRICE -> products.sortedByDescending { it.price }
             Constants.SortType.RANGE -> {
                 val filteredProducts = products.filter { product ->
                     val price = product.price
