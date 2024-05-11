@@ -244,6 +244,7 @@ fun RegistrationScreen(
     }
     if (showTypeAccountDialog) {
         TypeAccountBottomSheet(
+            currentTypeAccount = typeAccount.value,
             typeAccount = { typeAccount.value = it },
             showTypeAccountDialog = { showTypeAccountDialog = false }
         )

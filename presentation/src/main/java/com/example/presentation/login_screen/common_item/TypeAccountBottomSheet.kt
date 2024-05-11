@@ -34,11 +34,12 @@ import com.example.utils.Constants
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TypeAccountBottomSheet(
+    currentTypeAccount: Constants.TypeOfAccount,
     typeAccount: (Constants.TypeOfAccount) -> Unit,
     showTypeAccountDialog: (Boolean) -> Unit,
 ) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
     val types = listOf(Constants.TypeOfAccount.USER, Constants.TypeOfAccount.MANAGER)
+    var selectedIndex by remember { mutableIntStateOf(types.indexOf(currentTypeAccount)) }
 
     val password = remember { mutableStateOf("") }
     var isErrorPassword by remember { mutableStateOf(false) }
@@ -68,7 +69,7 @@ fun TypeAccountBottomSheet(
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(index = index, count = types.size),
                         onClick = { selectedIndex = index },
-                        selected = index == selectedIndex
+                        selected = selectedIndex == index
                     ) {
                         Text(label.name)
                     }

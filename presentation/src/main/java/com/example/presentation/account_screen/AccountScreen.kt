@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,20 +14,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -48,12 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.domain.models.User
 import com.example.presentation.R
 import com.example.presentation.login_screen.common_item.TypeAccountBottomSheet
 import com.example.presentation.main_screen.MainViewModel
-import com.example.presentation.theme.DarkBlue
-import com.example.presentation.theme.GrayWithBlue
+import com.example.presentation.theme.GrayDarkest
+import com.example.presentation.theme.GrayLighter
 import com.example.presentation.theme.LightDarkGray
 import com.example.presentation.theme.LightGray
 import com.example.utils.Constants
@@ -65,7 +62,7 @@ fun AccountScreen(
     toTermsConditionScreen: () -> Unit,
     toLoginScreen: () -> Unit
 ) {
-    val userState by remember { mutableStateOf(mainViewModel.currentUser.value) }
+    val userState by mainViewModel.currentUser.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var showTypeAccountDialog by remember { mutableStateOf(false) }
     val typeAccount = remember { mutableStateOf(
@@ -73,25 +70,50 @@ fun AccountScreen(
         else Constants.TypeOfAccount.USER)
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ImageProfile(
-            imageProfile = mainViewModel.currentProfileImage.value,
-            editIcon = { showDialog = true }
+        Text(
+            text = "Profile",
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 8.dp)
+                .align(Alignment.CenterHorizontally),
+            fontWeight = FontWeight(700),
+            textAlign = TextAlign.Center,
+            fontSize = 16.sp,
+            color = GrayDarkest,
         )
-        userState?.let { ProfileInfo(it) }
-        TypeOfAccount() { showTypeAccountDialog = true }
-        TermsConditions { toTermsConditionScreen() }
-        SignOut {
-            mainViewModel.signOut()
-            toLoginScreen()
+
+        HorizontalDivider( color = GrayLighter)
+
+        userState?.let {
+            Profile(
+                imageProfile = mainViewModel.currentProfileImage.value,
+                user = it,
+                editIcon = { showDialog = true }
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier.padding(25.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            TypeOfAccount() { showTypeAccountDialog = true }
+            TermsConditions { toTermsConditionScreen() }
+            SignOut {
+                mainViewModel.signOut()
+                toLoginScreen()
+            }
         }
 
         if (showTypeAccountDialog) {
             TypeAccountBottomSheet(
+                currentTypeAccount = typeAccount.value,
                 typeAccount = { typeAccount.value = it },
                 showTypeAccountDialog = { showTypeAccountDialog = false }
             )
@@ -117,62 +139,21 @@ fun AccountScreen(
 }
 
 @Composable
-fun ImageProfile(
-    imageProfile: Int,
-    editIcon: () -> Unit,
-) {
-    Box(
+fun TypeOfAccount(toTypeOfAccount: () -> Unit) {
+    Button(
+        onClick = { toTypeOfAccount() },
         modifier = Modifier
-            .padding(vertical = 113.1.dp, horizontal = 27.dp)
-            .width(105.dp)
-            .height(100.dp)
+            .fillMaxWidth()
+            .height(56.dp),
+        colors = ButtonDefaults.buttonColors(LightGray),
+        shape = RoundedCornerShape(12)
     ) {
-        Image(
-            painter = painterResource(id = imageProfile),
-            contentDescription = "image",
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-    }
-    Box(
-        modifier = Modifier
-            .padding(
-                vertical = 181.1.dp,
-                horizontal = 100.dp
-            )
-            .size(32.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_edit),
-            contentDescription = "edit icon",
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .clickable { editIcon() }
-        )
-    }
-}
-
-@Composable
-fun ProfileInfo(
-    user: User
-) {
-    var isPasswordVisible by remember { mutableStateOf(false) }
-    Box(
-        modifier = Modifier
-            .padding(
-                top = 126.6.dp,
-                start = 167.5.dp
-            )
-            .width(105.dp)
-            .height(69.5.dp)
-    ) {
-        Column {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = user.name,
+                text = "Type of account",
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.W600,
@@ -180,191 +161,96 @@ fun ProfileInfo(
                     lineHeight = 24.sp,
                     letterSpacing = 0.5.sp
                 ),
-                color = DarkBlue,
-                modifier = Modifier.widthIn(max = 105.dp),
-                softWrap = false
+                color = LightDarkGray,
+                modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.padding(2.dp))
-            Text(
-                text = user.email,
-                style = TextStyle(
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.W400,
-                    fontSize = 14.sp,
-                    lineHeight = 24.sp,
-                    letterSpacing = 0.5.sp
-                ),
-                color = GrayWithBlue,
-                modifier = Modifier.widthIn(max = 105.dp),
-                softWrap = false
+            Icon(
+                painter = painterResource(id = R.drawable.ic_vector),
+                contentDescription = "",
+                tint = LightDarkGray,
+                modifier = Modifier
+                    .width(6.25.dp)
+                    .height(10.49.dp)
             )
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.eye),
-                    contentDescription = "",
-                    Modifier
-                        .size(16.dp)
-                        .clickable { isPasswordVisible = !isPasswordVisible }
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = if (isPasswordVisible) user.password else "*".repeat(user.password.length),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.W400,
-                        fontSize = 14.sp,
-                        lineHeight = 24.sp,
-                        letterSpacing = 0.5.sp
-                    ),
-                    color = GrayWithBlue,
-                    modifier = Modifier.widthIn(max = 105.dp),
-                    softWrap = false
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TypeOfAccount(toTypeOfAccount: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .padding(
-                top = 509.77.dp,
-                start = 29.33.dp
-            )
-    ) {
-        Button(
-            onClick = { toTypeOfAccount() },
-            modifier = Modifier
-                .width(336.dp)
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(LightGray),
-            shape = RoundedCornerShape(12)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Type of account",
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        letterSpacing = 0.5.sp
-                    ),
-                    color = LightDarkGray,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_vector),
-                    contentDescription = "",
-                    tint = LightDarkGray,
-                    modifier = Modifier
-                        .width(6.25.dp)
-                        .height(10.49.dp)
-                )
-            }
-
         }
     }
 }
 
 @Composable
 fun TermsConditions(toTermsConditions: () -> Unit) {
-    Box(
+    Button(
+        onClick = { toTermsConditions() },
         modifier = Modifier
-            .padding(
-                top = 587.18.dp,
-                start = 29.33.dp
-            )
+            .fillMaxWidth()
+            .height(56.dp),
+        colors = ButtonDefaults.buttonColors(LightGray),
+        shape = RoundedCornerShape(12)
     ) {
-        Button(
-            onClick = { toTermsConditions() },
-            modifier = Modifier
-                .width(336.dp)
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(LightGray),
-            shape = RoundedCornerShape(12)
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Terms & Conditions",
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        letterSpacing = 0.5.sp
-                    ),
-                    color = LightDarkGray,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_vector),
-                    contentDescription = "",
-                    tint = LightDarkGray,
-                    modifier = Modifier
-                        .width(6.25.dp)
-                        .height(10.49.dp)
-                )
-            }
-
+            Text(
+                text = "Terms & Conditions",
+                style = TextStyle(
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.5.sp
+                ),
+                color = LightDarkGray,
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_vector),
+                contentDescription = "",
+                tint = LightDarkGray,
+                modifier = Modifier
+                    .width(6.25.dp)
+                    .height(10.49.dp)
+            )
         }
     }
 }
 
 @Composable
 fun SignOut(toSignOut: () -> Unit) {
-    Box(
+    Button(
+        onClick = { toSignOut() },
         modifier = Modifier
-            .padding(
-                top = 664.59.dp,
-                start = 29.33.dp
-            )
+            .fillMaxWidth()
+            .height(56.dp),
+        colors = ButtonDefaults.buttonColors(LightGray),
+        shape = RoundedCornerShape(12)
     ) {
-        Button(
-            onClick = { toSignOut() },
-            modifier = Modifier
-                .width(336.dp)
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(LightGray),
-            shape = RoundedCornerShape(12)
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Sign Out",
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        letterSpacing = 0.5.sp
-                    ),
-                    color = LightDarkGray,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_exit),
-                    contentDescription = "",
-                    tint = LightDarkGray,
-                    modifier = Modifier
-                        .width(16.dp)
-                        .height(20.dp)
-                )
-            }
-
+            Text(
+                text = "Sign Out",
+                style = TextStyle(
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.5.sp
+                ),
+                color = LightDarkGray,
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_exit),
+                contentDescription = "",
+                tint = LightDarkGray,
+                modifier = Modifier
+                    .width(16.dp)
+                    .height(20.dp)
+            )
         }
     }
 }

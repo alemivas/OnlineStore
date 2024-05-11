@@ -23,9 +23,7 @@ fun MainScreen() {
     val navController = rememberNavController()
     var showBottomBar by rememberSaveable { mutableStateOf(true) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    // Получаем данные о пользователе из MainViewModel
-
+    
     showBottomBar = when (navBackStackEntry?.destination?.route) {
         "homeScreen" -> true
         "wishlistScreen" -> true

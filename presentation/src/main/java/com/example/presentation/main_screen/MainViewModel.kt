@@ -71,6 +71,7 @@ class MainViewModel @Inject constructor(
             val user = userList?.find { it.email == email }
             if (user != null) {
                 _isManager.value = user.isManager
+                _currentUser.value = user
                 saveUser(user.copy(isLogin = true))
 
                 val otherUsers = userList - user
