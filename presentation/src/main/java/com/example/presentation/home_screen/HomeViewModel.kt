@@ -241,8 +241,8 @@ class HomeViewModel @Inject constructor(
     fun sortedProductList(
         filter: Constants.SortType,
         products: List<Product>,
-        priceMin: Int?,
-        priceMax: Int?
+        priceMin100: Int?,
+        priceMax100: Int?
     ) {
         _sortedList.value = when (filter) {
             Constants.SortType.NAME -> products.sortedBy { it.title }
@@ -251,9 +251,9 @@ class HomeViewModel @Inject constructor(
             Constants.SortType.REVERSE_PRICE -> products.sortedByDescending { it.price }
             Constants.SortType.RANGE -> {
                 val filteredProducts = products.filter { product ->
-                    val price = product.price
-                    if (priceMin == null || priceMax == null) return
-                    price in priceMin..priceMax
+                    val price100 = product.price * 100
+                    if (priceMin100 == null || priceMax100 == null) return
+                    price100 in priceMin100..priceMax100
                 }
                 filteredProducts.sortedBy { it.price }
             }
@@ -296,18 +296,19 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getBucksPrice(price: Int): Int {
+    fun getBucksPrice100(price: Int): Int {
+        val price100 = price*100
         return when (_currentCountry.value) {
-            Constants.Country.USA.toString() -> price
-            Constants.Country.BRAZIL.toString() -> price / 5
-            Constants.Country.ARGENTINA.toString() -> price / 877
-            Constants.Country.MEXICO.toString() -> price / 17
-            Constants.Country.EUROPE.toString() -> (price / 0.9).toInt()
-            Constants.Country.UNITED_KINGDOM.toString() -> (price / 0.8).toInt()
-            Constants.Country.JAPAN.toString() -> price / 156
-            Constants.Country.RUSSIA.toString() -> price / 90
-            Constants.Country.CHINA.toString() -> price / 7
-            else -> { price }
+            Constants.Country.USA.toString() -> price100
+            Constants.Country.BRAZIL.toString() -> price100 / 5
+            Constants.Country.ARGENTINA.toString() -> price100 / 877
+            Constants.Country.MEXICO.toString() -> price100 / 17
+            Constants.Country.EUROPE.toString() -> (price100 / 0.9).toInt()
+            Constants.Country.UNITED_KINGDOM.toString() -> (price100 / 0.8).toInt()
+            Constants.Country.JAPAN.toString() -> price100 / 156
+            Constants.Country.RUSSIA.toString() -> price100 / 90
+            Constants.Country.CHINA.toString() -> price100 / 7
+            else -> { price100 }
         }
     }
 
