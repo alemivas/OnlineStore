@@ -148,8 +148,8 @@ fun FilterProduct(
                             products =
                                 if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
-                            priceMin = null,
-                            priceMax = null
+                            priceMin100 = null,
+                            priceMax100 = null
                         )
                         sortedClicked()
                     },
@@ -193,8 +193,8 @@ fun FilterProduct(
                             products =
                                 if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
-                            priceMin = null,
-                            priceMax = null
+                            priceMin100 = null,
+                            priceMax100 = null
                         )
                         sortedClicked()
                     },
@@ -213,8 +213,8 @@ fun FilterProduct(
                             products =
                                 if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
-                            priceMin = priceMin.toIntOrNull() ?: 0,
-                            priceMax = priceMax.toIntOrNull() ?: 100000
+                            priceMin100 = (priceMin.toIntOrNull() ?: 0) * 100,
+                            priceMax100 = (priceMax.toIntOrNull() ?: 100000) * 100
                         )
                         alertShow = true
                     },
@@ -267,8 +267,8 @@ fun FilterProduct(
                                 filter = Constants.SortType.RANGE,
                                 products = if (isHomeScreen) homeViewModel.products.value.data ?: emptyList()
                                 else homeViewModel.searchList.value.data ?: emptyList(),
-                                priceMin = homeViewModel.getBucksPrice (priceMin.toInt()),
-                                priceMax = homeViewModel.getBucksPrice (priceMax.toInt())
+                                priceMin100 = homeViewModel.getBucksPrice100 (priceMin.toInt()),
+                                priceMax100 = homeViewModel.getBucksPrice100 (priceMax.toInt())
                             )
                             sortedClicked()
                             alertShow = false
