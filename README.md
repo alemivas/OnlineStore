@@ -9,5 +9,6 @@ Implemented:
 * filtering and sorting of products, 
 * cart, 
 * wishlist, 
-* profile settings, 
+* profile settings,
+  
 etc.
