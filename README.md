@@ -3,7 +3,7 @@
 Implemented: 
 * registration and authorization, 
 * onboarding, 
-* selection of country (currency), 
+* selection of Country (currency), 
 * product search, 
 * category selection, 
 * filtering and sorting of products, 
